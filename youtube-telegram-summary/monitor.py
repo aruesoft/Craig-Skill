@@ -536,7 +536,19 @@ def main():
     parser.add_argument('--list-channels', action='store_true', help='등록된 채널 목록')
     parser.add_argument('--add-channel', metavar='CH', help='채널 추가 (@핸들/URL/UC아이디)')
     parser.add_argument('--remove-channel', metavar='CH', help='채널 삭제 (번호 또는 ID)')
+    parser.add_argument('--logfile', metavar='PATH',
+                        help='모든 출력을 이 파일에 기록 (Windows 작업 스케줄러의 pythonw 실행용)')
     args = parser.parse_args()
+
+    # --logfile 지정 시 stdout/stderr 를 파일로 (pythonw 는 콘솔이 없어 출력이 사라지므로)
+    if args.logfile:
+        try:
+            fh = open(args.logfile, 'a', encoding='utf-8', buffering=1)
+            sys.stdout = fh
+            sys.stderr = fh
+            print(f"\n===== {datetime.now().isoformat()} 실행 시작 =====")
+        except Exception as e:
+            print(f"로그 파일 열기 실패({args.logfile}): {e}")
 
     config = load_config()
 

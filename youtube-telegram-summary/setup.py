@@ -4,6 +4,7 @@ YouTube → secondb.ai → Telegram 초기 설정 마법사
 """
 
 import json
+import platform
 import subprocess
 import sys
 from pathlib import Path
@@ -122,33 +123,19 @@ secondb.ai 는 구글 로그인을 사용합니다.
         print("나중에 실행: python ~/youtube-telegram-summary/login.py")
 
 
-def setup_cron(python_path, monitor_path):
-    hr("5단계: 자동 실행 설정 (매시간)")
-    log_path = HOME_DIR / "monitor.log"
-    cron_line = f"0 * * * * {python_path} {monitor_path} >> {log_path} 2>&1"
+def setup_schedule():
+    """자동 실행 등록 (OS 자동 감지: cron 또는 Windows 작업 스케줄러)"""
+    is_windows = platform.system() == "Windows"
+    label = "Windows 작업 스케줄러" if is_windows else "crontab"
+    hr(f"5단계: 자동 실행 설정 (매시간, {label})")
 
-    print(f"\n등록할 crontab 줄:\n  {cron_line}\n")
-    if ask("자동으로 crontab에 추가할까요? (y/n)", "y").lower() != 'y':
-        print("나중에 직접 추가:  crontab -e  후 위 줄을 붙여넣기")
+    if ask(f"{label}에 매시간 실행을 등록할까요? (y/n)", "y").lower() != 'y':
+        print("나중에 등록:  python install_schedule.py")
         return
 
-    try:
-        result = subprocess.run(['crontab', '-l'], capture_output=True, text=True, timeout=10)
-        existing = result.stdout if result.returncode == 0 else ""
-        if cron_line.strip() in existing:
-            print("이미 crontab에 등록되어 있습니다.")
-            return
-        new_cron = (existing.rstrip('\n') + "\n" + cron_line + "\n").lstrip('\n')
-        subprocess.run(['crontab', '-'], input=new_cron, text=True, check=True, timeout=10)
-        print("crontab 등록 완료!  (확인: crontab -l)")
-    except subprocess.TimeoutExpired:
-        print("⚠️  crontab 등록이 멈췄습니다. macOS 권한 문제일 수 있습니다.")
-        print("    시스템 설정 → 개인정보 보호 및 보안 → 전체 디스크 접근 권한 에")
-        print("    터미널(또는 iTerm)을 추가한 뒤, 직접 등록하세요:")
-        print(f"    crontab -e  →  {cron_line}")
-    except Exception as e:
-        print(f"⚠️  crontab 자동 등록 실패: {e}")
-        print(f"    직접 추가하세요:  crontab -e  →  {cron_line}")
+    # 스케줄 등록 로직은 install_schedule.py 에 일원화
+    installer = Path(__file__).parent / "install_schedule.py"
+    subprocess.run([sys.executable, str(installer)])
 
 
 def test_telegram(token, chat_id):
@@ -189,26 +176,31 @@ def main():
     }
     with open(CONFIG_FILE, 'w') as f:
         json.dump(config, f, indent=2, ensure_ascii=False)
-    CONFIG_FILE.chmod(0o600)
+    try:
+        CONFIG_FILE.chmod(0o600)  # Windows에서는 제한적이지만 오류는 나지 않음
+    except Exception:
+        pass
     print(f"\n✅ config.json 저장됨: {CONFIG_FILE}")
 
     install_packages()
     google_login()
 
-    monitor_path = Path(__file__).parent / "monitor.py"
-    setup_cron(sys.executable, monitor_path)
+    setup_schedule()
 
     hr("테스트")
     if ask("텔레그램으로 테스트 메시지를 보낼까요? (y/n)", "y").lower() == 'y':
         test_telegram(token, chat_id)
 
+    monitor_path = Path(__file__).parent / "monitor.py"
     if ask("\n지금 바로 첫 실행을 해볼까요? (y/n)", "y").lower() == 'y':
         subprocess.run([sys.executable, str(monitor_path)])
 
+    log_path = Path(__file__).parent / "monitor.log"
     print("\n🎉 설정 완료!")
-    print("  채널 추가:  python ~/youtube-telegram-summary/monitor.py --add-channel @핸들")
-    print("  채널 목록:  python ~/youtube-telegram-summary/monitor.py --list-channels")
-    print(f"  로그 확인:  tail -f {HOME_DIR}/monitor.log")
+    print(f"  채널 추가:  python \"{monitor_path}\" --add-channel @핸들")
+    print(f"  채널 목록:  python \"{monitor_path}\" --list-channels")
+    print(f"  스케줄 변경: python \"{Path(__file__).parent / 'install_schedule.py'}\" --status")
+    print(f"  로그 파일:  {log_path}")
 
 
 if __name__ == '__main__':
