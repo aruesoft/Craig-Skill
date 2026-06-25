@@ -13,6 +13,7 @@
 """
 
 import argparse
+import json
 import platform
 import subprocess
 import sys
@@ -23,7 +24,22 @@ MONITOR = SCRIPT_DIR / "monitor.py"
 LOG_FILE = SCRIPT_DIR / "monitor.log"
 TASK_NAME = "YouTubeTelegramSummary"
 
+CONFIG_FILE = Path.home() / ".config" / "youtube-telegram-summary" / "config.json"
+
 IS_WINDOWS = platform.system() == "Windows"
+
+
+def _save_interval_to_config(interval_hours):
+    """미실행 감지가 주기를 알 수 있도록 config에 기록"""
+    try:
+        if not CONFIG_FILE.exists():
+            return
+        cfg = json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
+        cfg["schedule_interval_hours"] = interval_hours
+        CONFIG_FILE.write_text(json.dumps(cfg, indent=2, ensure_ascii=False), encoding="utf-8")
+        print(f"   (config에 실행 주기 {interval_hours}시간 기록)")
+    except Exception:
+        pass
 
 
 # ──────────────────────── Windows (schtasks) ────────────────────────
@@ -51,6 +67,7 @@ def install_windows(interval_hours):
         print(f"⚠️ 작업 등록 실패: {e}")
         print("   관리자 권한 PowerShell/명령 프롬프트에서 다시 시도해 보세요.")
         return
+    _save_interval_to_config(interval_hours)
     print(f"\n✅ Windows 작업 스케줄러 등록 완료: '{TASK_NAME}' ({interval_hours}시간마다)")
     print(f"   로그 파일: {LOG_FILE}")
     print(f"   상태 확인: schtasks /Query /TN {TASK_NAME}")
@@ -90,6 +107,7 @@ def install_unix(interval_hours):
             return
         new_cron = (existing.rstrip('\n') + "\n" + cron_line + "\n").lstrip('\n')
         subprocess.run(['crontab', '-'], input=new_cron, text=True, check=True, timeout=10)
+        _save_interval_to_config(interval_hours)
         print(f"✅ crontab 등록 완료 ({interval_hours}시간마다). 확인: crontab -l")
         print(f"   로그 파일: {LOG_FILE}")
     except subprocess.TimeoutExpired:

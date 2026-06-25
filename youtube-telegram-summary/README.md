@@ -92,16 +92,41 @@ python install_schedule.py --remove     # 등록 해제
   "youtube_channels": ["UCxxxx", "UCyyyy"],
   "telegram_bot_token": "...",
   "telegram_chat_id": "...",
-  "summary_language": "kr"
+  "summary_language": "kr",
+  "max_videos_per_channel_per_run": 2,
+  "schedule_interval_hours": 1,
+  "healthcheck_ping_url": ""
 }
 ```
 
 - `summary_language`: 요약 언어 (기본 `kr`)
+- `max_videos_per_channel_per_run`: **채널당 한 번에 보낼 최신 영상 수 (기본 2)**. 신규 채널을 추가했거나
+  한동안 안 돈 채널에 영상이 여러 개 쌓여 있어도 최신 N개만 전송하고, 나머지 과거분은 전송 없이 '본 영상' 처리.
+- `schedule_interval_hours`: 스케줄 주기(시간). 스케줄 미실행(공백) 감지에 사용 (등록 시 자동 기록).
+- `healthcheck_ping_url`: (선택) 외부 감시 핑 URL. → 아래 "알림" 참고.
 
 상태 파일 `state.json`(이미 처리한 영상 목록)을 초기화하려면:
 ```bash
 echo '{"seen_videos":[],"last_checked":null}' > ~/.config/youtube-telegram-summary/state.json
 ```
+
+## 알림 (텔레그램)
+
+요약 메시지와 별개로, 다음 상황에서 ⚠️ 알림을 텔레그램으로 보냅니다.
+
+1. **실행 중 오류** — 예외 발생 시 오류 내용을 전송 (스크립트는 그대로 로그도 남김)
+2. **secondb.ai 로그인 만료** — `python login.py` 재실행 안내
+3. **스케줄 공백 감지** — 예상 주기의 2.5배 이상 실행이 비면, 재개 시점에 "그동안 안 돌았음" 알림
+
+### 스케줄이 '완전히' 멈춘 경우까지 감지하려면 (선택)
+
+스케줄이 아예 안 돌면 모니터 자신은 그 사실을 알릴 수 없습니다(자기가 안 도니까). 이를 잡으려면
+외부 감시 서비스의 "데드맨 스위치"를 씁니다 — [healthchecks.io](https://healthchecks.io) 무료 사용 추천:
+
+1. healthchecks.io에서 체크 생성(주기 1시간, grace 15분 등) → Ping URL 복사
+2. `config.json` 의 `healthcheck_ping_url` 에 그 URL 입력
+3. 이후 매 실행마다 핑을 보내고, 핑이 늦으면 healthchecks.io가 **이메일/텔레그램 등으로** 알려줍니다
+   (성공=기본 URL, 시작=`/start`, 실패=`/fail` 자동 전송)
 
 ## 문제 해결
 

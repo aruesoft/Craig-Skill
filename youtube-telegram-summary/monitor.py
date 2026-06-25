@@ -457,6 +457,33 @@ def send_telegram(text, config):
     return True
 
 
+def send_telegram_alert(config, text):
+    """오류/상태 알림 전송 (요약 메시지와 구분되는 ⚠️ 포맷)"""
+    import html
+    msg = f"⚠️ <b>요약봇 알림</b>\n\n{html.escape(str(text))}"
+    try:
+        return send_telegram(msg, config)
+    except Exception as e:
+        log(f"알림 전송 실패: {e}")
+        return False
+
+
+def ping_healthcheck(config, suffix=""):
+    """선택: config의 healthcheck_ping_url 로 핑 (healthchecks.io 등 외부 감시용).
+
+    스케줄이 아예 안 돌면 모니터 자신은 그 사실을 알릴 수 없다(자기가 안 도니까).
+    외부 감시 서비스에 매 실행마다 핑을 보내면, 핑이 늦을 때 그쪽에서 사용자에게 알려준다.
+    healthchecks.io 기준: 성공 시 기본 URL, 시작 시 /start, 실패 시 /fail
+    """
+    url = config.get('healthcheck_ping_url')
+    if not url:
+        return
+    try:
+        requests.get(url.rstrip('/') + suffix, timeout=10)
+    except Exception:
+        pass
+
+
 def format_message(video, summary):
     import html
     def esc(s):
@@ -476,58 +503,101 @@ def format_message(video, summary):
 
 # ──────────────────────────── 메인 ────────────────────────────
 
+def _check_missed_schedule(config, state):
+    """직전 실행 이후 예상 주기보다 오래 비었으면 알림 (실행이 재개된 시점에 감지).
+
+    한계: 스케줄이 '완전히' 멈추면 모니터 자신이 안 돌아 알릴 수 없다.
+    그 경우는 config의 healthcheck_ping_url(외부 감시)로 보완한다.
+    """
+    last = state.get('last_checked')
+    if not last:
+        return
+    interval_h = float(config.get('schedule_interval_hours', 1))
+    try:
+        gap_h = (datetime.now() - datetime.fromisoformat(last)).total_seconds() / 3600
+    except Exception:
+        return
+    threshold = max(interval_h * 2.5, interval_h + 1)
+    if gap_h >= threshold:
+        log(f"스케줄 공백 감지: 약 {gap_h:.1f}시간 (예상 주기 {interval_h}시간)")
+        send_telegram_alert(
+            config,
+            f"스케줄이 약 {gap_h:.1f}시간 동안 실행되지 않았습니다.\n"
+            f"예상 주기: {interval_h}시간 — PC 꺼짐/절전/로그아웃 등으로 건너뛰었을 수 있습니다.\n"
+            f"지금 정상 재개되었습니다."
+        )
+
+
 def run_monitor(config, debug=False):
     state = load_state()
     seen = set(state.get('seen_videos', []))
     channels = config.get('youtube_channels', [])
     if not channels:
         log("등록된 채널이 없습니다. --add-channel 로 추가하세요.")
-        return
+        return 0, []
+
+    # #2 스케줄 미실행(공백) 감지 — 실행 재개 시점에 알림
+    _check_missed_schedule(config, state)
 
     language = config.get('summary_language', 'kr')
+    # #3 채널당 한 번에 처리할 신규 영상 상한 (신규/휴면 채널의 무더기 전송·quota 폭주 방지)
+    max_per_channel = int(config.get('max_videos_per_channel_per_run', 2))
 
-    # 모든 채널의 새 영상을 먼저 수집 (오래된 것부터 = 올라온 순서대로 전송)
+    # 채널별 신규 영상 수집 + 채널당 최신 N개만 전송 대상으로, 나머지(과거분)는 전송 없이 본 영상 처리
     new_videos = []
     for channel_id in channels:
-        for v in get_channel_videos(channel_id, debug):
-            if v['id'] not in seen:
-                new_videos.append(v)
-    new_videos.sort(key=lambda v: v.get('published', ''))
+        vids = get_channel_videos(channel_id, debug)
+        unseen = [v for v in vids if v['id'] not in seen]
+        if not unseen:
+            continue
+        unseen.sort(key=lambda v: v.get('published', ''), reverse=True)  # 최신 우선
+        to_send, to_skip = unseen[:max_per_channel], unseen[max_per_channel:]
+        for v in to_skip:
+            seen.add(v['id'])  # 과거분은 전송하지 않고 '본 영상'으로만 기록
+        if to_skip:
+            cname = vids[0]['channel'] if vids else channel_id
+            log(f"{cname}: 신규 {len(unseen)}개 → 최신 {len(to_send)}개만 전송, "
+                f"{len(to_skip)}개는 과거분이라 건너뜀")
+        new_videos.extend(to_send)
 
-    if not new_videos:
-        state['last_checked'] = datetime.now().isoformat()
-        save_state(state)
-        log("새 동영상 없음")
-        return
-
-    log(f"새 동영상 {len(new_videos)}개 발견")
+    new_videos.sort(key=lambda v: v.get('published', ''))  # 전송은 올라온 순서대로
 
     new_count, failed = 0, []
-    # 브라우저는 실행당 1회만 열고 세션을 모든 영상에 재사용
-    with secondb_session(debug) as session:
-        if session is None:
-            log("secondb 세션을 열 수 없습니다 (로그인 필요)")
-            return
-        api, headers = session
-
-        for video in new_videos:
-            log(f"처리 중: {video['title']}")
-            summary = _fetch_summary_via_api(api, video['url'], headers, language, debug)
-            if summary:
-                if send_telegram(format_message(video, summary), config):
-                    log(f"전송 완료: {video['title']}")
-                    seen.add(video['id'])
-                    new_count += 1
-                else:
-                    failed.append(video['title'])
+    if new_videos:
+        log(f"처리 대상 {len(new_videos)}개")
+        # 브라우저는 실행당 1회만 열고 세션을 모든 영상에 재사용
+        with secondb_session(debug) as session:
+            if session is None:
+                # #1 로그인 만료/세션 없음 — 사람이 조치해야 하므로 알림
+                send_telegram_alert(
+                    config,
+                    "secondb.ai 로그인 세션이 없거나 만료되었습니다.\n"
+                    "다음 명령으로 다시 로그인해 주세요:  python login.py\n"
+                    "(해당 영상들은 다음 실행 때 자동 재시도됩니다.)"
+                )
             else:
-                log(f"요약 실패 (다음 실행 시 재시도): {video['title']}")
-            time.sleep(2)
+                api, headers = session
+                for video in new_videos:
+                    log(f"처리 중: {video['title']}")
+                    summary = _fetch_summary_via_api(api, video['url'], headers, language, debug)
+                    if summary:
+                        if send_telegram(format_message(video, summary), config):
+                            log(f"전송 완료: {video['title']}")
+                            seen.add(video['id'])
+                            new_count += 1
+                        else:
+                            failed.append(video['title'])
+                    else:
+                        log(f"요약 실패 (다음 실행 시 재시도): {video['title']}")
+                    time.sleep(2)
+    else:
+        log("새 동영상 없음")
 
     state['seen_videos'] = list(seen)
     state['last_checked'] = datetime.now().isoformat()
     save_state(state)
     log(f"완료: {new_count}개 전송" + (f", {len(failed)}개 실패" if failed else ""))
+    return new_count, failed
 
 
 def main():
@@ -562,7 +632,17 @@ def main():
         cmd_remove_channel(config, args.remove_channel)
         return
 
-    run_monitor(config, args.debug)
+    # #1 실행 중 예외 발생 시 텔레그램 알림 + (선택) 외부 헬스체크 핑
+    ping_healthcheck(config, "/start")
+    try:
+        run_monitor(config, args.debug)
+        ping_healthcheck(config)  # 성공 핑
+    except Exception as e:
+        import traceback
+        log("실행 중 오류 발생:\n" + traceback.format_exc())
+        send_telegram_alert(config, f"실행 중 오류가 발생했습니다.\n{type(e).__name__}: {e}")
+        ping_healthcheck(config, "/fail")
+        raise
 
 
 if __name__ == '__main__':

@@ -173,6 +173,10 @@ def main():
         "youtube_channels": channels,
         "telegram_bot_token": token,
         "telegram_chat_id": chat_id,
+        "summary_language": "kr",
+        "max_videos_per_channel_per_run": 2,  # 채널당 한 번에 보낼 최신 영상 수
+        "schedule_interval_hours": 1,         # 스케줄 주기(미실행 감지에 사용)
+        "healthcheck_ping_url": "",           # (선택) healthchecks.io 등 외부 감시 핑 URL
     }
     with open(CONFIG_FILE, 'w') as f:
         json.dump(config, f, indent=2, ensure_ascii=False)

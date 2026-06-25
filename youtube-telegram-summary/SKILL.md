@@ -73,6 +73,20 @@ python install_schedule.py --remove     # 등록 해제
   - 상태: `schtasks /Query /TN YouTubeTelegramSummary` / 즉시 실행: `schtasks /Run /TN YouTubeTelegramSummary`
   - 기본적으로 로그인했을 때 실행됨
 
+## 알림 (텔레그램 ⚠️)
+
+요약 메시지와 별개로 다음 상황을 알린다:
+- **실행 중 오류**: 예외 발생 시 오류 내용 전송 (`main()` 에서 try/except로 포착 후 재전파)
+- **secondb.ai 로그인 만료**: 세션 없음/만료 시 `python login.py` 안내
+- **스케줄 공백 감지**: 예상 주기의 2.5배 이상 비면 실행 재개 시점에 알림 (`schedule_interval_hours` 기준)
+- (선택) **완전 중단 감지**: `config.healthcheck_ping_url` 설정 시 매 실행 핑 → healthchecks.io 등 외부에서
+  핑 누락을 감지해 알림 (모니터가 아예 안 돌면 자기 자신은 못 알리므로 외부 감시로 보완)
+
+## 신규/휴면 채널 무더기 방지
+
+- `max_videos_per_channel_per_run`(기본 2): 채널당 한 번에 보낼 **최신 영상 수**. 신규 채널 추가나 오래
+  안 돈 채널에 영상이 여러 개 있어도 **최신 N개만 전송**, 나머지 과거분은 전송 없이 '본 영상' 처리.
+
 ## 참고
 
 - **secondb.ai 요약 quota(사용량 한도)** 가 있다. 한 번에 많은 영상을 몰아 요약하면 429(quota 초과)가
