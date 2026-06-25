@@ -540,24 +540,36 @@ def run_monitor(config, debug=False):
     _check_missed_schedule(config, state)
 
     language = config.get('summary_language', 'kr')
-    # #3 채널당 한 번에 처리할 신규 영상 상한 (신규/휴면 채널의 무더기 전송·quota 폭주 방지)
+    # #3 신규/장기휴면 채널의 back-catalog 무더기 전송 방지용 상한 (기본 2)
     max_per_channel = int(config.get('max_videos_per_channel_per_run', 2))
 
-    # 채널별 신규 영상 수집 + 채널당 최신 N개만 전송 대상으로, 나머지(과거분)는 전송 없이 본 영상 처리
+    # 신규 영상 수집
+    #  - '처음 보는' 채널(현재 피드에 본 영상이 하나도 없음 = 첫 등록/장기 휴면):
+    #    과거 영상 무더기 방지를 위해 최신 N개만 전송, 나머지 과거분은 전송 없이 '본 영상' 처리.
+    #  - 이미 추적 중이던 채널: 새 영상을 모두 전송(누락 방지). 실패분은 다음 실행에서 재시도.
+    #    (예전엔 활성 채널도 최신 N개 외엔 건너뛰어, quota/타임아웃으로 밀린 영상이 영구 누락됐음)
     new_videos = []
     for channel_id in channels:
         vids = get_channel_videos(channel_id, debug)
+        if not vids:
+            continue
         unseen = [v for v in vids if v['id'] not in seen]
         if not unseen:
             continue
         unseen.sort(key=lambda v: v.get('published', ''), reverse=True)  # 최신 우선
-        to_send, to_skip = unseen[:max_per_channel], unseen[max_per_channel:]
-        for v in to_skip:
-            seen.add(v['id'])  # 과거분은 전송하지 않고 '본 영상'으로만 기록
-        if to_skip:
-            cname = vids[0]['channel'] if vids else channel_id
-            log(f"{cname}: 신규 {len(unseen)}개 → 최신 {len(to_send)}개만 전송, "
-                f"{len(to_skip)}개는 과거분이라 건너뜀")
+        cname = vids[0]['channel']
+
+        first_contact = len(unseen) == len(vids)  # 피드에 본 영상이 하나도 없음
+        if first_contact and len(unseen) > max_per_channel:
+            to_send = unseen[:max_per_channel]
+            for v in unseen[max_per_channel:]:
+                seen.add(v['id'])  # 신규/장기휴면 채널의 과거분만 전송 없이 기록
+            log(f"{cname}: (신규/장기휴면) 신규 {len(unseen)}개 → 최신 {len(to_send)}개만 전송, "
+                f"나머지 {len(unseen) - len(to_send)}개 과거분 건너뜀")
+        else:
+            to_send = unseen  # 기존 채널: 새 영상 전부 전송 (누락 없음)
+            if len(to_send) > max_per_channel:
+                log(f"{cname}: 기존 채널 — 밀린 새 영상 {len(to_send)}개 모두 처리(누락 방지)")
         new_videos.extend(to_send)
 
     new_videos.sort(key=lambda v: v.get('published', ''))  # 전송은 올라온 순서대로
