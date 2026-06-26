@@ -1,2 +1,5 @@
 playwright>=1.40.0
 requests>=2.28.0
+# Claude 폴백(자막 요약)용 — secondb.ai 실패 시 사용
+anthropic>=0.40.0
+youtube-transcript-api>=0.6.0

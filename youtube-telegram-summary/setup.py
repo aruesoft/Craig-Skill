@@ -177,6 +177,8 @@ def main():
         "max_videos_per_channel_per_run": 2,  # 채널당 한 번에 보낼 최신 영상 수
         "schedule_interval_hours": 1,         # 스케줄 주기(미실행 감지에 사용)
         "healthcheck_ping_url": "",           # (선택) healthchecks.io 등 외부 감시 핑 URL
+        "anthropic_api_key": "",              # (선택) secondb 실패 시 Claude 폴백. 비우면 env ANTHROPIC_API_KEY 사용
+        "claude_model": "claude-haiku-4-5",   # 폴백 요약 모델 (입력 $1/출력 $5 per 1M)
     }
     with open(CONFIG_FILE, 'w') as f:
         json.dump(config, f, indent=2, ensure_ascii=False)

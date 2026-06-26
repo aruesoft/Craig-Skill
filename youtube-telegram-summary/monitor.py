@@ -484,7 +484,7 @@ def ping_healthcheck(config, suffix=""):
         pass
 
 
-def format_message(video, summary):
+def format_message(video, summary, source="secondb.ai"):
     import html
     def esc(s):
         return html.escape(str(s or ""))
@@ -496,7 +496,7 @@ def format_message(video, summary):
         f"📺 {esc(video.get('channel'))}\n"
         f"🎥 <a href=\"{esc(video.get('url'))}\">{esc(video.get('title'))}</a>\n"
         f"{date_str}\n"
-        f"📝 <b>secondb.ai 요약</b>\n\n"
+        f"📝 <b>{esc(source)} 요약</b>\n\n"
         f"{esc(summary[:3500])}"
     )
 
@@ -526,6 +526,37 @@ def _check_missed_schedule(config, state):
             f"예상 주기: {interval_h}시간 — PC 꺼짐/절전/로그아웃 등으로 건너뛰었을 수 있습니다.\n"
             f"지금 정상 재개되었습니다."
         )
+
+
+def _claude_enabled(config):
+    """Anthropic API 키가 설정돼 있으면 Claude 폴백 사용 가능"""
+    try:
+        from claude_summary import claude_enabled
+        return claude_enabled(config)
+    except Exception:
+        return False
+
+
+def _summarize_with_fallback(session, video, language, config, debug=False):
+    """secondb.ai 먼저 시도 → 실패하면 Claude(자막+요약) 폴백. (요약, 출처) 반환."""
+    # 1) secondb.ai (세션이 열려 있을 때)
+    if session is not None:
+        api, headers = session
+        s = _fetch_summary_via_api(api, video['url'], headers, language, debug)
+        if s:
+            return s, 'secondb.ai'
+
+    # 2) Claude 폴백 (자막이 있는 영상만)
+    if _claude_enabled(config):
+        try:
+            from claude_summary import claude_fallback_summary
+            s = claude_fallback_summary(video, language, config, debug)
+            if s:
+                return s, 'Claude'
+        except Exception as e:
+            log(f"Claude 폴백 오류: {e}")
+
+    return None, None
 
 
 def run_monitor(config, debug=False):
@@ -579,8 +610,8 @@ def run_monitor(config, debug=False):
         log(f"처리 대상 {len(new_videos)}개")
         # 브라우저는 실행당 1회만 열고 세션을 모든 영상에 재사용
         with secondb_session(debug) as session:
-            if session is None:
-                # #1 로그인 만료/세션 없음 — 사람이 조치해야 하므로 알림
+            # secondb 세션이 없고 Claude 폴백도 없으면 알림 후 종료
+            if session is None and not _claude_enabled(config):
                 send_telegram_alert(
                     config,
                     "secondb.ai 로그인 세션이 없거나 만료되었습니다.\n"
@@ -588,13 +619,15 @@ def run_monitor(config, debug=False):
                     "(해당 영상들은 다음 실행 때 자동 재시도됩니다.)"
                 )
             else:
-                api, headers = session
+                if session is None:
+                    log("secondb 세션 없음 → Claude 폴백으로 진행")
                 for video in new_videos:
                     log(f"처리 중: {video['title']}")
-                    summary = _fetch_summary_via_api(api, video['url'], headers, language, debug)
+                    summary, source = _summarize_with_fallback(
+                        session, video, language, config, debug)
                     if summary:
-                        if send_telegram(format_message(video, summary), config):
-                            log(f"전송 완료: {video['title']}")
+                        if send_telegram(format_message(video, summary, source), config):
+                            log(f"전송 완료({source}): {video['title']}")
                             seen.add(video['id'])
                             new_count += 1
                         else:
