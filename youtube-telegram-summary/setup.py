@@ -179,6 +179,7 @@ def main():
         "healthcheck_ping_url": "",           # (선택) healthchecks.io 등 외부 감시 핑 URL
         "anthropic_api_key": "",              # (선택) secondb 실패 시 Claude 폴백. 비우면 env ANTHROPIC_API_KEY 사용
         "claude_model": "claude-haiku-4-5",   # 폴백 요약 모델 (입력 $1/출력 $5 per 1M)
+        "obsidian_daily_dir": "",             # (선택) 설정 시 요약을 날짜별 .md 로그로 저장할 폴더 경로
     }
     with open(CONFIG_FILE, 'w') as f:
         json.dump(config, f, indent=2, ensure_ascii=False)

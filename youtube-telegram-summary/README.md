@@ -105,6 +105,21 @@ python install_schedule.py --remove     # 등록 해제
   한동안 안 돈 채널에 영상이 여러 개 쌓여 있어도 최신 N개만 전송하고, 나머지 과거분은 전송 없이 '본 영상' 처리.
 - `schedule_interval_hours`: 스케줄 주기(시간). 스케줄 미실행(공백) 감지에 사용 (등록 시 자동 기록).
 - `healthcheck_ping_url`: (선택) 외부 감시 핑 URL. → 아래 "알림" 참고.
+- `anthropic_api_key` / `claude_model`: Claude 폴백용. → 아래 "Claude 폴백" 참고.
+- `obsidian_daily_dir`: (선택) 설정 시 전송한 요약을 **날짜별 .md 로그**로도 저장. → 아래 "옵시디언 데일리 로그" 참고.
+
+## 옵시디언 데일리 로그 (선택)
+
+`obsidian_daily_dir` 에 폴더 경로를 넣으면, 텔레그램으로 전송한 요약을 **그 날짜의 `YYYY-MM-DD.md` 파일**에도
+누적 저장합니다 (옵시디언/일반 마크다운 호환).
+
+```json
+"obsidian_daily_dir": "/Users/me/.../StockVault/1_Projects/유튜브-요약봇/요약로그"
+```
+
+- 파일이 없으면 frontmatter(`type/date/tags`) + 헤더로 새로 만들고, 새 영상 요약을 시간순으로 추가
+- 영상별: `## [제목](url)` + `📺 채널 · 🔖 출처 · 🕘 시각` + 요약 본문
+- 같은 영상은 중복 저장 안 함 / 비워두면 비활성
 
 상태 파일 `state.json`(이미 처리한 영상 목록)을 초기화하려면:
 ```bash

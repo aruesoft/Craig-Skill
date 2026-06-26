@@ -88,6 +88,11 @@ python install_schedule.py --remove     # 등록 해제
 - `max_videos_per_channel_per_run`(기본 2): 채널당 한 번에 보낼 **최신 영상 수**. 신규 채널 추가나 오래
   안 돈 채널에 영상이 여러 개 있어도 **최신 N개만 전송**, 나머지 과거분은 전송 없이 '본 영상' 처리.
 
+## 옵시디언 데일리 로그 (선택)
+
+- `config.obsidian_daily_dir` 에 폴더 경로 설정 시, 전송한 요약을 **날짜별 `YYYY-MM-DD.md`** 로그로도 저장.
+- `append_daily_log()`: 파일 없으면 frontmatter+헤더 생성, 영상별 `## [제목](url)` + 채널·출처·시각 + 본문 추가, 같은 영상 중복 방지.
+
 ## Claude 폴백 (secondb.ai 실패 시)
 
 secondb.ai가 429/다운/로그인만료로 실패하면, **유튜브 자막(youtube-transcript-api) → Claude API

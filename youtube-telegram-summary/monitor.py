@@ -484,6 +484,51 @@ def ping_healthcheck(config, suffix=""):
         pass
 
 
+def append_daily_log(video, summary, source, config, debug=False):
+    """요약을 옵시디언 날짜별 데일리 로그(YYYY-MM-DD.md)에 추가.
+
+    config.obsidian_daily_dir 가 설정돼 있을 때만 동작. 같은 영상은 중복 저장 안 함.
+    """
+    daily_dir = config.get('obsidian_daily_dir', '')
+    if not daily_dir:
+        return
+    try:
+        ddir = Path(daily_dir).expanduser()
+        ddir.mkdir(parents=True, exist_ok=True)
+        today = datetime.now().strftime('%Y-%m-%d')
+        fpath = ddir / f"{today}.md"
+        url = video.get('url', '')
+
+        # 파일이 없으면 frontmatter + 헤더 생성
+        if not fpath.exists():
+            weekday = datetime.now().strftime('%a')
+            fpath.write_text(
+                f"---\ntype: youtube-summary-log\ndate: {today}\n"
+                f"tags: [daily, youtube, summary]\n---\n\n"
+                f"# 📺 {today} ({weekday}) 유튜브 요약 로그\n\n"
+                f"> 봇이 자동 생성. 새 영상 요약이 시간순으로 추가됩니다.\n",
+                encoding='utf-8')
+
+        # 중복 방지: 같은 URL이 이미 있으면 skip
+        if url and url in fpath.read_text(encoding='utf-8'):
+            log(f"데일리 로그에 이미 있음(skip): {video.get('title')}", debug, is_debug=True)
+            return
+
+        ts = datetime.now().strftime('%H:%M')
+        # 제목의 대괄호는 마크다운 링크를 깨뜨리므로 치환
+        safe_title = str(video.get('title', '제목 없음')).replace('[', '(').replace(']', ')')
+        block = (
+            f"\n---\n\n## [{safe_title}]({url})\n"
+            f"- 📺 {video.get('channel', '')} · 🔖 {source} · 🕘 {ts}\n\n"
+            f"{summary.strip()}\n"
+        )
+        with open(fpath, 'a', encoding='utf-8') as f:
+            f.write(block)
+        log(f"데일리 로그 저장: {fpath.name}", debug, is_debug=True)
+    except Exception as e:
+        log(f"데일리 로그 저장 실패: {e}")
+
+
 def format_message(video, summary, source="secondb.ai"):
     import html
     def esc(s):
@@ -628,6 +673,7 @@ def run_monitor(config, debug=False):
                     if summary:
                         if send_telegram(format_message(video, summary, source), config):
                             log(f"전송 완료({source}): {video['title']}")
+                            append_daily_log(video, summary, source, config, debug)
                             seen.add(video['id'])
                             new_count += 1
                         else:
