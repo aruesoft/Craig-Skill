@@ -1,0 +1,1713 @@
+{
+  "_note": "큐레이션 데이터셋. 길이/소요시간/난이도는 일반적인 안내 수치이며 계절·기상·탐방로 통제 상황에 따라 달라질 수 있다. 정확한 최신 정보는 국립공원공단(knps.or.kr) 또는 해당 지자체/산림청 공지를 함께 안내한다.",
+  "mountains": [
+    {
+      "name": "북한산",
+      "aliases": [
+        "북한산국립공원",
+        "Bukhansan"
+      ],
+      "region": "서울/경기",
+      "lat": 37.6585,
+      "lon": 126.977,
+      "courses": [
+        {
+          "name": "백운대 코스",
+          "route": "북한산성탐방지원센터 - 백운대",
+          "length_km": 4,
+          "duration": "2~3시간",
+          "difficulty": "중급",
+          "recommended": true,
+          "note": "북한산 최고봉(백운대, 836.5m)까지 오르는 가장 대표적인 코스"
+        },
+        {
+          "name": "의상능선 코스",
+          "route": "대서문 - 의상봉 - 백운대",
+          "length_km": 7.9,
+          "duration": "5~6시간",
+          "difficulty": "상급",
+          "recommended": false,
+          "note": "암릉 구간이 많아 체력과 시간이 더 필요한 코스"
+        },
+        {
+          "name": "우이동 코스",
+          "route": "우이동 - 도선사 - 백운대",
+          "length_km": 4.2,
+          "duration": "약 3시간",
+          "difficulty": "중급",
+          "recommended": false,
+          "note": "접근성이 좋아 많이 이용되는 코스"
+        }
+      ],
+      "mtId": "11B001P1",
+      "height_m": 835.6,
+      "rank_100": 45
+    },
+    {
+      "name": "관악산",
+      "aliases": [
+        "Gwanaksan"
+      ],
+      "region": "서울/경기 (서울·과천·안양)",
+      "lat": 37.4423,
+      "lon": 126.9646,
+      "courses": [
+        {
+          "name": "사당 코스",
+          "route": "사당역 - 관악산 정상(연주대)",
+          "length_km": 4.6,
+          "duration": "2~3시간",
+          "difficulty": "중급",
+          "recommended": true,
+          "note": "지하철 접근성이 좋아 가장 많이 이용되는 코스"
+        },
+        {
+          "name": "서울대 코스",
+          "route": "서울대 정문 - 관악산 정상",
+          "length_km": 4.3,
+          "duration": "약 2시간 30분",
+          "difficulty": "중급",
+          "recommended": false,
+          "note": "초반 완만하다가 정상부 경사가 급해지는 코스"
+        }
+      ],
+      "mtId": "11B014P0",
+      "height_m": 632.2,
+      "rank_100": 10
+    },
+    {
+      "name": "도봉산",
+      "aliases": [
+        "Dobongsan"
+      ],
+      "region": "서울/경기 (북한산국립공원 도봉지구)",
+      "lat": 37.6889,
+      "lon": 127.0153,
+      "courses": [
+        {
+          "name": "자운봉 코스",
+          "route": "도봉산역 - 도봉대피소 - 자운봉",
+          "length_km": 3.8,
+          "duration": "약 3시간",
+          "difficulty": "상급",
+          "recommended": true,
+          "note": "암릉 구간이 있어 주의가 필요한 대표 코스"
+        },
+        {
+          "name": "우이암 코스",
+          "route": "도봉탐방지원센터 - 우이암",
+          "length_km": 4.5,
+          "duration": "약 3시간",
+          "difficulty": "중급",
+          "recommended": false,
+          "note": "비교적 완만한 능선길 위주"
+        }
+      ],
+      "mtId": "11B007P1",
+      "height_m": 740.2,
+      "rank_100": 27
+    },
+    {
+      "name": "청계산",
+      "aliases": [
+        "Cheonggyesan"
+      ],
+      "region": "서울/경기 (서울·성남·과천)",
+      "lat": 37.431,
+      "lon": 127.0552,
+      "courses": [
+        {
+          "name": "매봉 코스",
+          "route": "옛골 - 매봉",
+          "length_km": 2.8,
+          "duration": "약 1시간 30분",
+          "difficulty": "초급",
+          "recommended": true,
+          "note": "초보자도 부담 없이 다녀올 수 있는 코스"
+        },
+        {
+          "name": "망경대 코스",
+          "route": "원터골 - 망경대(정상)",
+          "length_km": 3.5,
+          "duration": "약 2시간",
+          "difficulty": "중급",
+          "recommended": false,
+          "note": "청계산 최고봉까지 오르는 코스"
+        }
+      ],
+      "mtId": "11B011P1"
+    },
+    {
+      "name": "설악산",
+      "aliases": [
+        "Seoraksan",
+        "설악산국립공원"
+      ],
+      "region": "강원 (속초/양양/인제)",
+      "lat": 38.1196,
+      "lon": 128.4656,
+      "courses": [
+        {
+          "name": "대청봉 코스 (오색)",
+          "route": "오색탐방지원센터 - 대청봉",
+          "length_km": 5,
+          "duration": "4~5시간",
+          "difficulty": "상급",
+          "recommended": true,
+          "note": "설악산 최고봉(1,708m)으로 가는 최단 코스 중 하나"
+        },
+        {
+          "name": "흔들바위 코스",
+          "route": "소공원 - 흔들바위 - 울산바위",
+          "length_km": 1.4,
+          "duration": "약 1시간 (흔들바위까지)",
+          "difficulty": "초급",
+          "recommended": false,
+          "note": "가족 단위로 가볍게 즐기기 좋은 코스"
+        },
+        {
+          "name": "공룡능선 코스",
+          "route": "마등령 - 공룡능선 - 신선대",
+          "length_km": 11.6,
+          "duration": "8~9시간",
+          "difficulty": "최상급",
+          "recommended": false,
+          "note": "설악산 대표 종주 코스, 충분한 체력과 시간 필요"
+        }
+      ],
+      "mtId": "11D001P1",
+      "height_m": 1708.1,
+      "rank_100": 50
+    },
+    {
+      "name": "지리산",
+      "aliases": [
+        "Jirisan",
+        "지리산국립공원"
+      ],
+      "region": "전남/전북/경남 (구례/남원/하동/산청/함양)",
+      "lat": 35.337,
+      "lon": 127.7306,
+      "courses": [
+        {
+          "name": "천왕봉 코스 (중산리)",
+          "route": "중산리탐방지원센터 - 천왕봉",
+          "length_km": 5.4,
+          "duration": "4~5시간",
+          "difficulty": "상급",
+          "recommended": true,
+          "note": "남한 육지부 최고봉(1,915m)으로 가는 대표 코스"
+        },
+        {
+          "name": "노고단 코스",
+          "route": "성삼재 - 노고단",
+          "length_km": 2.6,
+          "duration": "약 1시간 30분",
+          "difficulty": "초급",
+          "recommended": false,
+          "note": "성삼재에서 비교적 짧게 오를 수 있는 코스"
+        }
+      ],
+      "mtId": "11F002P2",
+      "height_m": 1915.4,
+      "rank_100": 75
+    },
+    {
+      "name": "한라산",
+      "aliases": [
+        "Hallasan",
+        "한라산국립공원"
+      ],
+      "region": "제주",
+      "lat": 33.3617,
+      "lon": 126.5292,
+      "courses": [
+        {
+          "name": "성판악 코스",
+          "route": "성판악탐방로 입구 - 백록담",
+          "length_km": 9.6,
+          "duration": "4~5시간 (편도)",
+          "difficulty": "중급",
+          "recommended": true,
+          "note": "한라산 정상(백록담)까지 갈 수 있는 두 코스 중 하나, 사전 탐방예약 필요"
+        },
+        {
+          "name": "어리목 코스",
+          "route": "어리목탐방로 입구 - 윗세오름",
+          "length_km": 4.7,
+          "duration": "2~3시간",
+          "difficulty": "중급",
+          "recommended": false,
+          "note": "윗세오름까지만 운영, 정상은 별도 코스 필요"
+        }
+      ],
+      "mtId": "11G001P1",
+      "height_m": 1947.3,
+      "rank_100": 91
+    },
+    {
+      "name": "속리산",
+      "aliases": [
+        "Songnisan",
+        "속리산국립공원"
+      ],
+      "region": "충북 (보은)",
+      "lat": 36.5408,
+      "lon": 127.865,
+      "courses": [
+        {
+          "name": "문장대 코스",
+          "route": "법주사 - 세심정 - 문장대",
+          "length_km": 4.2,
+          "duration": "약 3시간",
+          "difficulty": "중급",
+          "recommended": true,
+          "note": "속리산 대표 명소인 문장대까지 오르는 코스"
+        },
+        {
+          "name": "천왕봉 코스",
+          "route": "법주사 - 천왕봉",
+          "length_km": 5.8,
+          "duration": "약 4시간",
+          "difficulty": "상급",
+          "recommended": false,
+          "note": "속리산 최고봉(1,058m)까지 오르는 코스"
+        }
+      ],
+      "mtId": "11C002P1",
+      "height_m": 1058.4,
+      "rank_100": 54
+    },
+    {
+      "name": "가야산",
+      "aliases": [
+        "Gayasan",
+        "가야산국립공원"
+      ],
+      "region": "경남/경북 (합천/성주)",
+      "lat": 35.7803,
+      "lon": 128.1219,
+      "courses": [
+        {
+          "name": "칠불봉 코스",
+          "route": "해인사 - 백운동 - 칠불봉",
+          "length_km": 4.8,
+          "duration": "약 3시간 30분",
+          "difficulty": "상급",
+          "recommended": true,
+          "note": "가야산 최고봉(1,433m)까지 가는 코스"
+        },
+        {
+          "name": "백운동 코스",
+          "route": "백운동탐방지원센터 - 상왕봉",
+          "length_km": 5.1,
+          "duration": "약 3시간",
+          "difficulty": "중급",
+          "recommended": false,
+          "note": "경북 성주 방면 출발 코스"
+        }
+      ],
+      "height_m": 1432.6,
+      "rank_100": 3,
+      "mtId": "11H002P1"
+    },
+    {
+      "name": "덕유산",
+      "aliases": [
+        "Deogyusan",
+        "덕유산국립공원"
+      ],
+      "region": "전북/경남 (무주/거창)",
+      "lat": 35.8614,
+      "lon": 127.7506,
+      "courses": [
+        {
+          "name": "향적봉 코스 (곤돌라)",
+          "route": "무주리조트 곤돌라 - 설천봉 - 향적봉",
+          "length_km": 0.6,
+          "duration": "약 40분 (곤돌라 하차 후)",
+          "difficulty": "초급",
+          "recommended": true,
+          "note": "곤돌라 이용 시 가장 손쉽게 오를 수 있는 코스"
+        },
+        {
+          "name": "백련사 코스",
+          "route": "백련사 - 향적봉",
+          "length_km": 5.8,
+          "duration": "약 4시간",
+          "difficulty": "중급",
+          "recommended": false,
+          "note": "도보로만 정상에 오르는 전통적인 코스"
+        }
+      ],
+      "mtId": "11F004P1",
+      "height_m": 1614.2,
+      "rank_100": 24
+    },
+    {
+      "name": "소백산",
+      "aliases": [
+        "Sobaeksan",
+        "소백산국립공원"
+      ],
+      "region": "충북/경북 (단양/영주)",
+      "lat": 36.9572,
+      "lon": 128.4858,
+      "courses": [
+        {
+          "name": "비로봉 코스 (천동)",
+          "route": "천동탐방지원센터 - 비로봉",
+          "length_km": 4.4,
+          "duration": "약 3시간",
+          "difficulty": "중급",
+          "recommended": true,
+          "note": "소백산 최고봉(1,439m)으로 가는 대표 코스"
+        },
+        {
+          "name": "죽령 코스",
+          "route": "죽령탐방지원센터 - 연화봉 - 비로봉",
+          "length_km": 5.4,
+          "duration": "약 3시간 30분",
+          "difficulty": "중급",
+          "recommended": false,
+          "note": "경사가 비교적 완만한 능선 코스"
+        }
+      ],
+      "mtId": "11H003P1",
+      "height_m": 1439.7,
+      "rank_100": 52
+    },
+    {
+      "name": "무등산",
+      "aliases": [
+        "Mudeungsan",
+        "무등산국립공원"
+      ],
+      "region": "광주/전남 (화순/담양)",
+      "lat": 35.1342,
+      "lon": 127.0147,
+      "courses": [
+        {
+          "name": "서석대 코스",
+          "route": "증심사 - 중머리재 - 서석대",
+          "length_km": 5.1,
+          "duration": "약 3시간",
+          "difficulty": "중급",
+          "recommended": true,
+          "note": "무등산 대표 절경인 주상절리대(서석대)로 가는 코스"
+        },
+        {
+          "name": "입석대 코스",
+          "route": "증심사 - 중머리재 - 입석대 - 서석대",
+          "length_km": 5.8,
+          "duration": "약 3시간 30분",
+          "difficulty": "중급",
+          "recommended": false,
+          "note": "서석대 코스에 입석대를 추가로 경유"
+        }
+      ],
+      "mtId": "11F019P1",
+      "height_m": 1186.8,
+      "rank_100": 35
+    },
+    {
+      "name": "계룡산",
+      "aliases": [
+        "Gyeryongsan",
+        "계룡산국립공원"
+      ],
+      "region": "충남/대전 (공주/계룡)",
+      "lat": 36.3573,
+      "lon": 127.2119,
+      "courses": [
+        {
+          "name": "관음봉 코스",
+          "route": "동학사 - 은선폭포 - 관음봉",
+          "length_km": 3,
+          "duration": "약 2시간 30분",
+          "difficulty": "중급",
+          "recommended": true,
+          "note": "동학사 방면에서 가장 많이 찾는 코스"
+        },
+        {
+          "name": "연천봉 코스",
+          "route": "갑사 - 연천봉고개 - 연천봉",
+          "length_km": 3.5,
+          "duration": "약 3시간",
+          "difficulty": "중급",
+          "recommended": false,
+          "note": "갑사 방면 출발, 일출 명소로도 알려짐"
+        }
+      ],
+      "mtId": "11C001P1",
+      "height_m": 846.5,
+      "rank_100": 7
+    },
+    {
+      "name": "내장산",
+      "aliases": [
+        "Naejangsan",
+        "내장산국립공원"
+      ],
+      "region": "전북 (정읍)",
+      "lat": 35.4761,
+      "lon": 126.8889,
+      "courses": [
+        {
+          "name": "신선봉 코스",
+          "route": "내장사 - 연자봉 - 신선봉",
+          "length_km": 3.2,
+          "duration": "약 2시간 30분",
+          "difficulty": "중급",
+          "recommended": true,
+          "note": "내장산 최고봉(763m)까지 가는 코스"
+        },
+        {
+          "name": "까치봉 코스",
+          "route": "내장사 - 까치봉 - 신선봉",
+          "length_km": 4.5,
+          "duration": "약 3시간",
+          "difficulty": "중급",
+          "recommended": false,
+          "note": "단풍 명소로 유명한 능선 코스"
+        }
+      ],
+      "mtId": "11F003P1",
+      "height_m": 763.5,
+      "rank_100": 19
+    },
+    {
+      "name": "치악산",
+      "aliases": [
+        "Chiaksan",
+        "치악산국립공원"
+      ],
+      "region": "강원 (원주)",
+      "lat": 37.3697,
+      "lon": 128.0594,
+      "courses": [
+        {
+          "name": "비로봉 코스",
+          "route": "구룡탐방지원센터 - 세렴폭포 - 비로봉",
+          "length_km": 5.6,
+          "duration": "약 4시간",
+          "difficulty": "상급",
+          "recommended": true,
+          "note": "치악산 최고봉(1,288m)까지 가는 대표 코스"
+        },
+        {
+          "name": "입석사 코스",
+          "route": "황골탐방지원센터 - 입석사 - 비로봉",
+          "length_km": 4,
+          "duration": "약 3시간",
+          "difficulty": "중급",
+          "recommended": false,
+          "note": "상대적으로 짧지만 경사가 가파른 구간 포함"
+        }
+      ],
+      "mtId": "11D003P1",
+      "height_m": 1282.0,
+      "rank_100": 84
+    },
+    {
+      "name": "월출산",
+      "aliases": [
+        "Wolchulsan",
+        "월출산국립공원"
+      ],
+      "region": "전남 (영암/강진)",
+      "lat": 34.7594,
+      "lon": 126.6906,
+      "courses": [
+        {
+          "name": "천황지구 코스 (원점회귀)",
+          "route": "천황탐방지원센터 - 구름다리 - 사자봉 - 천황봉 - 원점회귀",
+          "length_km": 6.7,
+          "duration": "약 4시간",
+          "difficulty": "상급",
+          "recommended": true,
+          "note": "월출산 대표 코스, 구름다리·사자봉을 거쳐 정상(천황봉)까지 (국립공원공단 기준)"
+        },
+        {
+          "name": "경포대 코스",
+          "route": "경포대탐방지원센터 - 천황봉 방면",
+          "length_km": 5.9,
+          "duration": "약 3시간",
+          "difficulty": "중급",
+          "recommended": false,
+          "note": "월출산에서 가장 완만하고 길이 잘 정비되어 초보자도 도전 가능 (국립공원공단 기준)"
+        },
+        {
+          "name": "도갑사 코스",
+          "route": "도갑사 - 정상부 능선",
+          "length_km": 6.9,
+          "duration": "약 3시간 40분",
+          "difficulty": "상급",
+          "recommended": false,
+          "note": "난이도가 높아 경력자에게 추천 (국립공원공단 기준)"
+        },
+        {
+          "name": "산성대 코스",
+          "route": "산성대탐방로",
+          "length_km": 2.7,
+          "duration": "약 1시간 45분",
+          "difficulty": "중급",
+          "recommended": false,
+          "note": "비교적 짧게 다녀올 수 있는 코스 (국립공원공단 기준)"
+        },
+        {
+          "name": "종주 코스",
+          "route": "천황탐방지원센터 - 천황봉 - 도갑사",
+          "length_km": 9.5,
+          "duration": "약 6시간 30분",
+          "difficulty": "최상급",
+          "recommended": false,
+          "note": "전 구간 급경사·로프 구간이 많아 초보자에게는 비추천 (국립공원공단 기준)"
+        }
+      ],
+      "map_url": "https://www.knps.or.kr/download/park/map/월출산국립공원안내도.jpg",
+      "mtId": "11F001P1",
+      "height_m": 810.7,
+      "rank_100": 65
+    },
+    {
+      "name": "장산",
+      "aliases": [
+        "Jangsan",
+        "장산구립공원",
+        "해운대장산"
+      ],
+      "region": "부산 (해운대)",
+      "lat": 35.1928,
+      "lon": 129.1786,
+      "source": "auto-search",
+      "added_at": "2026-06-10",
+      "courses": [
+        {
+          "name": "대천공원 폭포사 코스",
+          "route": "대천공원 - 삼림욕장 - 폭포사(양운폭포) - 중봉 - 장산 정상",
+          "length_km": null,
+          "duration": "약 3~4시간",
+          "difficulty": "중급",
+          "recommended": true,
+          "note": "장산에서 가장 대중적인 코스 (해운대구·산림청·블로그 기준, 정확한 거리는 공식 확인 필요)"
+        },
+        {
+          "name": "반송동 코스",
+          "route": "청운아파트 - 반송초등학교 - 장산약수터 - 철탑 - 군진지 - 너덜겅 - 장산 정상 - (하산) 반여3동 체육공원",
+          "length_km": null,
+          "duration": "약 4시간 (종주 기준)",
+          "difficulty": "중급",
+          "recommended": false,
+          "note": "전체 종주 시 약 4시간 소요 (블로그 기준)"
+        },
+        {
+          "name": "재송동 코스",
+          "route": "재송동 - 장산 정상",
+          "length_km": null,
+          "duration": "약 1~2시간 (추정)",
+          "difficulty": "상급",
+          "recommended": false,
+          "note": "장산 정상으로 가는 가장 짧은 코스지만 급경사 직진 구간이라 초보자에게는 다소 힘들 수 있음"
+        },
+        {
+          "name": "기장(안적사) 코스",
+          "route": "오신마을 - 안적사 - 억새밭 - 장산 정상",
+          "length_km": null,
+          "duration": "약 3시간 (추정)",
+          "difficulty": "중급",
+          "recommended": false,
+          "note": "억새밭을 지나는 코스"
+        }
+      ]
+    },
+    {
+      "name": "팔봉산",
+      "aliases": [
+        "Palbongsan",
+        "홍천 팔봉산",
+        "팔봉산관광지"
+      ],
+      "region": "강원 (홍천)",
+      "lat": 37.7717,
+      "lon": 127.7894,
+      "source": "auto-search",
+      "added_at": "2026-06-10",
+      "courses": [
+        {
+          "name": "A코스",
+          "route": "주차장(입구) - 제2봉",
+          "length_km": 1.3,
+          "duration": "약 2시간",
+          "difficulty": "초급",
+          "recommended": false,
+          "note": "가장 짧은 코스 (홍천군 팔봉산관광지관리사무소 기준)"
+        },
+        {
+          "name": "B코스",
+          "route": "주차장(입구) - 제7봉",
+          "length_km": 2.3,
+          "duration": "약 3시간",
+          "difficulty": "중급",
+          "recommended": true,
+          "note": "산림청 100대 명산, 8개 봉우리 중 7봉까지 오르는 코스 (관리사무소 기준)"
+        },
+        {
+          "name": "C코스",
+          "route": "주차장(입구) - 제8봉(정상)",
+          "length_km": 2.6,
+          "duration": "약 3시간 30분",
+          "difficulty": "중급",
+          "recommended": false,
+          "note": "전체 8봉을 모두 오르는 코스 (관리사무소 기준)"
+        }
+      ],
+      "mtId": "11D008P1",
+      "height_m": 328.2,
+      "rank_100": 89
+    },
+    {
+      "name": "오대산",
+      "aliases": [
+        "Odaesan",
+        "오대산국립공원"
+      ],
+      "region": "강원 (평창/홍천)",
+      "lat": 37.7961,
+      "lon": 128.5432,
+      "mtId": "11D002P1",
+      "courses": [
+        {
+          "name": "비로봉 코스",
+          "route": "상원사탐방지원센터 - 상원사 - 중대(사자암) - 적멸보궁 - 비로봉",
+          "length_km": 3.4,
+          "duration": "왕복 약 3시간 30분",
+          "difficulty": "중급",
+          "recommended": true,
+          "note": "오대산 정상(비로봉, 1,563m)으로 가는 대표 코스. 거리가 적당하고 볼거리가 많음. 적멸보궁 이후 급경사 구간 있음 (오늘등산/국립공원공단 기준)"
+        },
+        {
+          "name": "노인봉 코스",
+          "route": "진고개탐방지원센터 - 노인봉 (원점회귀)",
+          "length_km": 3.9,
+          "duration": "왕복 약 3시간",
+          "difficulty": "중급",
+          "recommended": true,
+          "note": "출발 고도가 높아 비교적 수월한 코스. 노인봉(1,338m) 정상. 길 찾기 쉬움 (오늘등산 기준)"
+        },
+        {
+          "name": "소금강 코스",
+          "route": "진고개 휴게소 - 노인봉 - 낙영폭포 - 만물상 - 구룡폭포 - 연화담 - 소금강 계곡",
+          "length_km": null,
+          "duration": "약 7시간",
+          "difficulty": "상급",
+          "recommended": false,
+          "note": "노인봉을 경유해 소금강 계곡까지 내려오는 종주형 코스. 대중교통 하산 필요 (koreahike.com 기준)"
+        },
+        {
+          "name": "동대산 코스",
+          "route": "진고개 휴게소 - 동대산 정상 - 능선 - 동파골 - 진고개",
+          "length_km": null,
+          "duration": "약 2시간 10분",
+          "difficulty": "중급",
+          "recommended": false,
+          "note": "원점회귀 코스로 비교적 짧고 접근 편리 (koreahike.com 기준)"
+        },
+        {
+          "name": "선재길",
+          "route": "월정사 일주문 - 전나무숲길 - 오대천 계곡 - 상원사",
+          "length_km": null,
+          "duration": "약 3시간 30분",
+          "difficulty": "초급",
+          "recommended": false,
+          "note": "평탄한 계곡길 트레킹 코스. 정상 등정 없이 숲길/계곡 위주 (koreahike.com 기준)"
+        },
+        {
+          "name": "전나무숲길",
+          "route": "월정사 일주문 - 금강교",
+          "length_km": null,
+          "duration": "약 1시간",
+          "difficulty": "초급",
+          "recommended": false,
+          "note": "월정사 전나무숲을 걷는 가벼운 산책 코스 (koreahike.com 기준)"
+        }
+      ],
+      "height_m": 1565.4,
+      "rank_100": 57
+    },
+    {
+      "name": "가리산",
+      "aliases": [],
+      "region": "강원 (홍천)",
+      "lat": 37.801,
+      "lon": 127.963,
+      "height_m": 1050.9,
+      "rank_100": 1,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "가리왕산",
+      "aliases": [],
+      "region": "강원 (정선/평창)",
+      "lat": 37.423,
+      "lon": 128.588,
+      "height_m": 1561.9,
+      "rank_100": 2,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "가지산",
+      "aliases": [],
+      "region": "경남 (밀양/울주)",
+      "lat": 35.618,
+      "lon": 129.023,
+      "height_m": 1241.0,
+      "rank_100": 4,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "감악산",
+      "aliases": [],
+      "region": "경기 (파주/양주/연천)",
+      "lat": 37.893,
+      "lon": 126.97,
+      "height_m": 675.0,
+      "rank_100": 5,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "강천산",
+      "aliases": [],
+      "region": "전북 (순창)",
+      "lat": 35.422,
+      "lon": 127.003,
+      "height_m": 585.8,
+      "rank_100": 6,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "계방산",
+      "aliases": [],
+      "region": "강원 (평창/홍천)",
+      "lat": 37.651,
+      "lon": 128.441,
+      "height_m": 1579.1,
+      "rank_100": 8,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "공작산",
+      "aliases": [],
+      "region": "강원 (홍천)",
+      "lat": 37.713,
+      "lon": 128.054,
+      "height_m": 887.4,
+      "rank_100": 9,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "구병산",
+      "aliases": [],
+      "region": "경북 (상주)",
+      "lat": 36.374,
+      "lon": 127.97,
+      "height_m": 876.3,
+      "rank_100": 11,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "금산",
+      "aliases": [],
+      "region": "경남 (남해)",
+      "lat": 34.819,
+      "lon": 127.959,
+      "height_m": 704.9,
+      "rank_100": 12,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "금수산",
+      "aliases": [],
+      "region": "충북 (단양/제천)",
+      "lat": 37.068,
+      "lon": 128.302,
+      "height_m": 1051.8,
+      "rank_100": 13,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "금오산",
+      "aliases": [],
+      "region": "경북 (구미)",
+      "lat": 36.1,
+      "lon": 128.27,
+      "height_m": 976.5,
+      "rank_100": 14,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "금정산",
+      "aliases": [],
+      "region": "부산 (금정구)",
+      "lat": 35.293,
+      "lon": 129.063,
+      "height_m": 800.8,
+      "rank_100": 15,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "깃대봉",
+      "aliases": [],
+      "region": "전남 (신안 흑산도)",
+      "lat": 34.683,
+      "lon": 125.43,
+      "height_m": 381.8,
+      "rank_100": 16,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "남산",
+      "aliases": [],
+      "region": "경북 (경주)",
+      "lat": 35.791,
+      "lon": 129.22,
+      "height_m": 495.1,
+      "rank_100": 17,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "내연산",
+      "aliases": [],
+      "region": "경북 (포항)",
+      "lat": 36.114,
+      "lon": 129.342,
+      "height_m": 711.3,
+      "rank_100": 18,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "대둔산",
+      "aliases": [],
+      "region": "충남/전북 (논산/완주)",
+      "lat": 36.101,
+      "lon": 127.149,
+      "height_m": 878.9,
+      "rank_100": 20,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "대암산",
+      "aliases": [],
+      "region": "강원 (인제/양구)",
+      "lat": 38.222,
+      "lon": 128.111,
+      "height_m": 1312.6,
+      "rank_100": 21,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "대야산",
+      "aliases": [],
+      "region": "충북/경북 (괴산/문경)",
+      "lat": 36.551,
+      "lon": 128.003,
+      "height_m": 931.0,
+      "rank_100": 22,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "덕숭산",
+      "aliases": [],
+      "region": "충남 (예산)",
+      "lat": 36.65,
+      "lon": 126.58,
+      "height_m": 495.2,
+      "rank_100": 23,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "덕항산",
+      "aliases": [],
+      "region": "강원 (삼척)",
+      "lat": 37.173,
+      "lon": 129.07,
+      "height_m": 1072.9,
+      "rank_100": 25,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "도락산",
+      "aliases": [],
+      "region": "충북 (단양)",
+      "lat": 36.96,
+      "lon": 128.38,
+      "height_m": 965.3,
+      "rank_100": 26,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "두륜산",
+      "aliases": [],
+      "region": "전남 (해남)",
+      "lat": 34.553,
+      "lon": 126.612,
+      "height_m": 703.0,
+      "rank_100": 28,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "두타산",
+      "aliases": [],
+      "region": "강원 (삼척/동해)",
+      "lat": 37.269,
+      "lon": 129.007,
+      "height_m": 1357.0,
+      "rank_100": 29,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "마니산",
+      "aliases": [],
+      "region": "인천 (강화)",
+      "lat": 37.612,
+      "lon": 126.407,
+      "height_m": 472.1,
+      "rank_100": 30,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "마이산",
+      "aliases": [],
+      "region": "전북 (진안)",
+      "lat": 35.728,
+      "lon": 127.487,
+      "height_m": 687.4,
+      "rank_100": 31,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "명성산",
+      "aliases": [],
+      "region": "경기 (포천/강원 철원)",
+      "lat": 38.133,
+      "lon": 127.278,
+      "height_m": 922.0,
+      "rank_100": 32,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "명지산",
+      "aliases": [],
+      "region": "경기 (가평)",
+      "lat": 37.898,
+      "lon": 127.477,
+      "height_m": 1252.3,
+      "rank_100": 33,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "모악산",
+      "aliases": [],
+      "region": "전북 (김제/완주)",
+      "lat": 35.729,
+      "lon": 127.09,
+      "height_m": 795.2,
+      "rank_100": 34,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "무학산",
+      "aliases": [],
+      "region": "경남 (창원)",
+      "lat": 35.23,
+      "lon": 128.584,
+      "height_m": 761.4,
+      "rank_100": 36,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "미륵산",
+      "aliases": [],
+      "region": "전북 (익산)",
+      "lat": 35.984,
+      "lon": 127.009,
+      "height_m": 458.4,
+      "rank_100": 37,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "민주지산",
+      "aliases": [],
+      "region": "충북/전북/경북 (영동/무주/김천)",
+      "lat": 36.003,
+      "lon": 127.797,
+      "height_m": 1241.7,
+      "rank_100": 38,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "방장산",
+      "aliases": [],
+      "region": "전북/전남 (고창/장성)",
+      "lat": 35.483,
+      "lon": 126.851,
+      "height_m": 734.0,
+      "rank_100": 39,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "방태산",
+      "aliases": [],
+      "region": "강원 (인제)",
+      "lat": 38.011,
+      "lon": 128.24,
+      "height_m": 1435.57,
+      "rank_100": 40,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "백덕산",
+      "aliases": [],
+      "region": "강원 (영월/평창)",
+      "lat": 37.353,
+      "lon": 128.374,
+      "height_m": 1350.1,
+      "rank_100": 41,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "백암산",
+      "aliases": [],
+      "region": "전남 (장성)",
+      "lat": 35.327,
+      "lon": 126.893,
+      "height_m": 741.2,
+      "rank_100": 42,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "백운산",
+      "aliases": [],
+      "region": "경기 (포천)",
+      "lat": 37.912,
+      "lon": 127.282,
+      "height_m": 904.1,
+      "rank_100": 43,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "변산",
+      "aliases": [],
+      "region": "전북 (부안)",
+      "lat": 35.633,
+      "lon": 126.622,
+      "height_m": 508.0,
+      "rank_100": 44,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "비슬산",
+      "aliases": [],
+      "region": "대구/경북 (달성/청도)",
+      "lat": 35.66,
+      "lon": 128.54,
+      "height_m": 1083.4,
+      "rank_100": 46,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "삼악산",
+      "aliases": [],
+      "region": "강원 (춘천)",
+      "lat": 37.741,
+      "lon": 127.763,
+      "height_m": 655.8,
+      "rank_100": 47,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "서대산",
+      "aliases": [],
+      "region": "충남 (금산)",
+      "lat": 36.128,
+      "lon": 127.563,
+      "height_m": 904.1,
+      "rank_100": 48,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "선운산",
+      "aliases": [],
+      "region": "전북 (고창)",
+      "lat": 35.492,
+      "lon": 126.613,
+      "height_m": 334.7,
+      "rank_100": 49,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "성인봉",
+      "aliases": [],
+      "region": "경북 (울릉군)",
+      "lat": 37.503,
+      "lon": 130.872,
+      "height_m": 986.5,
+      "rank_100": 51,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "소요산",
+      "aliases": [],
+      "region": "경기 (동두천)",
+      "lat": 37.949,
+      "lon": 127.07,
+      "height_m": 587.5,
+      "rank_100": 53,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "신불산",
+      "aliases": [],
+      "region": "경남 (울주)",
+      "lat": 35.521,
+      "lon": 129.027,
+      "height_m": 1159.3,
+      "rank_100": 55,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "연화산",
+      "aliases": [],
+      "region": "경남 (고성)",
+      "lat": 35.031,
+      "lon": 128.214,
+      "height_m": 524.0,
+      "rank_100": 56,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "오봉산",
+      "aliases": [],
+      "region": "강원 (춘천)",
+      "lat": 37.808,
+      "lon": 127.693,
+      "height_m": 777.9,
+      "rank_100": 58,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "용문산",
+      "aliases": [],
+      "region": "경기 (양평)",
+      "lat": 37.54,
+      "lon": 127.628,
+      "height_m": 1157.1,
+      "rank_100": 59,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "용화산",
+      "aliases": [],
+      "region": "강원 (화천/춘천)",
+      "lat": 37.972,
+      "lon": 127.623,
+      "height_m": 877.8,
+      "rank_100": 60,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "운문산",
+      "aliases": [],
+      "region": "경북/경남 (청도/울주)",
+      "lat": 35.625,
+      "lon": 128.943,
+      "height_m": 1195.1,
+      "rank_100": 61,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "운악산",
+      "aliases": [],
+      "region": "경기 (포천/가평)",
+      "lat": 37.957,
+      "lon": 127.337,
+      "height_m": 934.7,
+      "rank_100": 62,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "운장산",
+      "aliases": [],
+      "region": "전북 (진안/완주)",
+      "lat": 35.883,
+      "lon": 127.341,
+      "height_m": 1125.8,
+      "rank_100": 63,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "월악산",
+      "aliases": [],
+      "region": "충북 (제천/경북 문경)",
+      "lat": 36.912,
+      "lon": 128.086,
+      "height_m": 1095.3,
+      "rank_100": 64,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "유명산",
+      "aliases": [],
+      "region": "경기 (가평/양평)",
+      "lat": 37.654,
+      "lon": 127.571,
+      "height_m": 864.0,
+      "rank_100": 66,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "응봉산",
+      "aliases": [],
+      "region": "강원/경북 (삼척/울진)",
+      "lat": 37.159,
+      "lon": 129.268,
+      "height_m": 999.7,
+      "rank_100": 67,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "장안산",
+      "aliases": [],
+      "region": "전북 (장수)",
+      "lat": 35.659,
+      "lon": 127.521,
+      "height_m": 1237.4,
+      "rank_100": 68,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "재약산",
+      "aliases": [],
+      "region": "경남 (밀양/울주)",
+      "lat": 35.591,
+      "lon": 128.997,
+      "height_m": 1108.0,
+      "rank_100": 69,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "적상산",
+      "aliases": [],
+      "region": "전북 (무주)",
+      "lat": 36.012,
+      "lon": 127.651,
+      "height_m": 1030.6,
+      "rank_100": 70,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "점봉산",
+      "aliases": [],
+      "region": "강원 (인제/양양)",
+      "lat": 38.061,
+      "lon": 128.634,
+      "height_m": 1426.0,
+      "rank_100": 71,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "조계산",
+      "aliases": [],
+      "region": "전남 (순천)",
+      "lat": 34.984,
+      "lon": 127.27,
+      "height_m": 887.3,
+      "rank_100": 72,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "주왕산",
+      "aliases": [],
+      "region": "경북 (청송)",
+      "lat": 36.4,
+      "lon": 129.13,
+      "height_m": 722.1,
+      "rank_100": 73,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "주흘산",
+      "aliases": [],
+      "region": "경북 (문경)",
+      "lat": 36.773,
+      "lon": 128.124,
+      "height_m": 1108.4,
+      "rank_100": 74,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "지리산(통영)",
+      "aliases": [],
+      "region": "경남 (통영)",
+      "lat": 34.859,
+      "lon": 128.412,
+      "height_m": 399.3,
+      "rank_100": 76,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "천관산",
+      "aliases": [],
+      "region": "전남 (장흥)",
+      "lat": 34.55,
+      "lon": 127.003,
+      "height_m": 724.3,
+      "rank_100": 77,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "천마산",
+      "aliases": [],
+      "region": "경기 (남양주)",
+      "lat": 37.63,
+      "lon": 127.327,
+      "height_m": 810.3,
+      "rank_100": 78,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "천성산",
+      "aliases": [],
+      "region": "경남 (양산)",
+      "lat": 35.421,
+      "lon": 129.151,
+      "height_m": 920.2,
+      "rank_100": 79,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "천태산",
+      "aliases": [],
+      "region": "충북/충남 (영동/금산)",
+      "lat": 36.1,
+      "lon": 127.698,
+      "height_m": 715.2,
+      "rank_100": 80,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "청량산",
+      "aliases": [],
+      "region": "경북 (봉화/안동)",
+      "lat": 36.884,
+      "lon": 128.879,
+      "height_m": 869.7,
+      "rank_100": 81,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "추월산",
+      "aliases": [],
+      "region": "전남/전북 (담양/순창)",
+      "lat": 35.312,
+      "lon": 126.993,
+      "height_m": 731.2,
+      "rank_100": 82,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "축령산",
+      "aliases": [],
+      "region": "경기 (가평/남양주)",
+      "lat": 37.739,
+      "lon": 127.371,
+      "height_m": 887.1,
+      "rank_100": 83,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "칠갑산",
+      "aliases": [],
+      "region": "충남 (청양)",
+      "lat": 36.478,
+      "lon": 126.799,
+      "height_m": 559.7,
+      "rank_100": 85,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "태백산",
+      "aliases": [],
+      "region": "강원/경북 (태백/봉화)",
+      "lat": 37.096,
+      "lon": 128.913,
+      "height_m": 1566.7,
+      "rank_100": 86,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26",
+      "mtId": "11D004P1"
+    },
+    {
+      "name": "태화산",
+      "aliases": [],
+      "region": "충북/강원 (충주/원주)",
+      "lat": 37.12,
+      "lon": 128.073,
+      "height_m": 1027.5,
+      "rank_100": 87,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "팔공산",
+      "aliases": [],
+      "region": "대구/경북 (영천/군위/칠곡/경산)",
+      "lat": 35.992,
+      "lon": 128.683,
+      "height_m": 1192.3,
+      "rank_100": 88,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "팔영산",
+      "aliases": [],
+      "region": "전남 (고흥)",
+      "lat": 34.65,
+      "lon": 127.432,
+      "height_m": 606.9,
+      "rank_100": 90,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "화악산",
+      "aliases": [],
+      "region": "경기/강원 (가평/화천)",
+      "lat": 37.993,
+      "lon": 127.508,
+      "height_m": 1446.1,
+      "rank_100": 92,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "화왕산",
+      "aliases": [],
+      "region": "경남 (창녕)",
+      "lat": 35.537,
+      "lon": 128.491,
+      "height_m": 757.7,
+      "rank_100": 93,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "황매산",
+      "aliases": [],
+      "region": "경남 (합천/산청)",
+      "lat": 35.544,
+      "lon": 127.988,
+      "height_m": 1113.1,
+      "rank_100": 94,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "황석산",
+      "aliases": [],
+      "region": "경남 (함양)",
+      "lat": 35.521,
+      "lon": 127.713,
+      "height_m": 1192.5,
+      "rank_100": 95,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "황악산",
+      "aliases": [],
+      "region": "경북 (김천)",
+      "lat": 36.06,
+      "lon": 127.876,
+      "height_m": 1111.4,
+      "rank_100": 96,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26",
+      "mtId": "11B001P2"
+    },
+    {
+      "name": "황장산",
+      "aliases": [],
+      "region": "경북 (문경)",
+      "lat": 36.772,
+      "lon": 128.274,
+      "height_m": 1078.9,
+      "rank_100": 97,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    },
+    {
+      "name": "희양산",
+      "aliases": [],
+      "region": "경북/충북 (문경/괴산)",
+      "lat": 36.617,
+      "lon": 128.048,
+      "height_m": 996.4,
+      "rank_100": 98,
+      "courses": [],
+      "source": "pdf-100대명산",
+      "added_at": "2026-06-26"
+    }
+  ]
+}
