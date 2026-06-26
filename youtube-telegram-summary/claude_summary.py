@@ -111,8 +111,10 @@ def summarize_with_claude(transcript, video, language, config, debug=False):
 
     prompt = (
         f"다음은 유튜브 영상 \"{video.get('title', '')}\" (채널: {video.get('channel', '')})의 "
-        f"자막입니다. 핵심 내용을 {lang_name}로 6~8문장으로 간결하게 요약해 주세요. "
-        f"인사말·군더더기 없이 요점만, 자연스러운 문단으로 작성하세요.\n\n"
+        f"자막입니다. 핵심 내용을 {lang_name}로 6~8문장으로 간결하게 요약해 주세요.\n"
+        f"- 제목·머리말·'요약:' 같은 라벨 없이 요약 본문만 작성\n"
+        f"- 마크다운(#, *, - 등) 쓰지 말고 자연스러운 문단으로\n"
+        f"- 인사말·군더더기 없이 요점만\n\n"
         f"=== 자막 ===\n{transcript}"
     )
 
