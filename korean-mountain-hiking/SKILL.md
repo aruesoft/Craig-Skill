@@ -35,8 +35,24 @@ metadata:
 - optional: `jq`
 - optional: `KSKILL_PROXY_BASE_URL` (self-host 프록시를 쓸 때만 설정. 비우면 기본 hosted `https://k-skill-proxy.nomadamas.org` 를 사용한다.)
 - optional: `naver-map` 스킬 (하산식 맛집 조회 시 활용)
+- optional: Chrome MCP (`mcp__Claude_in_Chrome__*`) — 네이버 카페 회원 전용 게시글 접근 시 필요
 
 사용자가 별도 API key를 발급받을 필요는 없다.
+
+## Reference Cafes (등산 커뮤니티 카페)
+
+등산 코스 후기·맛집 정보 조회 시 아래 네이버 카페를 **우선 참조**한다.
+
+| 카페 | URL | 특징 |
+|---|---|---|
+| 바람막이 (Windstopper) | https://cafe.naver.com/windstopper | 등산 장비·코스 후기, 하산식 맛집 추천 |
+| 하이킹F (HikingF) | https://cafe.naver.com/hikingf | 등산 코스·일정·맛집 정보 |
+
+**접근 방식**:
+1. **Chrome MCP 연결된 경우**: `mcp__Claude_in_Chrome__navigate`로 해당 카페에 직접 접근 → 로그인 세션 활용해 회원 전용 게시글도 조회 가능.
+   - 카페 내 검색: `https://cafe.naver.com/windstopper?search={산 이름}+코스` 형태로 이동
+   - 게시글 내용은 `mcp__Claude_in_Chrome__get_page_text`로 추출
+2. **Chrome MCP 미연결 또는 로그인 안 된 경우**: 웹 검색으로 `"windstopper" OR "hikingf" {산 이름} 코스` 검색. 공개 게시글이나 구글 캐시에서 내용을 수집한다.
 
 ## Data
 
@@ -68,7 +84,10 @@ jq '.mountains[] | select(.name == "북한산" or (.aliases[]? == "북한산"))'
 
 ### 1.5 데이터셋에 없는 산: 검색 후 자동 추가
 
-1. **코스 정보 검색**: 산림청 국가숲길정보시스템(forest.go.kr) → 일반 웹 검색 순으로 탐색. 나열된 코스를 **모두** 수집한다.
+1. **코스 정보 검색**: 아래 우선순위로 탐색. 나열된 코스를 **모두** 수집한다.
+   1. **네이버 카페 (Chrome MCP 연결 시 우선)**: `cafe.naver.com/windstopper`, `cafe.naver.com/hikingf`에서 "{산 이름} 코스" 검색
+   2. 산림청 국가숲길정보시스템(forest.go.kr)
+   3. 일반 웹 검색 — `"windstopper" OR "hikingf" {산 이름} 등산코스`로 카페 공개 글 우선 탐색
 2. **좌표 확보**: 검색 결과에 없으면 `kakao-map` 스킬로 지오코딩.
 3. **등산 지도 검색**: "{산 이름} 등산지도" 검색 → 공식 링크 있으면 `map_url`에 저장.
 4. **`references/mountains.json`에 추가**: `source: "auto-search"`, `added_at: "YYYY-MM-DD"` 포함.
@@ -193,9 +212,10 @@ curl -fsS --get "${BASE}/v1/korea-weather/forecast" \
 등산 후 하산식 식당을 추천한다. 사용자가 "맛집", "하산식", "먹을 곳", "식당" 등을 언급하거나, 등산 계획 전반적인 정보를 요청하면 자동으로 포함한다.
 
 1. **하산 지점 파악**: 코스에서 하산 종료 지점(탐방지원센터·주차장 등)을 확인한다.
-2. **맛집 검색**: 아래 방법 중 하나 또는 조합으로 조회한다.
+2. **맛집 검색**: 아래 우선순위로 조회한다.
+   - **네이버 카페 (Chrome MCP 연결 시 최우선)**: `cafe.naver.com/windstopper` 또는 `cafe.naver.com/hikingf`에서 "{산 이름} 맛집" 또는 "{산 이름} 하산식" 검색. 실제 등산객의 생생한 후기 위주로 수집.
    - `naver-map` 스킬: `"{하산지점 또는 산 근처 지역} 맛집"` 또는 `"{지역} 등산 후 식당"` 검색
-   - 웹 검색: `"{산 이름} 하산식 맛집"` 또는 `"{산 이름} {근처 읍/면} 식당 추천"` 검색
+   - 웹 검색: `"windstopper" OR "hikingf" {산 이름} 맛집` 또는 `"{산 이름} {근처 읍/면} 하산식 맛집 추천"` 검색
 3. **결과 정리**: 식당명, 대표 메뉴, 특징을 간략히 정리해 하산 지점별로 구분해 보여준다.
    ```markdown
    ## 🍽️ 하산 후 맛집 추천 ({하산지점} 근처)
