@@ -234,9 +234,13 @@ def format_courses(m):
         lines.append("")
         lines.append("코스 상세 데이터가 아직 없습니다. 산림청/국립공원공단에서 코스 확인 권장.")
 
+    # 등산로 정보 지도 링크는 항상 포함 (map_url 없으면 카카오맵 검색 링크로 대체)
+    lines.append("")
     if m.get("map_url"):
-        lines.append("")
         lines.append(f"🗺️ 등산 지도: {m['map_url']}")
+    else:
+        q = (m.get("name", "") + "+등산로").replace(" ", "+")
+        lines.append(f"🗺️ 등산 지도: https://map.kakao.com/?q={q}")
     return "\n".join(lines)
 
 
