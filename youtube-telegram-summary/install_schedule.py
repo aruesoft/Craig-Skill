@@ -10,6 +10,10 @@
   python install_schedule.py --interval 6   # 6시간마다
   python install_schedule.py --status       # 등록 상태 확인
   python install_schedule.py --remove       # 등록 해제
+
+  # 텔레그램 즉시-응답 리스너(항상 켜둠, macOS launchd — 채널명 보내면 수초 내 등록)
+  python install_schedule.py --install-listener   # 리스너 상시 실행 등록(+로그인 시 자동 시작)
+  python install_schedule.py --remove-listener     # 리스너 등록 해제
 """
 
 import argparse
@@ -143,6 +147,74 @@ def status_unix():
         print("등록된 cron 작업이 없습니다.")
 
 
+# ─────────────── 텔레그램 즉시-응답 리스너 (macOS launchd) ───────────────
+#
+# `monitor.py --listen` 을 항상 켜두면(long-poll) 텔레그램에서 채널명을 보내는
+# 즉시(수초 내) 등록·응답한다. launchd 의 KeepAlive 로 꺼지면 자동 재시작하고,
+# RunAtLoad 로 로그인/재부팅 시 자동 시작한다. 크론(6시간)과 독립적으로 공존한다.
+
+LISTENER_LABEL = "com.craig.youtube-telegram-listener"
+LISTENER_PLIST = Path.home() / "Library" / "LaunchAgents" / f"{LISTENER_LABEL}.plist"
+LISTENER_LOG = SCRIPT_DIR / "listener.log"
+
+
+def install_listener():
+    if IS_WINDOWS:
+        print("Windows에서는 리스너를 백그라운드로 직접 실행하세요:")
+        print(f'  start "" /min "{_pythonw_path()}" "{MONITOR}" --listen --logfile "{LISTENER_LOG}"')
+        print("자동 시작을 원하면 이 명령을 작업 스케줄러의 '로그온 시' 트리거로 등록하세요.")
+        return
+    LISTENER_PLIST.parent.mkdir(parents=True, exist_ok=True)
+    plist = f"""<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>{LISTENER_LABEL}</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>{sys.executable}</string>
+    <string>{MONITOR}</string>
+    <string>--listen</string>
+  </array>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PYTHONUNBUFFERED</key><string>1</string>
+  </dict>
+  <key>StandardOutPath</key><string>{LISTENER_LOG}</string>
+  <key>StandardErrorPath</key><string>{LISTENER_LOG}</string>
+</dict>
+</plist>
+"""
+    LISTENER_PLIST.write_text(plist, encoding="utf-8")
+    subprocess.run(["launchctl", "unload", str(LISTENER_PLIST)],
+                   capture_output=True)  # 이미 로드돼 있으면 먼저 내림
+    res = subprocess.run(["launchctl", "load", str(LISTENER_PLIST)],
+                         capture_output=True, text=True)
+    if res.returncode != 0:
+        print(f"⚠️ launchctl load 실패: {res.stderr.strip()}")
+        print(f"   plist는 생성됨: {LISTENER_PLIST}")
+        return
+    print(f"✅ 텔레그램 리스너 상시 실행 등록 완료 ({LISTENER_LABEL})")
+    print(f"   로그: {LISTENER_LOG}")
+    print("   이제 텔레그램에서 봇에게 채널명(예: 삼프로TV / @3protv)을 보내면 수초 내 등록됩니다.")
+    print(f"   상태: launchctl list | grep youtube-telegram")
+    print("   해제: python install_schedule.py --remove-listener")
+
+
+def remove_listener():
+    if IS_WINDOWS:
+        print("Windows: 실행 중인 --listen 프로세스를 종료하고, 작업 스케줄러 트리거를 제거하세요.")
+        return
+    if LISTENER_PLIST.exists():
+        subprocess.run(["launchctl", "unload", str(LISTENER_PLIST)], capture_output=True)
+        LISTENER_PLIST.unlink()
+        print(f"✅ 리스너 등록 해제 완료 ({LISTENER_LABEL})")
+    else:
+        print("등록된 리스너가 없습니다.")
+
+
 # ──────────────────────────── 진입점 ────────────────────────────
 
 def main():
@@ -150,11 +222,18 @@ def main():
     ap.add_argument('--interval', type=int, default=1, help='실행 주기(시간). 기본 1')
     ap.add_argument('--remove', action='store_true', help='등록 해제')
     ap.add_argument('--status', action='store_true', help='등록 상태 확인')
+    ap.add_argument('--install-listener', action='store_true',
+                    help='텔레그램 즉시-응답 리스너 상시 실행 등록(macOS launchd)')
+    ap.add_argument('--remove-listener', action='store_true', help='리스너 등록 해제')
     args = ap.parse_args()
 
     LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
 
-    if args.status:
+    if args.install_listener:
+        install_listener()
+    elif args.remove_listener:
+        remove_listener()
+    elif args.status:
         (status_windows if IS_WINDOWS else status_unix)()
     elif args.remove:
         (remove_windows if IS_WINDOWS else remove_unix)()

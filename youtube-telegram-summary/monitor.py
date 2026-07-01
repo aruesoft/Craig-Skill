@@ -8,6 +8,10 @@ YouTube 채널 모니터 → secondb.ai 요약 → Telegram 전송
   python monitor.py --list-channels      등록된 채널 목록
   python monitor.py --add-channel @핸들  채널 추가 (@핸들 / URL / UC아이디 모두 가능)
   python monitor.py --remove-channel X   채널 삭제 (UC아이디 또는 목록 번호)
+  python monitor.py --listen             텔레그램 명령 상시 대기(채널명 보내면 즉시 등록)
+
+텔레그램에서 봇에게 보내는 명령:
+  채널명/@핸들/URL/UC아이디 → 채널 추가   |   /list 목록   |   /remove N 삭제   |   /run 즉시 실행
 """
 
 import json
@@ -110,6 +114,37 @@ def resolve_channel_id(value):
     return None
 
 
+def search_channel_id(query):
+    """플레인 채널명/키워드 → YouTube 검색으로 첫 '채널' 결과의 UC아이디.
+
+    @핸들/URL/UC 로 안 잡히는 한글 채널명(예: '삼프로TV')을 텔레그램에서 바로
+    등록할 수 있도록 채널 필터(sp) 검색 결과에서 channelId 를 뽑는다.
+    """
+    import urllib.parse
+    q = urllib.parse.quote(query.strip())
+    # sp=EgIQAg%3D%3D → 검색 유형을 '채널'로 필터 (영상 채널ID 오탐 감소)
+    url = (f"https://www.youtube.com/results?search_query={q}"
+           f"&sp=EgIQAg%253D%253D")
+    try:
+        r = requests.get(url, timeout=15, headers={'User-Agent': UA})
+    except requests.RequestException as e:
+        log(f"채널 검색 실패: {e}")
+        return None
+    # 채널 결과(channelRenderer)를 최우선, 없으면 일반 channelId 폴백
+    for pat in (r'"channelRenderer":\{"channelId":"(UC[\w-]{22})"',
+                r'"browseEndpoint":\{"browseId":"(UC[\w-]{22})"',
+                r'"channelId":"(UC[\w-]{22})"'):
+        m = re.search(pat, r.text)
+        if m:
+            return m.group(1)
+    return None
+
+
+def resolve_channel_query(value):
+    """@핸들 / URL / UC아이디 → 해석. 실패하면 채널명 검색으로 폴백."""
+    return resolve_channel_id(value) or search_channel_id(value)
+
+
 def get_channel_name(channel_id):
     """RSS에서 채널 이름만 빠르게 조회"""
     try:
@@ -123,59 +158,73 @@ def get_channel_name(channel_id):
         return channel_id
 
 
-def cmd_list_channels(config):
+# 아래 *_core 함수는 (성공여부, 사람이 읽을 메시지) 를 반환한다.
+# CLI(cmd_*) 와 텔레그램 명령 핸들러가 함께 재사용한다.
+
+def list_channels_core(config):
     channels = config.get('youtube_channels', [])
     if not channels:
-        print("등록된 채널이 없습니다. --add-channel 로 추가하세요.")
-        return
-    print(f"\n등록된 채널 {len(channels)}개:")
+        return "등록된 채널이 없습니다. 채널명이나 @핸들을 보내면 추가됩니다."
+    lines = [f"📺 등록된 채널 {len(channels)}개:"]
     for i, ch in enumerate(channels, 1):
-        print(f"  {i}. {get_channel_name(ch)}  ({ch})")
-    print()
+        lines.append(f"{i}. {get_channel_name(ch)}  ({ch})")
+    return "\n".join(lines)
 
 
-def cmd_add_channel(config, value):
-    channel_id = resolve_channel_id(value)
+def add_channel_core(config, value):
+    channel_id = resolve_channel_query(value)
     if not channel_id:
-        print(f"채널 ID를 찾지 못했습니다: {value}")
-        print("YouTube 채널 페이지의 @핸들, 전체 URL, 또는 UC로 시작하는 ID를 입력하세요.")
-        sys.exit(1)
-
+        return False, (f"❌ 채널을 찾지 못했습니다: {value}\n"
+                       f"@핸들, 채널 URL, UC아이디, 또는 정확한 채널명을 보내주세요.")
     channels = config.get('youtube_channels', [])
+    name = get_channel_name(channel_id)
     if channel_id in channels:
-        print(f"이미 등록된 채널입니다: {get_channel_name(channel_id)} ({channel_id})")
-        return
-
+        return False, f"ℹ️ 이미 등록된 채널입니다: {name} ({channel_id})"
     channels.append(channel_id)
     config['youtube_channels'] = channels
     save_config(config)
-    print(f"채널 추가됨: {get_channel_name(channel_id)} ({channel_id})")
+    return True, f"✅ 채널 추가됨: {name}\n({channel_id})\n지금부터 새 영상을 추적합니다."
 
 
-def cmd_remove_channel(config, value):
+def remove_channel_core(config, value):
     channels = config.get('youtube_channels', [])
     target = None
-
     # 목록 번호로 삭제
-    if value.isdigit():
-        idx = int(value) - 1
+    if value.strip().isdigit():
+        idx = int(value.strip()) - 1
         if 0 <= idx < len(channels):
             target = channels[idx]
-    # UC 아이디 또는 핸들/URL로 삭제
+    # UC 아이디 또는 핸들/URL/채널명로 삭제
     if target is None:
-        rid = resolve_channel_id(value) or value
+        rid = resolve_channel_query(value) or value.strip()
         if rid in channels:
             target = rid
-
     if target is None:
-        print(f"해당 채널을 찾지 못했습니다: {value}")
-        print("--list-channels 로 번호나 ID를 확인하세요.")
-        sys.exit(1)
-
+        return False, (f"❌ 해당 채널을 찾지 못했습니다: {value}\n"
+                       f"/list 로 번호나 ID를 확인하세요.")
+    name = get_channel_name(target)
     channels.remove(target)
     config['youtube_channels'] = channels
     save_config(config)
-    print(f"채널 삭제됨: {target}")
+    return True, f"🗑 채널 삭제됨: {name} ({target})"
+
+
+def cmd_list_channels(config):
+    print("\n" + list_channels_core(config) + "\n")
+
+
+def cmd_add_channel(config, value):
+    ok, msg = add_channel_core(config, value)
+    print(msg)
+    if not ok and msg.startswith("❌"):
+        sys.exit(1)
+
+
+def cmd_remove_channel(config, value):
+    ok, msg = remove_channel_core(config, value)
+    print(msg)
+    if not ok:
+        sys.exit(1)
 
 
 # ──────────────────────────── YouTube ────────────────────────────
@@ -468,6 +517,166 @@ def send_telegram_alert(config, text):
         return False
 
 
+def send_telegram_plain(config, text):
+    """명령 응답용 평문 전송 (HTML 파싱 안 함 — 사용자 입력이 그대로 나가도 안전)."""
+    token = config.get('telegram_bot_token', '')
+    chat_id = config.get('telegram_chat_id', '')
+    if not token or not chat_id:
+        log("Telegram 설정이 없습니다 (config.json 확인)")
+        return False
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    try:
+        result = requests.post(
+            url,
+            json={'chat_id': chat_id, 'text': text, 'disable_web_page_preview': True},
+            timeout=10).json()
+        if not result.get('ok'):
+            log(f"Telegram 오류: {result.get('description', result)}")
+            return False
+        return True
+    except Exception as e:
+        log(f"Telegram 전송 실패: {e}")
+        return False
+
+
+# ─────────────────── 텔레그램 → 봇 (수신 명령 처리) ───────────────────
+#
+# 봇은 요약을 '보내기'만 하는 게 아니라, 사용자가 텔레그램에서 보낸 메시지를
+# getUpdates 로 읽어 채널 추가/삭제/목록/실행 명령을 처리한다.
+#  - 크론 실행마다 자동으로 밀린 명령을 소비 (인프라 0, 최대 주기만큼 지연)
+#  - `python monitor.py --listen` 상시 long-poll 로 즉시 응답
+# 중복 처리는 state.json 의 telegram_update_offset 으로 방지한다.
+
+HELP_TEXT = (
+    "🤖 유튜브 요약봇 명령\n\n"
+    "• 채널명 / @핸들 / URL / UC아이디 를 그냥 보내면 → 모니터링 채널로 추가\n"
+    "   예) 삼프로TV   |   @3protv   |   https://youtube.com/@3protv\n"
+    "• /list — 등록된 채널 목록\n"
+    "• /remove <번호|@핸들|UC아이디> — 채널 삭제\n"
+    "• /run — 지금 새 영상 확인 실행\n"
+    "• /help — 이 도움말"
+)
+
+
+def handle_command_text(config, text):
+    """텔레그램 메시지 한 건을 해석·적용하고 응답 문자열을 반환.
+
+    '/run' 요청이면 특수 신호 '__RUN__' 을 반환 (실제 실행은 호출부가 결정).
+    처리할 게 없으면 None.
+    """
+    text = (text or "").strip()
+    if not text:
+        return None
+    low = text.lower()
+
+    if low in ("/help", "help", "도움말", "/start", "start"):
+        return HELP_TEXT
+    if low in ("/list", "list", "목록", "/channels", "채널"):
+        return list_channels_core(config)
+    if low in ("/run", "run", "실행", "확인"):
+        return "__RUN__"
+    if low.startswith(("/remove", "/delete", "삭제")):
+        parts = text.split(maxsplit=1)
+        if len(parts) < 2:
+            return "삭제할 채널 번호나 ID를 함께 보내주세요. 예) /remove 2"
+        return remove_channel_core(config, parts[1])[1]
+    if low.startswith("/add"):
+        parts = text.split(maxsplit=1)
+        if len(parts) < 2:
+            return "추가할 채널명이나 @핸들을 함께 보내주세요. 예) /add 삼프로TV"
+        text = parts[1].strip()
+    # 그 외 모든 일반 텍스트 = 채널 추가 시도
+    return add_channel_core(config, text)[1]
+
+
+def _authorized_chat(config, chat_id):
+    """설정된 telegram_chat_id 와 일치하는 채팅만 명령 허용 (타인 조작 방지)."""
+    want = str(config.get('telegram_chat_id', ''))
+    return bool(want) and str(chat_id) == want
+
+
+def process_incoming_commands(config, debug=False, run_callback=None, long_poll=False):
+    """텔레그램에 쌓인 메시지를 offset 기준으로 소비해 채널 명령을 처리.
+
+    long_poll=True 면 getUpdates 를 최대 ~50초 대기(즉시 응답용 --listen 에서 사용).
+    run_callback 이 주어지고 '/run' 이 오면 즉시 실행, 없으면 안내만 응답.
+    """
+    token = config.get('telegram_bot_token', '')
+    if not token:
+        return
+    offset = load_state().get('telegram_update_offset')
+    params = {"timeout": 50 if long_poll else 0}
+    if offset is not None:
+        params["offset"] = offset
+    try:
+        r = requests.get(f"https://api.telegram.org/bot{token}/getUpdates",
+                         params=params, timeout=(55 if long_poll else 20)).json()
+    except Exception as e:
+        log(f"getUpdates 오류: {e}", debug, is_debug=True)
+        return
+    if not r.get("ok"):
+        log(f"getUpdates 실패: {r.get('description')}", debug, is_debug=True)
+        return
+
+    updates = r.get("result", [])
+    if not updates:
+        return
+
+    last_update_id = None
+    processed = 0
+    for upd in updates:
+        last_update_id = upd["update_id"]
+        msg = upd.get("message") or upd.get("channel_post") or {}
+        text = msg.get("text", "")
+        chat_id = msg.get("chat", {}).get("id")
+        if not text:
+            continue
+        if not _authorized_chat(config, chat_id):
+            log(f"권한 없는 채팅 무시: {chat_id}", debug, is_debug=True)
+            continue
+        log(f"명령 수신: {text}")
+        reply = handle_command_text(config, text)
+        if reply == "__RUN__":
+            if run_callback:
+                send_telegram_plain(config, "🔄 지금 새 영상을 확인합니다…")
+                try:
+                    n, _ = run_callback()
+                    send_telegram_plain(config, f"✅ 확인 완료 (새 요약 {n}건)")
+                except Exception as e:
+                    send_telegram_plain(config, f"❌ 실행 오류: {e}")
+            else:
+                send_telegram_plain(config, "🔄 이번 실행에서 곧 새 영상을 확인합니다.")
+        elif reply:
+            send_telegram_plain(config, reply)
+        processed += 1
+
+    # 처리한 업데이트 이후만 다음에 받도록 offset 전진 (state 재로딩 후 저장)
+    if last_update_id is not None:
+        state = load_state()
+        state['telegram_update_offset'] = last_update_id + 1
+        save_state(state)
+    if processed:
+        log(f"텔레그램 명령 {processed}건 처리")
+
+
+def listen_loop(config, debug=False):
+    """--listen: long-poll 로 텔레그램 명령을 즉시 처리 (Ctrl+C 종료)."""
+    log("텔레그램 리스너 시작 (long-poll). 채널명을 보내면 추가됩니다. Ctrl+C 로 종료.")
+    send_telegram_plain(config, "🤖 요약봇 리스너 시작됨. 채널명을 보내면 추가합니다.\n/help 로 명령 목록 확인.")
+    while True:
+        try:
+            process_incoming_commands(
+                config, debug,
+                run_callback=lambda: run_monitor(config, debug),
+                long_poll=True)
+        except KeyboardInterrupt:
+            log("리스너 종료")
+            break
+        except Exception as e:
+            log(f"리스너 오류(계속 실행): {e}")
+            time.sleep(5)
+
+
 def ping_healthcheck(config, suffix=""):
     """선택: config의 healthcheck_ping_url 로 핑 (healthchecks.io 등 외부 감시용).
 
@@ -697,6 +906,8 @@ def main():
     parser.add_argument('--list-channels', action='store_true', help='등록된 채널 목록')
     parser.add_argument('--add-channel', metavar='CH', help='채널 추가 (@핸들/URL/UC아이디)')
     parser.add_argument('--remove-channel', metavar='CH', help='채널 삭제 (번호 또는 ID)')
+    parser.add_argument('--listen', action='store_true',
+                        help='텔레그램 명령 상시 대기(long-poll) — 채널명 보내면 즉시 등록')
     parser.add_argument('--logfile', metavar='PATH',
                         help='모든 출력을 이 파일에 기록 (Windows 작업 스케줄러의 pythonw 실행용)')
     args = parser.parse_args()
@@ -722,10 +933,15 @@ def main():
     if args.remove_channel:
         cmd_remove_channel(config, args.remove_channel)
         return
+    if args.listen:
+        listen_loop(config, args.debug)
+        return
 
     # #1 실행 중 예외 발생 시 텔레그램 알림 + (선택) 외부 헬스체크 핑
     ping_healthcheck(config, "/start")
     try:
+        # 크론 실행마다: 텔레그램에 쌓인 채널 명령을 먼저 반영 (모니터가 곧 실행되므로 run 콜백은 생략)
+        process_incoming_commands(config, args.debug)
         run_monitor(config, args.debug)
         ping_healthcheck(config)  # 성공 핑
     except Exception as e:
