@@ -1,0 +1,5 @@
+# 토큰 등 비밀은 절대 커밋하지 않는다
+config.json
+state.json
+*.log
+__pycache__/
