@@ -234,13 +234,18 @@ def format_courses(m):
         lines.append("")
         lines.append("코스 상세 데이터가 아직 없습니다. 산림청/국립공원공단에서 코스 확인 권장.")
 
-    # 등산로 정보 지도 링크는 항상 포함 (map_url 없으면 카카오맵 검색 링크로 대체)
+    # 등산로 정보 지도 링크는 항상 포함
+    name = m.get("name", "")
     lines.append("")
+    lines.append("🗺️ 등산로 지도")
     if m.get("map_url"):
-        lines.append(f"🗺️ 등산 지도: {m['map_url']}")
-    else:
-        q = (m.get("name", "") + "+등산로").replace(" ", "+")
-        lines.append(f"🗺️ 등산 지도: https://map.kakao.com/?q={q}")
+        lines.append(f"  • 공식 등산 지도: {m['map_url']}")
+    # 네이버 지도 — 실제 등산로(트레일)가 표시됨
+    nq = (name + " 등산로").replace(" ", "%20")
+    lines.append(f"  • 네이버 지도(등산로): https://map.naver.com/p/search/{nq}")
+    # 카카오맵 — 위치·주변 (유지)
+    kq = (name + " 등산로").replace(" ", "+")
+    lines.append(f"  • 카카오맵: https://map.kakao.com/?q={kq}")
     return "\n".join(lines)
 
 
