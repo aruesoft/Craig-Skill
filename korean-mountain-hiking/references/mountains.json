@@ -1708,6 +1708,232 @@
       "courses": [],
       "source": "pdf-100대명산",
       "added_at": "2026-06-26"
+    },
+    {
+      "name": "남산(서울)",
+      "aliases": [
+        "목멱산",
+        "종남산",
+        "인경산",
+        "Namsan"
+      ],
+      "region": "서울 중구/용산구",
+      "lat": 37.5497,
+      "lon": 126.9919,
+      "height_m": 270.85,
+      "courses": [],
+      "source": "popular-search",
+      "source_note": "위키백과 남산(서울) 270.85m",
+      "added_at": "2026-07-02"
+    },
+    {
+      "name": "아차산",
+      "aliases": [
+        "Achasan"
+      ],
+      "region": "서울 광진구/중랑구, 경기 구리시",
+      "lat": 37.5707,
+      "lon": 127.1039,
+      "height_m": 348.0,
+      "courses": [],
+      "source": "popular-search",
+      "source_note": "위키백과 아차산 348m(대표좌표 능선상)",
+      "added_at": "2026-07-02"
+    },
+    {
+      "name": "인왕산",
+      "aliases": [
+        "Inwangsan"
+      ],
+      "region": "서울 종로구/서대문구",
+      "lat": 37.5849,
+      "lon": 126.9587,
+      "height_m": 338.2,
+      "courses": [],
+      "source": "popular-search",
+      "source_note": "위키백과 인왕산 338.2m 최고봉좌표",
+      "added_at": "2026-07-02"
+    },
+    {
+      "name": "안산",
+      "aliases": [
+        "무악산",
+        "무악",
+        "길마재",
+        "Ansan"
+      ],
+      "region": "서울 서대문구",
+      "lat": 37.5767,
+      "lon": 126.945,
+      "height_m": 295.9,
+      "courses": [],
+      "source": "popular-search",
+      "source_note": "위키백과 안산(서울) 295.9m. 경기 안산시와 별개",
+      "added_at": "2026-07-02"
+    },
+    {
+      "name": "수락산",
+      "aliases": [
+        "Suraksan"
+      ],
+      "region": "서울 노원구, 경기 의정부시/남양주시",
+      "lat": 37.696,
+      "lon": 127.0819,
+      "height_m": 637.7,
+      "courses": [],
+      "source": "popular-search",
+      "source_note": "위키백과 수락산 637.7m 최고봉좌표",
+      "added_at": "2026-07-02"
+    },
+    {
+      "name": "불암산",
+      "aliases": [
+        "필암산",
+        "천보산",
+        "Bulamsan"
+      ],
+      "region": "서울 노원구, 경기 남양주시",
+      "lat": 37.6637,
+      "lon": 127.0949,
+      "height_m": 508.0,
+      "courses": [],
+      "source": "popular-search",
+      "source_note": "위키백과+관광공사 508m. 좌표 관광공사값(신뢰도 보통)",
+      "added_at": "2026-07-02"
+    },
+    {
+      "name": "대모산",
+      "aliases": [
+        "할미산",
+        "Daemosan"
+      ],
+      "region": "서울 강남구/서초구",
+      "lat": 37.4754,
+      "lon": 127.0864,
+      "height_m": 293.0,
+      "courses": [],
+      "source": "popular-search",
+      "source_note": "위키백과 대모산(서울) 293m",
+      "added_at": "2026-07-02"
+    },
+    {
+      "name": "구룡산",
+      "aliases": [
+        "Guryongsan"
+      ],
+      "region": "서울 서초구/강남구",
+      "lat": 37.4689,
+      "lon": 127.0616,
+      "height_m": 306.0,
+      "courses": [],
+      "source": "popular-search",
+      "source_note": "위키백과 구룡산(서울) 306m",
+      "added_at": "2026-07-02"
+    },
+    {
+      "name": "우면산",
+      "aliases": [
+        "Umyeonsan"
+      ],
+      "region": "서울 서초구, 경기 과천시",
+      "lat": 37.4705,
+      "lon": 127.0091,
+      "height_m": 293.0,
+      "courses": [],
+      "source": "popular-search",
+      "source_note": "위키백과 우면산 293m",
+      "added_at": "2026-07-02"
+    },
+    {
+      "name": "광교산",
+      "aliases": [
+        "광악산",
+        "광옥산",
+        "Gwanggyosan"
+      ],
+      "region": "경기 수원시/용인시",
+      "lat": 37.343,
+      "lon": 127.028,
+      "height_m": 582.0,
+      "courses": [],
+      "source": "popular-search",
+      "source_note": "위키백과 광교산 시루봉 582m",
+      "added_at": "2026-07-02"
+    },
+    {
+      "name": "검단산",
+      "aliases": [
+        "금단산",
+        "Geomdansan"
+      ],
+      "region": "경기 하남시",
+      "lat": 37.5209,
+      "lon": 127.2471,
+      "height_m": 657.0,
+      "courses": [],
+      "source": "popular-search",
+      "source_note": "위키백과 검단산(하남) 657m. 인천/예산 검단산과 구분",
+      "added_at": "2026-07-02"
+    },
+    {
+      "name": "예봉산",
+      "aliases": [
+        "사랑산",
+        "영산",
+        "Yebongsan"
+      ],
+      "region": "경기 남양주시",
+      "lat": 37.5589,
+      "lon": 127.2615,
+      "height_m": 683.2,
+      "courses": [],
+      "source": "popular-search",
+      "source_note": "위키백과 예봉산 683.2m 최고봉좌표",
+      "added_at": "2026-07-02"
+    },
+    {
+      "name": "운길산",
+      "aliases": [
+        "Ungilsan"
+      ],
+      "region": "경기 남양주시 조안면",
+      "lat": 37.5725,
+      "lon": 127.2946,
+      "height_m": 610.2,
+      "courses": [],
+      "source": "popular-search",
+      "source_note": "영위키+PeakVisor 610.2m. 좌표 PeakVisor(신뢰도 보통)",
+      "added_at": "2026-07-02"
+    },
+    {
+      "name": "황령산",
+      "aliases": [
+        "사자봉",
+        "갈미봉",
+        "Hwangnyeongsan"
+      ],
+      "region": "부산 남구/부산진구/연제구/수영구",
+      "lat": 35.1581,
+      "lon": 129.0823,
+      "height_m": 427.0,
+      "courses": [],
+      "source": "popular-search",
+      "source_note": "위키백과 황령산 427m",
+      "added_at": "2026-07-02"
+    },
+    {
+      "name": "승학산",
+      "aliases": [
+        "Seunghaksan"
+      ],
+      "region": "부산 사하구/사상구",
+      "lat": 35.1154,
+      "lon": 129.0028,
+      "height_m": 497.0,
+      "courses": [],
+      "source": "popular-search",
+      "source_note": "위키백과 승학산 497m. 좌표 정보상자 비활성(신뢰도 보통)",
+      "added_at": "2026-07-02"
     }
   ]
 }
