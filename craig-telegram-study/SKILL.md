@@ -67,7 +67,10 @@ python study_bot.py --check "URL 또는 텍스트"  # 텔레그램 없이 로컬
 ### 인스타그램/틱톡 (로그인 벽)
 URL만으론 자동 추출 불가. 두 방법:
 1. **캡션·핵심 텍스트를 링크와 함께** 붙여 보내면 그 텍스트로 정리(가장 간단).
-2. `config.ytdlp_cookies` 에 로그인 쿠키(Netscape `cookies.txt`) 지정 → yt-dlp가 캡션/오디오 확보 → (오디오면) whisper 전사. 쿠키는 주기적 갱신 필요.
+2. `config.ytdlp_cookies` 에 로그인 쿠키(Netscape `cookies.txt`) 지정 → yt-dlp가 캡션/오디오 확보 → (오디오면) whisper 전사.
+   - **설정/갱신**: 이 Mac의 Chrome(instagram.com 로그인)에서 `bash craig-telegram-study/refresh_ig_cookies.sh` 실행 →
+     IG 쿠키만 추출·필터해 서버(`~/.config/craig-telegram-study/ig_cookies.txt`, chmod 600)로 전송 + 학습봇 재시작.
+   - 쿠키는 **몇 주~몇 달 뒤 만료** → 인스타가 다시 "접근 불가"로 나오면 위 스크립트 재실행.
 
 ### 음성인식 모델 (`whisper_model`)
 `base`(빠름·정확도↓) / `small`(기본) / `medium`(한국어 정확도↑·느림) / `large-v3`(최고·매우 느림).
