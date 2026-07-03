@@ -28,6 +28,7 @@ import time
 import glob
 import base64
 import shutil
+import hashlib
 import argparse
 import tempfile
 import subprocess
@@ -382,14 +383,19 @@ def _build_prompt(source, existing, content_or_hint, user_tags, is_image):
         '  "tags": ["분야/하위", ...],\n'
         '  "summary_md": "마크다운 본문",\n'
         '  "links": ["기존 목록에 실제 있는 제목만"],\n'
-        '  "new_concepts": ["본문에서 [[..]]로 참조했으나 아직 없는 개념 제목"]\n'
+        '  "new_concepts": ["본문에서 [[..]]로 참조했으나 아직 없는 개념 제목"],\n'
+        '  "cards": [{"type": "basic", "q": "질문", "a": "정답"}, '
+        '{"type": "cloze", "q": "핵심어를 ==이렇게== 표시한 완성 문장", "a": "가려진 핵심어"}]\n'
         "}\n\n"
         "# 규칙\n"
         "- 한국어. 자료에 근거해 정리하고 지어내지 않는다.\n"
         "- tags: 3~6개, 계층형(예: 경제/금리), 소문자, 공백은 하이픈. 사용자 지정 태그를 반드시 포함.\n"
         "- summary_md 섹션: '## 핵심 요약' → '## 상세 정리' → '## 인과관계'(A → B) → '## 왜 중요한가/응용'. "
         "본문의 중요한 개념은 [[개념]] 위키링크로.\n"
-        "- links 는 기존 목록에 실제 존재하는 제목만(없으면 빈 배열).")
+        "- links 는 기존 목록에 실제 존재하는 제목만(없으면 빈 배열).\n"
+        "- cards: 능동 인출용 복습 카드 3~5개. 핵심 개념·인과관계를 묻는다(단순 암기 지양, '왜/어떻게' 위주). "
+        "basic 은 질문/정답, cloze 는 문장에서 핵심어 하나를 ==표시==(q에 완성 문장, a에 그 핵심어). "
+        "자료로 답할 수 있는 것만.")
     return src_section + body_section + schema
 
 
@@ -438,6 +444,14 @@ def organize(source, existing, cfg, content=None, image=None, image_media="image
         return re.sub(r"^\[+|\]+$", "", str(x).strip()).strip()
     data["links"] = [_clean(l) for l in (data.get("links") or []) if _clean(l)]
     data["new_concepts"] = [_clean(c) for c in (data.get("new_concepts") or []) if _clean(c)]
+    # 카드 정규화(질문 있는 것만)
+    cards = []
+    for c in (data.get("cards") or []):
+        if isinstance(c, dict) and str(c.get("q", "")).strip():
+            cards.append({"type": c.get("type", "basic"),
+                          "q": str(c["q"]).strip(),
+                          "a": str(c.get("a", "")).strip()})
+    data["cards"] = cards[:8]
     return data
 
 
@@ -455,6 +469,65 @@ def _frontmatter(title, tags, source, date, extra=None):
         lines += extra
     lines += ["---", ""]
     return lines
+
+
+# ── 복습 카드 (Phase 1: 능동 인출) — 노트에 SR-플러그인 포맷 + _srs 스케줄 등록 ──
+def _srs_load(vault):
+    p = Path(vault) / "_srs" / "schedule.json"
+    if p.exists():
+        try:
+            return json.load(open(p))
+        except Exception:
+            pass
+    return {}
+
+
+def _srs_save(vault, data):
+    d = Path(vault) / "_srs"
+    d.mkdir(parents=True, exist_ok=True)
+    tmp = d / "schedule.json.tmp"
+    json.dump(data, open(tmp, "w"), ensure_ascii=False, indent=2)
+    os.replace(tmp, d / "schedule.json")
+
+
+def _card_id(note_rel, q):
+    return hashlib.sha1(f"{note_rel}::{q}".encode("utf-8")).hexdigest()[:12]
+
+
+def render_cards(cards):
+    """옵시디언 Spaced Repetition 플러그인 호환 카드 섹션 마크다운."""
+    if not cards:
+        return []
+    lines = ["", "## 복습 카드 (능동 인출)", "", "#flashcard", ""]
+    for c in cards:
+        if c.get("type") == "cloze" and "==" in c.get("q", ""):
+            lines.append(c["q"].replace("\n", " "))
+        else:
+            q = c["q"].replace("::", ":").replace("\n", " ")
+            a = (c.get("a") or "").replace("\n", " ")
+            lines.append(f"{q}::{a}")
+        lines.append("")
+    return lines
+
+
+def register_cards(vault, note_rel, cards):
+    """카드를 _srs/schedule.json 에 due=오늘로 등록(중복 id 스킵). 등록 수 반환."""
+    if not cards:
+        return 0
+    sched = _srs_load(vault)
+    today = datetime.now().strftime("%Y-%m-%d")
+    n = 0
+    for c in cards:
+        cid = _card_id(note_rel, c["q"])
+        if cid in sched:
+            continue
+        sched[cid] = {"note": note_rel, "type": c.get("type", "basic"),
+                      "q": c["q"], "a": c.get("a", ""), "due": today,
+                      "stability": None, "difficulty": None,
+                      "reps": 0, "lapses": 0, "last": None, "created": today}
+        n += 1
+    _srs_save(vault, sched)
+    return n
 
 
 def _make_concepts(vault, new_concepts, date):
@@ -488,9 +561,12 @@ def write_note(vault_dir, data, source_url, debug=False):
     lines = _frontmatter(title, data.get("tags", []), source_url or "text", date) + [f"# {title}", "", body, ""]
     if data.get("links"):
         lines += ["", "## 관련 (인과·연관)"] + [f"- [[{l}]]" for l in data["links"]]
+    lines += render_cards(data.get("cards"))
     fpath.write_text("\n".join(lines), encoding="utf-8")
     created = _make_concepts(vault, data.get("new_concepts"), date)
-    return fpath, created, False  # created_flag False = 새 노트(topic append 아님)
+    note_rel = str(fpath.relative_to(vault))
+    ncards = register_cards(vault, note_rel, data.get("cards"))
+    return fpath, created, False, ncards  # False = 새 노트(topic append 아님)
 
 
 def append_to_topic(vault_dir, topic, data, source_url, debug=False):
@@ -506,6 +582,13 @@ def append_to_topic(vault_dir, topic, data, source_url, debug=False):
     entry = [entry_head, "", body]
     if data.get("links"):
         entry += ["", "**관련:** " + " · ".join(f"[[{l}]]" for l in data["links"])]
+    if data.get("cards"):
+        entry += ["", "**복습 카드** #flashcard", ""]
+        for c in data["cards"]:
+            if c.get("type") == "cloze" and "==" in c.get("q", ""):
+                entry.append(c["q"].replace("\n", " "))
+            else:
+                entry.append(f"{c['q'].replace('::', ':').replace(chr(10), ' ')}::{(c.get('a') or '').replace(chr(10), ' ')}")
 
     existed = fpath.exists()
     if not existed:
@@ -530,17 +613,18 @@ def append_to_topic(vault_dir, topic, data, source_url, debug=False):
         fpath.write_text(raw, encoding="utf-8")
 
     created = _make_concepts(vault, data.get("new_concepts"), date)
-    return fpath, created, existed  # existed=True → 이어붙임, False → 새 주제노트
+    ncards = register_cards(vault, str(fpath.relative_to(vault)), data.get("cards"))
+    return fpath, created, existed, ncards  # existed=True → 이어붙임
 
 
 # ─────────────────────────── 파이프라인 ───────────────────────────
 def _finish(cfg, data, source_url, topic, debug):
     vault = cfg["study_vault_dir"]
     if topic:
-        fpath, new_concepts, appended = append_to_topic(vault, topic, data, source_url, debug)
+        fpath, new_concepts, appended, ncards = append_to_topic(vault, topic, data, source_url, debug)
         head = f"➕ [{topic}] 에 이어붙였어요" if appended else f"🆕 [{topic}] 주제 노트를 새로 만들었어요"
     else:
-        fpath, new_concepts, _ = write_note(vault, data, source_url, debug)
+        fpath, new_concepts, _, ncards = write_note(vault, data, source_url, debug)
         head = "✅ 정리 완료"
     rel = fpath.relative_to(Path(vault))
     reply = (f"{head}\n📝 {data.get('title')}\n"
@@ -550,6 +634,8 @@ def _finish(cfg, data, source_url, topic, debug):
         reply += "\n🔗 연결: " + ", ".join(data["links"][:6])
     if new_concepts:
         reply += "\n🆕 개념: " + ", ".join(new_concepts)
+    if ncards:
+        reply += f"\n🃏 복습 카드 {ncards}개 (오늘부터 복습 대상)"
     return fpath, reply
 
 
