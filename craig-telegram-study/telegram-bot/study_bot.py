@@ -787,6 +787,88 @@ def _archive_inbox(path):
         log(f"인박스 아카이브 실패({path.name}): {e}")
 
 
+# ─────────────────────────── 옵시디언 직접 입력 스캔 ───────────────────────────
+def _strip_frontmatter(raw):
+    m = re.match(r"^---\n.*?\n---\n?", raw, flags=re.DOTALL)
+    return raw[m.end():] if m else raw
+
+
+def scan_vault(cfg, debug=False):
+    """0_Inbox 를 스캔: 옵시디언에서 직접 만든 원시 노트를 인식·강화(또는 지시어 승격),
+    `#승격` 태그 달린 인박스 노트는 학습 노트로 승격. (텍스트 기반 — 스캔은 가볍게)"""
+    vault = cfg["study_vault_dir"]
+    inbox = Path(vault) / "0_Inbox"
+    if not inbox.exists():
+        return
+    for f in sorted(inbox.glob("*.md")):
+        if f.name.startswith("_"):
+            continue
+        try:
+            if time.time() - f.stat().st_mtime < 120:  # 편집 중 방지(2분)
+                continue
+            raw = f.read_text(encoding="utf-8", errors="ignore")
+        except Exception:
+            continue
+        is_ours = re.search(r"^type:\s*inbox\s*$", raw, flags=re.MULTILINE)
+        try:
+            if not is_ours:
+                _ingest_raw(cfg, f, raw, debug)
+            elif "#승격" in raw:
+                _promote_note(cfg, f, raw, debug)
+        except Exception as e:
+            log(f"[scan] {f.name} 처리 오류: {e}")
+
+
+def _ingest_raw(cfg, path, raw, debug):
+    """옵시디언에서 직접 만든 원시 노트 → 지시어 처리 후 인박스 강화(또는 즉시 승격)."""
+    vault = cfg["study_vault_dir"]
+    body = _strip_frontmatter(raw).strip()
+    if len(body) < 5:
+        return
+    topic, user_tags, promote, cleaned = parse_directives(body)
+    if not cleaned or len(cleaned) < 5:
+        return
+    if topic or promote:  # !학습/[주제] → 학습 노트로 승격
+        data = organize("obsidian", vault_index(vault), cfg, content=cleaned,
+                        user_tags=user_tags, mode="full", debug=debug)
+        if not data:
+            return
+        _finish(cfg, data, "obsidian", topic, debug)
+        path.unlink()
+        log(f"[scan] 원시노트 승격: {path.name}")
+        return
+    data = organize("obsidian", [], cfg, content=cleaned, user_tags=user_tags, mode="inbox", debug=debug)
+    if not data:
+        return
+    title = data.get("title") or path.stem
+    date = datetime.now().strftime("%Y-%m-%d")
+    lines = ["---", "type: inbox", "status: unread",
+             f'title: "{str(title).replace(chr(34), "")}"',
+             f'one_line: "{str(data.get("one_line", "")).replace(chr(34), "")}"',
+             "tags: [" + ", ".join(data.get("tags", []) or []) + "]",
+             f'source: "obsidian"', f"created: {date}", "---", "",
+             f"# {title}", "", body, "",
+             "> 📥 인박스(옵시디언 입력) — 학습감이면 `#승격` 태그를 달거나 텔레그램 `/curate`.", ""]
+    path.write_text("\n".join(lines), encoding="utf-8")
+    log(f"[scan] 인박스 강화: {path.name}")
+
+
+def _promote_note(cfg, path, raw, debug):
+    """#승격 태그가 달린 인박스 노트 → 학습 노트로 승격 + 카드."""
+    vault = cfg["study_vault_dir"]
+    body = _strip_frontmatter(raw).replace("#승격", " ").strip()
+    topic, user_tags, _, cleaned = parse_directives(body)
+    if not cleaned or len(cleaned) < 5:
+        return
+    data = organize("obsidian 승격", vault_index(vault), cfg, content=cleaned,
+                    user_tags=user_tags, mode="full", debug=debug)
+    if not data:
+        return
+    _finish(cfg, data, "obsidian", topic, debug)
+    _archive_inbox(path)
+    log(f"[scan] #승격 노트 승격: {path.name}")
+
+
 # ─────────────────────────── 마무리(학습 노트) ───────────────────────────
 def _finish(cfg, data, source_url, topic, debug):
     vault = cfg["study_vault_dir"]
@@ -893,11 +975,25 @@ def maybe_remind(cfg):
     save_state(st)
 
 
+def maybe_scan(cfg):
+    """옵시디언 직접 입력 반영: 15분마다 볼트 스캔(같은 프로세스라 state 경합 없음)."""
+    st = load_state()
+    if time.time() - float(st.get("last_scan", 0) or 0) < 900:
+        return
+    st["last_scan"] = time.time()
+    save_state(st)
+    try:
+        scan_vault(cfg)
+    except Exception as e:
+        log(f"scan 오류: {e}")
+
+
 def poll_once(cfg, long_poll=False, debug=False):
     token = cfg["telegram_bot_token"]
     if not token:
         log("텔레그램 토큰 없음")
         return
+    maybe_scan(cfg)
     maybe_remind(cfg)
     offset = load_state().get("telegram_update_offset")
     params = {"timeout": 50 if long_poll else 0}
@@ -998,10 +1094,14 @@ def main():
     ap.add_argument("--image", metavar="PATH", help="로컬 이미지 파일로 비전 정리 테스트")
     ap.add_argument("--curate", action="store_true", help="인박스 큐레이션 제안(로컬)")
     ap.add_argument("--promote", metavar="SEL", help="큐레이션 후보 승격(예: '1 3' 또는 'all')")
+    ap.add_argument("--scan", action="store_true", help="옵시디언 0_Inbox 직접 입력 스캔·반영")
     ap.add_argument("--debug", action="store_true")
     a = ap.parse_args()
     cfg = load_config()
-    if a.curate:
+    if a.scan:
+        scan_vault(cfg, a.debug)
+        print("스캔 완료")
+    elif a.curate:
         print(curate(cfg, a.debug))
     elif a.promote is not None:
         print(promote_groups(cfg, a.promote, a.debug))
