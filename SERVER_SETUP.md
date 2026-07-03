@@ -53,9 +53,12 @@ cd Craig-Skill
 PY=/Users/craigpark/anaconda3/bin/python3
 # 등산봇: requests 필수, anthropic 선택(자유질문 AI 모드)
 $PY -m pip install -U requests anthropic
-# 유튜브봇: secondb 세션 브라우저 + 요약/자막
-$PY -m pip install -U playwright requests anthropic youtube-transcript-api
+# 유튜브봇: secondb 세션 브라우저 + 요약/자막(+ secondb quota 시 yt-dlp 자막 폴백)
+$PY -m pip install -U playwright requests anthropic youtube-transcript-api yt-dlp
 $PY -m playwright install chromium
+# (선택) deno — yt-dlp 의 JS 런타임. 자막 추출 신뢰도↑(YouTube 429 완화).
+#   brew 는 구버전 macOS 에서 소스빌드 실패 → prebuilt 바이너리 권장:
+#   curl -fsSL https://deno.land/install.sh | sh  &&  ln -sf ~/.deno/bin/deno /opt/homebrew/bin/deno
 ```
 
 > `bootstrap_server.sh` 가 이 3개(requests/anthropic/playwright) 존재를 프리플라이트로 검사한다.

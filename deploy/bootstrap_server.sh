@@ -36,6 +36,8 @@ cd "$ROOT" || exit 1
 $PY -c "import requests" 2>/dev/null && ok "requests OK" || err "requests 없음 → $PY -m pip install requests"
 $PY -c "import anthropic" 2>/dev/null && ok "anthropic OK(자유질문 모드)" || warn "anthropic 없음(선택) → 등산봇 규칙기반만 동작. AI모드 쓰려면 pip install anthropic"
 $PY -c "import playwright" 2>/dev/null && ok "playwright OK(유튜브 secondb)" || warn "playwright 없음 → $PY -m pip install playwright && $PY -m playwright install chromium"
+$PY -c "import yt_dlp" 2>/dev/null && ok "yt-dlp OK(secondb quota 시 자막 폴백)" || warn "yt-dlp 없음 → $PY -m pip install yt-dlp"
+command -v deno >/dev/null 2>&1 && ok "deno OK(yt-dlp JS런타임)" || warn "deno 없음(선택) — yt-dlp 자막 신뢰도↑. YouTube 429 잦으면 설치 검토"
 
 # ── 가드 2: 비밀정보(config.json, git 밖) ──────────────────────────────
 MCFG="$HOME/.config/korean-mountain-hiking/config.json"
