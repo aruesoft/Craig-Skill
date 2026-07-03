@@ -45,6 +45,7 @@ DEFAULT_MODEL = "claude-sonnet-5"
 URL_RE = re.compile(r"https?://[^\s]+")
 TOPIC_RE = re.compile(r"^\s*\[([^\]\n]{1,60})\]\s*")
 HASHTAG_RE = re.compile(r"(?:^|\s)#([^\s#]{1,40})")
+PROMOTE_RE = re.compile(r"(?:^|\s)!(?:학습|study|s)\b")  # 즉시 학습 노트로 승격
 # 로그인/접근 벽으로 URL만으론 본문 추출이 어려운 소셜 플랫폼(쿠키 설정 시 가능)
 SOCIAL_RE = re.compile(r"(instagram\.com|tiktok\.com|facebook\.com|fb\.watch|threads\.net|x\.com|twitter\.com)")
 
@@ -136,8 +137,8 @@ def _authorized(cfg, chat_id):
 
 # ─────────────────────────── 메시지 지시어 파싱 ───────────────────────────
 def parse_directives(text):
-    """메시지에서 [주제]와 #태그 지시어를 뽑고 본문에서 제거.
-    → (topic|None, user_tags[list], cleaned_text)
+    """메시지에서 [주제]·#태그·!학습 지시어를 뽑고 본문에서 제거.
+    → (topic|None, user_tags[list], promote[bool], cleaned_text)
     """
     text = text or ""
     topic = None
@@ -145,9 +146,11 @@ def parse_directives(text):
     if m:
         topic = m.group(1).strip()
         text = text[m.end():]
+    promote = bool(PROMOTE_RE.search(text))
+    text = PROMOTE_RE.sub(" ", text)
     user_tags = [t.strip() for t in HASHTAG_RE.findall(text)]
     cleaned = HASHTAG_RE.sub(" ", text).strip()
-    return topic, user_tags, cleaned
+    return topic, user_tags, promote, cleaned
 
 
 # ─────────────────────────── 콘텐츠 추출 ───────────────────────────
@@ -363,8 +366,20 @@ def _extract_json(raw):
     return json.loads(s[i:j + 1])
 
 
-def _build_prompt(source, existing, content_or_hint, user_tags, is_image):
+def _build_prompt(source, existing, content_or_hint, user_tags, is_image, mode="full"):
     ut = (" ".join("#" + t for t in user_tags)) if user_tags else "(없음)"
+    if mode == "inbox":
+        # 경량 수집 — 요약·태그만(카드·상세·링크 없음)
+        body = (f"# 학습 자료\n첨부 이미지를 읽어 " if is_image else "# 학습 자료 원문\n") + \
+               (content_or_hint[:60000] if not is_image else f"(이미지) 메모: {content_or_hint or '(없음)'}") + "\n\n"
+        schema = (
+            "# 출력 JSON 스키마 (경량 수집용)\n{\n"
+            '  "title": "간결한 제목(특수문자 금지)",\n'
+            '  "one_line": "핵심 한 줄",\n'
+            '  "tags": ["분야/하위", ...],\n'
+            '  "summary_md": "핵심만 3~5줄(불릿 가능). 상세·카드 없이 가볍게."\n}\n\n'
+            "# 규칙\n- 한국어. 자료 근거. tags 3~5개 계층형+사용자태그 포함. 나중에 선별할 수 있게 요점만.")
+        return (f"# 자료 출처\n{source}\n\n# 사용자 지정 태그(반드시 포함)\n{ut}\n\n") + body + schema
     src_section = (
         f"# 자료 출처\n{source}\n\n"
         f"# 사용자 지정 태그 (반드시 tags 에 포함)\n{ut}\n\n"
@@ -400,7 +415,7 @@ def _build_prompt(source, existing, content_or_hint, user_tags, is_image):
 
 
 def organize(source, existing, cfg, content=None, image=None, image_media="image/jpeg",
-             user_tags=None, debug=False):
+             user_tags=None, mode="full", debug=False):
     import anthropic
     key = cfg["anthropic_api_key"]
     if not key:
@@ -409,7 +424,7 @@ def organize(source, existing, cfg, content=None, image=None, image_media="image
     existing_txt = "\n".join(
         f"- [[{i['title']}]] ({i['kind']}) {' '.join('#' + t for t in i['tags'])}"
         for i in existing[:400]) or "(아직 없음)"
-    prompt = _build_prompt(source, existing_txt, content, user_tags, is_image=bool(image))
+    prompt = _build_prompt(source, existing_txt, content, user_tags, is_image=bool(image), mode=mode)
 
     user_content = []
     if image:
@@ -617,7 +632,162 @@ def append_to_topic(vault_dir, topic, data, source_url, debug=False):
     return fpath, created, existed, ncards  # existed=True → 이어붙임
 
 
-# ─────────────────────────── 파이프라인 ───────────────────────────
+# ─────────────────────────── ① 수집(인박스) ───────────────────────────
+def write_inbox(vault_dir, data, source_url):
+    """경량 인박스 노트 저장(카드·복습 없음). → fpath"""
+    vault = Path(vault_dir)
+    inbox = vault / "0_Inbox"
+    inbox.mkdir(parents=True, exist_ok=True)
+    date = datetime.now().strftime("%Y-%m-%d")
+    title = data.get("title") or f"인박스 {date}"
+    fpath = inbox / f"{date} {slugify(title)}.md"
+    n = 2
+    while fpath.exists():
+        fpath = inbox / f"{date} {slugify(title)} ({n}).md"
+        n += 1
+    body = (data.get("summary_md") or "").strip()
+    lines = ["---", "type: inbox", "status: unread",
+             f'title: "{str(title).replace(chr(34), "")}"',
+             f'one_line: "{str(data.get("one_line", "")).replace(chr(34), "")}"',
+             "tags: [" + ", ".join(data.get("tags", []) or []) + "]",
+             f'source: "{source_url or "text"}"', f"created: {date}", "---", "",
+             f"# {title}", "", body, "",
+             "> 📥 인박스 — `/curate` 로 선별하거나 `!학습`/`[주제]` 로 학습 노트로 승격.", ""]
+    fpath.write_text("\n".join(lines), encoding="utf-8")
+    return fpath
+
+
+# ─────────────────────────── ② 선별·재조합(큐레이션) ───────────────────────────
+def _read_fm(path):
+    """노트 프론트매터에서 title/one_line/tags/status 추출."""
+    d = {"title": path.stem, "one_line": "", "tags": [], "status": "unread"}
+    try:
+        head = "".join(open(path, encoding="utf-8").readlines()[:15])
+        for k in ("title", "one_line", "status"):
+            m = re.search(rf'^{k}:\s*"?([^"\n]*)"?\s*$', head, flags=re.MULTILINE)
+            if m:
+                d[k] = m.group(1).strip()
+        mt = re.search(r"tags:\s*\[([^\]]*)\]", head)
+        if mt:
+            d["tags"] = [t.strip() for t in mt.group(1).split(",") if t.strip()]
+    except Exception:
+        pass
+    return d
+
+
+def list_inbox(vault_dir):
+    """인박스의 미승격(status!=promoted) 노트 목록."""
+    items = []
+    d = Path(vault_dir) / "0_Inbox"
+    if not d.exists():
+        return items
+    for f in sorted(d.glob("*.md")):
+        fm = _read_fm(f)
+        if fm.get("status") == "promoted":
+            continue
+        items.append({"file": f, "title": fm["title"], "one_line": fm["one_line"], "tags": fm["tags"]})
+    return items
+
+
+def curate(cfg, debug=False):
+    """인박스를 주제별로 자동 클러스터링해 승격 후보를 제안. state 에 저장."""
+    vault = cfg["study_vault_dir"]
+    items = list_inbox(vault)
+    if not items:
+        return "📭 인박스가 비어 있어요. 링크·텍스트·이미지를 보내면 여기에 모입니다."
+    listing = "\n".join(
+        f"{i}. {it['title']} — {it['one_line']} {' '.join('#'+t for t in it['tags'])}"
+        for i, it in enumerate(items))
+    import anthropic
+    key = cfg["anthropic_api_key"]
+    if not key:
+        return "anthropic 키가 없어 큐레이션을 못 해요."
+    prompt = (
+        "다음은 학습 인박스 항목들이다. 관련 있는 것끼리 묶어 '학습 노트로 승격할 그룹'을 제안하라.\n"
+        "가치가 낮거나 스쳐가는 정보는 그룹에서 빼도 된다. 단독으로도 가치 있으면 1개짜리 그룹 가능.\n\n"
+        f"{listing}\n\n"
+        "아래 JSON만 출력:\n"
+        '{ "groups": [ {"label": "묶음 주제", "members": [항목번호...], "reason": "왜 묶나(한 줄)"} ],'
+        ' "skip": [가치 낮아 보류할 항목번호...] }')
+    try:
+        client = anthropic.Anthropic(api_key=key)
+        resp = client.messages.create(model=cfg["claude_model"], max_tokens=2048,
+                                       messages=[{"role": "user", "content": prompt}])
+        raw = "".join(b.text for b in resp.content if b.type == "text")
+        res = _extract_json(raw)
+    except Exception as e:
+        log(f"curate 오류: {e}")
+        return "큐레이션 중 오류가 났어요."
+    groups = res.get("groups", []) or []
+    if not groups:
+        return f"📥 인박스 {len(items)}개 — 아직 묶을 만한 게 뚜렷하지 않아요. 더 모은 뒤 다시 `/curate`."
+    st = load_state()
+    st["curate"] = {"files": [str(it["file"]) for it in items],
+                    "groups": [{"label": g.get("label", ""), "members": g.get("members", [])} for g in groups]}
+    save_state(st)
+    lines = [f"🧩 인박스 {len(items)}개 → 승격 후보 {len(groups)}묶음:"]
+    for gi, g in enumerate(groups, 1):
+        mem = ", ".join(items[m]["title"] for m in g.get("members", []) if 0 <= m < len(items))
+        lines.append(f"\n{gi}) [{g.get('label','')}]  ← {mem}\n   → {g.get('reason','')}")
+    skip = res.get("skip", []) or []
+    if skip:
+        lines.append("\n⏭️ 보류: " + ", ".join(items[m]["title"] for m in skip if 0 <= m < len(items)))
+    lines.append("\n\n승격: `/promote 1 3` (번호) 또는 `/promote all`")
+    return "\n".join(lines)
+
+
+def promote_groups(cfg, selection, debug=False):
+    """/promote — 큐레이션 제안 중 선택 그룹을 학습 노트로 합성(재조합) + 카드 + 인박스 아카이브."""
+    vault = cfg["study_vault_dir"]
+    st = load_state()
+    cur = st.get("curate")
+    if not cur or not cur.get("groups"):
+        return "먼저 `/curate` 로 후보를 만들어 주세요."
+    files = [Path(p) for p in cur["files"]]
+    groups = cur["groups"]
+    sel = selection.strip().lower()
+    idxs = list(range(len(groups))) if sel in ("all", "전체") else \
+        [int(x) - 1 for x in re.findall(r"\d+", sel) if 0 < int(x) <= len(groups)]
+    if not idxs:
+        return "승격할 번호를 알려주세요. 예: `/promote 1 3` 또는 `/promote all`"
+    done = []
+    for gi in idxs:
+        g = groups[gi]
+        members = [files[m] for m in g.get("members", []) if 0 <= m < len(files) and files[m].exists()]
+        if not members:
+            continue
+        # 멤버 본문을 합쳐 재조합 → 학습 노트(카드 포함)
+        combined = f"[묶음 주제] {g.get('label','')}\n\n" + "\n\n---\n\n".join(
+            f"[{p.stem}]\n{p.read_text(encoding='utf-8')}" for p in members)
+        data = organize(f"인박스 재조합: {g.get('label','')}", vault_index(vault), cfg,
+                        content=combined[:100000], mode="full", debug=debug)
+        if not data:
+            continue
+        fpath, _, _, ncards = write_note(vault, data, "inbox-curate", debug)
+        for p in members:  # 인박스 항목 아카이브
+            _archive_inbox(p)
+        done.append(f"📝 {data.get('title')} (카드 {ncards})")
+    st.pop("curate", None)
+    save_state(st)
+    if not done:
+        return "승격된 게 없어요(멤버 파일을 못 찾았을 수 있어요)."
+    return "✅ 승격 완료:\n" + "\n".join(done)
+
+
+def _archive_inbox(path):
+    """처리된 인박스 노트를 status: promoted 로 표시 후 0_Inbox/_archive 로 이동."""
+    try:
+        raw = path.read_text(encoding="utf-8")
+        raw = re.sub(r"^status:.*$", "status: promoted", raw, count=1, flags=re.MULTILINE)
+        arc = path.parent / "_archive"
+        arc.mkdir(exist_ok=True)
+        (arc / path.name).write_text(raw, encoding="utf-8")
+        path.unlink()
+    except Exception as e:
+        log(f"인박스 아카이브 실패({path.name}): {e}")
+
+
+# ─────────────────────────── 마무리(학습 노트) ───────────────────────────
 def _finish(cfg, data, source_url, topic, debug):
     vault = cfg["study_vault_dir"]
     if topic:
@@ -639,8 +809,16 @@ def _finish(cfg, data, source_url, topic, debug):
     return fpath, reply
 
 
+def _inbox_reply(fpath, data, cfg):
+    rel = fpath.relative_to(Path(cfg["study_vault_dir"]))
+    return (f"📥 인박스 저장\n📝 {data.get('title')}\n"
+            f"🏷️ {' '.join('#' + t for t in data.get('tags', []))}\n"
+            f"💡 {data.get('one_line', '')}\n📁 {rel}\n"
+            f"(가치 있으면 `/curate` 로 묶어 승격 · `!학습`/`[주제]` 로 즉시 학습 노트)")
+
+
 def process(text, cfg, debug=False):
-    topic, user_tags, cleaned = parse_directives(text)
+    topic, user_tags, promote, cleaned = parse_directives(text)
     source, content, url, ok = extract_content(cleaned, cfg, debug)
     if not ok:
         plat = _platform_name(url or "")
@@ -651,32 +829,77 @@ def process(text, cfg, debug=False):
             f"※ 내용이 없어 노트는 만들지 않았어요(정크 노트 방지).")
     if not content or len(content.strip()) < 5:
         return None, "내용이 비어 있어 정리하지 못했어요. 링크나 학습 텍스트를 보내주세요."
-    log(f"콘텐츠 추출: {source} ({len(content)}자){' [주제:'+topic+']' if topic else ''}")
-    data = organize(source, vault_index(cfg["study_vault_dir"]), cfg,
-                    content=content, user_tags=user_tags, debug=debug)
+    to_study = bool(topic or promote)
+    log(f"콘텐츠 추출: {source} ({len(content)}자) → {'학습노트' if to_study else '인박스'}"
+        f"{' [주제:'+topic+']' if topic else ''}")
+    data = organize(source, vault_index(cfg["study_vault_dir"]) if to_study else [], cfg,
+                    content=content, user_tags=user_tags,
+                    mode="full" if to_study else "inbox", debug=debug)
     if not data:
         return None, "Claude 정리에 실패했어요 (anthropic 키·네트워크 확인)."
-    return _finish(cfg, data, url, topic, debug)
+    if to_study:
+        return _finish(cfg, data, url, topic, debug)
+    fpath = write_inbox(cfg["study_vault_dir"], data, url)
+    return fpath, _inbox_reply(fpath, data, cfg)
 
 
 def process_image(image, media, caption, cfg, debug=False):
-    topic, user_tags, cleaned = parse_directives(caption or "")
-    log(f"이미지 수신({len(image)}바이트){' [주제:'+topic+']' if topic else ''} → 비전 정리")
-    data = organize("image", vault_index(cfg["study_vault_dir"]), cfg,
-                    content=cleaned, image=image, image_media=media, user_tags=user_tags, debug=debug)
+    topic, user_tags, promote, cleaned = parse_directives(caption or "")
+    to_study = bool(topic or promote)
+    log(f"이미지 수신({len(image)}바이트) → {'학습노트' if to_study else '인박스'}"
+        f"{' [주제:'+topic+']' if topic else ''}")
+    data = organize("image", vault_index(cfg["study_vault_dir"]) if to_study else [], cfg,
+                    content=cleaned, image=image, image_media=media, user_tags=user_tags,
+                    mode="full" if to_study else "inbox", debug=debug)
     if not data:
         return None, "이미지 정리에 실패했어요 (anthropic 키·네트워크 확인)."
-    return _finish(cfg, data, "image", topic, debug)
+    if to_study:
+        return _finish(cfg, data, "image", topic, debug)
+    fpath = write_inbox(cfg["study_vault_dir"], data, "image")
+    return fpath, _inbox_reply(fpath, data, cfg)
 
 
 # ─────────────────────────── 텔레그램 루프 ───────────────────────────
+def _remember_chat(chat_id):
+    st = load_state()
+    if str(st.get("last_chat")) != str(chat_id):
+        st["last_chat"] = chat_id
+        save_state(st)
+
+
+def maybe_remind(cfg):
+    """상기(리마인드): 정한 시각 이후 하루 1회, 인박스에 쌓인 게 있으면 알림."""
+    try:
+        hour = int(cfg.get("remind_hour", 9))
+    except Exception:
+        hour = 9
+    now = datetime.now()
+    if now.hour < hour:
+        return
+    st = load_state()
+    today = now.strftime("%Y-%m-%d")
+    if st.get("last_remind") == today:
+        return
+    items = list_inbox(cfg["study_vault_dir"])
+    if not items:
+        return
+    chat = str(cfg.get("telegram_chat_id") or st.get("last_chat") or "")
+    if not chat:
+        return
+    oldest = min((it["file"].name[:10] for it in items), default="")
+    tg_send(cfg, chat, f"📥 인박스에 {len(items)}개가 쌓여 있어요(가장 오래된 {oldest}).\n"
+                       f"`/curate` 로 가치 있는 것들을 묶어 학습 노트로 승격해보세요.")
+    st["last_remind"] = today
+    save_state(st)
+
+
 def poll_once(cfg, long_poll=False, debug=False):
     token = cfg["telegram_bot_token"]
     if not token:
         log("텔레그램 토큰 없음")
         return
-    st = load_state()
-    offset = st.get("telegram_update_offset")
+    maybe_remind(cfg)
+    offset = load_state().get("telegram_update_offset")
     params = {"timeout": 50 if long_poll else 0}
     if offset is not None:
         params["offset"] = offset
@@ -696,6 +919,7 @@ def poll_once(cfg, long_poll=False, debug=False):
         chat_id = msg.get("chat", {}).get("id")
         if not _authorized(cfg, chat_id):
             continue
+        _remember_chat(chat_id)
         photos = msg.get("photo")
         doc = msg.get("document")
         text = (msg.get("text") or "").strip()
@@ -715,13 +939,28 @@ def poll_once(cfg, long_poll=False, debug=False):
                 _, reply = process_image(img, media or doc.get("mime_type"), caption, cfg, debug) \
                     if img else (None, "이미지를 받지 못했어요.")
             elif text:
-                if text in ("/start", "/help"):
+                low = text.strip()
+                if low in ("/start", "/help"):
                     tg_send(cfg, chat_id,
-                            "📚 학습봇입니다. 아래를 보내면 옵시디언에 정리해 드려요.\n"
-                            "• 웹/유튜브/인스타 링크, 학습 텍스트, 노트·책 사진(이미지)\n"
-                            "• #태그 를 넣으면 그 태그를 반영\n"
-                            "• [주제] 로 시작하면 해당 주제 노트에 이어서 저장(없으면 새로)\n"
-                            "예) [금리] #경제 https://... / (책 사진) #독서")
+                            "📚 학습봇 — 수집 → 선별·재조합 → 학습·복습 파이프라인\n\n"
+                            "① 수집: 링크(웹/유튜브/인스타)·텍스트·사진을 보내면 인박스에 모음\n"
+                            "② 선별: /curate 로 봇이 주제별로 묶어 승격 제안 → /promote 1 3\n"
+                            "   즉시 승격: `!학습` 또는 `[주제]` 로 보내면 바로 학습 노트+카드\n"
+                            "③ 복습: (Phase 2) 카드 간격 반복\n\n"
+                            "지시어: #태그(태그 반영) · [주제](주제 노트 이어쓰기) · !학습(즉시 승격)\n"
+                            "명령: /inbox(대기 목록) /curate(묶기 제안) /promote(승격)")
+                    continue
+                if low.startswith("/curate"):
+                    tg_send(cfg, chat_id, "🧩 인박스 큐레이션 중…")
+                    tg_send(cfg, chat_id, curate(cfg, debug))
+                    continue
+                if low.startswith("/promote"):
+                    tg_send(cfg, chat_id, promote_groups(cfg, low[len("/promote"):], debug))
+                    continue
+                if low.startswith("/inbox"):
+                    items = list_inbox(cfg["study_vault_dir"])
+                    tg_send(cfg, chat_id, (f"📥 인박스 {len(items)}개:\n" +
+                            "\n".join(f"- {it['title']}" for it in items[:30])) if items else "📭 인박스 비어있음")
                     continue
                 log(f"수신: {text[:60]}")
                 tg_send(cfg, chat_id, "🧠 정리 중…")
@@ -733,6 +972,7 @@ def poll_once(cfg, long_poll=False, debug=False):
             log(reply)
         tg_send(cfg, chat_id, reply)
     if last is not None:
+        st = load_state()          # 커맨드들이 중간에 state 를 바꿨을 수 있어 재로딩 후 offset 만 갱신
         st["telegram_update_offset"] = last + 1
         save_state(st)
 
@@ -756,10 +996,16 @@ def main():
     ap.add_argument("--once", action="store_true")
     ap.add_argument("--check", metavar="TEXT", help="텔레그램 없이 로컬 처리(텍스트/URL)")
     ap.add_argument("--image", metavar="PATH", help="로컬 이미지 파일로 비전 정리 테스트")
+    ap.add_argument("--curate", action="store_true", help="인박스 큐레이션 제안(로컬)")
+    ap.add_argument("--promote", metavar="SEL", help="큐레이션 후보 승격(예: '1 3' 또는 'all')")
     ap.add_argument("--debug", action="store_true")
     a = ap.parse_args()
     cfg = load_config()
-    if a.image:
+    if a.curate:
+        print(curate(cfg, a.debug))
+    elif a.promote is not None:
+        print(promote_groups(cfg, a.promote, a.debug))
+    elif a.image:
         data = open(a.image, "rb").read()
         media = "image/png" if a.image.lower().endswith(".png") else "image/jpeg"
         _, reply = process_image(data, media, a.check or "", cfg, a.debug)
