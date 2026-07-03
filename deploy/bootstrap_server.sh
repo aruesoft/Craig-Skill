@@ -38,6 +38,7 @@ $PY -c "import anthropic" 2>/dev/null && ok "anthropic OK(자유질문 모드)" 
 $PY -c "import playwright" 2>/dev/null && ok "playwright OK(유튜브 secondb)" || warn "playwright 없음 → $PY -m pip install playwright && $PY -m playwright install chromium"
 $PY -c "import yt_dlp" 2>/dev/null && ok "yt-dlp OK(secondb quota 시 자막 폴백)" || warn "yt-dlp 없음 → $PY -m pip install yt-dlp"
 $PY -c "import trafilatura" 2>/dev/null && ok "trafilatura OK(학습봇 웹 추출)" || warn "trafilatura 없음 → $PY -m pip install trafilatura lxml_html_clean"
+$PY -c "import whisper" 2>/dev/null && ok "openai-whisper OK(학습봇 음성인식)" || warn "openai-whisper 없음(선택) → $PY -m pip install openai-whisper (torch 필요, 자막없는 영상 전사용)"
 command -v deno >/dev/null 2>&1 && ok "deno OK(yt-dlp JS런타임)" || warn "deno 없음(선택) — yt-dlp 자막 신뢰도↑. YouTube 429 잦으면 설치 검토"
 
 # ── 가드 2: 비밀정보(config.json, git 밖) ──────────────────────────────
