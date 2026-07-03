@@ -1,5 +1,7 @@
 playwright>=1.40.0
 requests>=2.28.0
-# Claude 폴백(자막 요약)용 — secondb.ai 실패 시 사용
+# Claude 폴백(자막 요약)용 — secondb.ai 실패(쿼터 초과 등) 시 사용
 anthropic>=0.40.0
 youtube-transcript-api>=0.6.0
+# 자동생성 자막 확보(견고) — transcript-api 실패 시 폴백 (https://github.com/yt-dlp/yt-dlp)
+yt-dlp>=2025.1.1

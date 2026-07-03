@@ -8,6 +8,11 @@ Claude 기반 요약 폴백 — secondb.ai가 실패할 때 사용.
 
 import os
 import re
+import sys
+import glob
+import shutil
+import tempfile
+import subprocess
 from datetime import datetime
 
 # 비용 효율 모델 (입력 $1 / 출력 $5 per 1M tokens). config로 변경 가능.
@@ -90,6 +95,92 @@ def get_transcript(video_id, languages=("ko", "en"), debug=False):
     return None
 
 
+def _ytdlp_cmd():
+    """yt-dlp 실행 커맨드 해석: CLI(yt-dlp) 우선, 없으면 python -m yt_dlp."""
+    exe = shutil.which("yt-dlp")
+    if exe:
+        return [exe]
+    try:
+        import yt_dlp  # noqa: F401
+        return [sys.executable, "-m", "yt_dlp"]
+    except Exception:
+        return None
+
+
+def _vtt_to_text(path):
+    """yt-dlp 가 받은 .vtt 자막을 평문으로. 타임스탬프·태그 제거 + 자동자막 연속중복 제거."""
+    try:
+        raw = open(path, encoding="utf-8", errors="ignore").read()
+    except Exception:
+        return None
+    out = []
+    for line in raw.splitlines():
+        line = line.strip()
+        if (not line or line == "WEBVTT" or "-->" in line
+                or re.fullmatch(r"\d+", line)
+                or line.startswith(("Kind:", "Language:", "NOTE"))):
+            continue
+        line = re.sub(r"<[^>]+>", "", line)        # <c>, <00:00:00.000> 등 인라인 태그 제거
+        line = re.sub(r"\s+", " ", line).strip()
+        if not line or (out and out[-1] == line):  # 자동자막 rolling 연속중복 제거
+            continue
+        out.append(line)
+    return " ".join(out).strip() or None
+
+
+def get_transcript_ytdlp(url, languages=("ko", "en"), debug=False):
+    """yt-dlp 로 (자동)자막을 받아 텍스트로. youtube-transcript-api 실패 시 보강.
+
+    자막만 받고 영상은 안 받는다(--skip-download). 자동생성 자막(--write-auto-subs) 포함.
+    """
+    if not url:
+        return None
+    cmd = _ytdlp_cmd()
+    if not cmd:
+        _log("yt-dlp 미설치: pip install yt-dlp (또는 brew install yt-dlp)", debug, is_debug=True)
+        return None
+
+    langs = list(languages) + [f"{l}-orig" for l in languages]  # ko,en,ko-orig,en-orig
+    sub_langs = ",".join(langs) + ",-live_chat"
+    # JS 런타임(deno/node) 있으면 지정 — 최신 YouTube 추출 신뢰도↑
+    js = []
+    for rt in ("deno", "node"):
+        p = shutil.which(rt)
+        if p:
+            js = ["--js-runtimes", f"{rt}:{p}"]
+            break
+    with tempfile.TemporaryDirectory() as td:
+        full = cmd + js + [
+            "--skip-download", "--write-subs", "--write-auto-subs",
+            "--sub-langs", sub_langs, "--sub-format", "vtt/best",
+            # 429(Too Many Requests) 등 일시적 오류에 재시도·백오프
+            "--retries", "5", "--retry-sleep", "5", "--sleep-subtitles", "1",
+            "--no-warnings", "--quiet",
+            "-o", os.path.join(td, "%(id)s.%(ext)s"),
+            url,
+        ]
+        try:
+            subprocess.run(full, check=False, timeout=120,
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except Exception as e:
+            _log(f"yt-dlp 실행 실패: {e}", debug, is_debug=True)
+            return None
+
+        vtts = glob.glob(os.path.join(td, "*.vtt"))
+        if not vtts:
+            _log("yt-dlp: 자막 파일 없음(자막 미제공 영상)", debug, is_debug=True)
+            return None
+
+        def rank(p):  # 요청 언어 우선순위로 자막 선택
+            name = os.path.basename(p).lower()
+            for i, l in enumerate(languages):
+                if f".{l}" in name:
+                    return i
+            return len(languages) + 1
+        vtts.sort(key=rank)
+        return _vtt_to_text(vtts[0])
+
+
 def summarize_with_claude(transcript, video, language, config, debug=False):
     """자막을 Claude로 요약 (anthropic SDK)."""
     try:
@@ -139,16 +230,26 @@ def summarize_with_claude(transcript, video, language, config, debug=False):
 
 
 def claude_fallback_summary(video, language, config, debug=False):
-    """secondb 실패 시 호출: 자막 확보 → Claude 요약. 실패 시 None."""
-    vid = extract_video_id(video.get("url", ""))
-    if not vid:
-        _log("video id를 찾지 못해 Claude 폴백 불가")
-        return None
+    """secondb(쿼터 초과 등) 실패 시 호출: 자막 확보 → Claude 요약. 실패 시 None.
 
+    자막 확보 순서: (1) youtube-transcript-api(빠름) → (2) yt-dlp 자동자막(견고).
+    transcript-api 가 '자막 없음'으로 실패해도 yt-dlp 로 자동생성 자막을 받아 요약을 이어간다.
+    """
+    url = video.get("url", "")
     _log("Claude 폴백 시도: 자막 확보 중...", debug)
-    transcript = get_transcript(vid, debug=debug)
+
+    transcript = None
+    vid = extract_video_id(url)
+    if vid:
+        transcript = get_transcript(vid, debug=debug)
+
     if not transcript:
-        _log("자막이 없어 Claude 폴백 불가 (자막 없는 영상)")
+        _log("transcript-api 실패 → yt-dlp 자막 시도...", debug)
+        pref = ("ko", "en") if language == "kr" else ("en", "ko")
+        transcript = get_transcript_ytdlp(url, languages=pref, debug=debug)
+
+    if not transcript:
+        _log("자막을 확보하지 못해 Claude 폴백 불가 (transcript-api·yt-dlp 모두 실패)")
         return None
 
     _log(f"자막 확보({len(transcript)}자) → Claude 요약 중...", debug)
