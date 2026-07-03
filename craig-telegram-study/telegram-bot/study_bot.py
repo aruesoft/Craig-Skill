@@ -294,18 +294,34 @@ def transcribe_url(url, cfg, debug=False):
 
 
 def _whisper(audio_path, cfg, debug=False):
+    """음성인식: faster-whisper(있으면) → openai-whisper 순으로 시도."""
+    model_name = cfg.get("whisper_model", "small")
+    # 1) faster-whisper (빠름, 설치 가능한 환경에서)
     try:
         from faster_whisper import WhisperModel
-    except ImportError:
-        log("faster-whisper 미설치 → pip install faster-whisper")
-        return None
-    try:
-        model = WhisperModel(cfg.get("whisper_model", "small"), device="cpu", compute_type="int8")
-        segments, _ = model.transcribe(audio_path)
-        text = " ".join(s.text.strip() for s in segments).strip()
+        model = WhisperModel(model_name, device="cpu", compute_type="int8")
+        segs, _ = model.transcribe(audio_path)
+        text = " ".join(s.text.strip() for s in segs).strip()
         if text:
-            log(f"음성인식 완료({len(text)}자)")
+            log(f"음성인식 완료(faster-whisper, {len(text)}자)")
         return text or None
+    except ImportError:
+        pass
+    except Exception as e:
+        log(f"faster-whisper 오류(→openai-whisper 시도): {e}")
+    # 2) openai-whisper (torch 기반, ffmpeg CLI 사용)
+    try:
+        import whisper
+        valid = {"tiny", "base", "small", "medium", "large", "large-v2", "large-v3"}
+        m = whisper.load_model(model_name if model_name in valid else "small")
+        r = m.transcribe(audio_path)
+        text = (r.get("text") or "").strip()
+        if text:
+            log(f"음성인식 완료(whisper, {len(text)}자)")
+        return text or None
+    except ImportError:
+        log("whisper 미설치 → pip install openai-whisper (또는 faster-whisper)")
+        return None
     except Exception as e:
         log(f"whisper 오류: {e}")
         return None
