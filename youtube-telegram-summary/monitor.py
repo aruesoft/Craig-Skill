@@ -19,6 +19,7 @@ import re
 import sys
 import time
 import argparse
+import threading
 import requests
 import xml.etree.ElementTree as ET
 from contextlib import contextmanager
@@ -660,25 +661,44 @@ def process_incoming_commands(config, debug=False, run_callback=None, long_poll=
 
 
 def listen_loop(config, debug=False):
-    """--listen: long-poll 로 텔레그램 명령을 즉시 처리 + N시간 주기로 새 영상 자동 감지.
+    """--listen: 메인 스레드는 텔레그램 명령을 long-poll 로 즉시 처리하고,
+    백그라운드 스레드가 N시간 주기로 새 영상을 감지·요약한다.
 
-    getUpdates 를 소유하는 단일 프로세스가 (1) 명령 즉시 응답과 (2) 주기 감지를 함께 수행한다.
-    → 별도 주기 잡을 두지 않아 같은 봇 두 프로세스의 getUpdates 충돌이 원천 발생하지 않는다.
-    감지 주기는 config 의 schedule_interval_hours(기본 6). 시작 시 1회 즉시 감지한다.
+    · getUpdates 는 메인 스레드만 소유 → 별도 주기 프로세스가 없어 getUpdates 충돌이 없다.
+    · 감지가 오래 걸려도(밀린 영상 다수·secondb quota 등) 명령 응답이 막히지 않는다.
+    · 감지 주기는 config 의 schedule_interval_hours(기본 6). 시작 시 1회 즉시 감지.
+    · 감지(주기)와 /run(명령) 이 run_monitor 를 동시에 돌리지 않도록 lock 으로 직렬화한다.
     """
-    log("텔레그램 리스너 시작 (long-poll + 주기 감지). 채널명을 보내면 추가됩니다. Ctrl+C 로 종료.")
+    log("텔레그램 리스너 시작 (long-poll + 백그라운드 주기 감지). 채널명을 보내면 추가됩니다. Ctrl+C 로 종료.")
     send_telegram_plain(config, "🤖 요약봇 리스너 시작됨. 채널명을 보내면 추가합니다.\n/help 로 명령 목록 확인.")
     interval_s = max(float(config.get('schedule_interval_hours', 6)), 0.05) * 3600
-    last_detect = None  # None = 시작 즉시 1회 감지(부팅 직후 monotonic 값에 무관하게 보장)
+    run_lock = threading.Lock()
+
+    def guarded_run():
+        """감지 실행을 직렬화. 이미 실행 중이면 건너뛴다(중복 브라우저/상태 경합 방지)."""
+        if not run_lock.acquire(blocking=False):
+            log("감지가 이미 실행 중 — 이번 요청은 건너뜀")
+            return 0, []
+        try:
+            return run_monitor(config, debug)
+        finally:
+            run_lock.release()
+
+    def detect_worker():
+        while True:
+            try:
+                guarded_run()
+            except Exception as e:
+                log(f"주기 감지 오류(계속 실행): {e}")
+            time.sleep(interval_s)
+
+    threading.Thread(target=detect_worker, name="detect", daemon=True).start()
+
     while True:
         try:
-            if last_detect is None or (time.monotonic() - last_detect) >= interval_s:
-                log(f"주기 감지 실행 (interval={interval_s/3600:.2g}h)")
-                run_monitor(config, debug)
-                last_detect = time.monotonic()
             process_incoming_commands(
                 config, debug,
-                run_callback=lambda: run_monitor(config, debug),
+                run_callback=guarded_run,
                 long_poll=True)
         except KeyboardInterrupt:
             log("리스너 종료")

@@ -20,6 +20,8 @@
     <dict>
         <key>PATH</key>
         <string>/opt/homebrew/bin:/Users/craigpark/anaconda3/bin:/usr/local/bin:/usr/bin:/bin</string>
+        <key>PYTHONUNBUFFERED</key>
+        <string>1</string>
     </dict>
 
     <!-- 상시 구동: 로그인 시 시작 + 죽으면 자동 재시작 (텔레그램 단일 인스턴스 철칙: 서버에서만 켠다) -->
