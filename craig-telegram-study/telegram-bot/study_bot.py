@@ -101,23 +101,45 @@ def _authorized(cfg, chat_id):
 
 
 # ─────────────────────────── 콘텐츠 추출 ───────────────────────────
-def extract_content(text, debug=False):
-    """메시지 → (출처라벨, 본문텍스트, 원본URL|None)."""
+# 로그인/접근 벽으로 URL만으론 본문 추출이 어려운 소셜 플랫폼(쿠키 설정 시 가능)
+SOCIAL_RE = re.compile(r"(instagram\.com|tiktok\.com|facebook\.com|fb\.watch|threads\.net|(^|\.)x\.com|twitter\.com)")
+
+
+def _platform_name(url):
+    for pat, name in [(r"instagram\.com", "인스타그램"), (r"tiktok\.com", "틱톡"),
+                      (r"(facebook\.com|fb\.watch)", "페이스북"), (r"threads\.net", "스레드"),
+                      (r"(x\.com|twitter\.com)", "X(트위터)")]:
+        if re.search(pat, url):
+            return name
+    return "이 링크"
+
+
+def extract_content(text, cfg, debug=False):
+    """메시지 → (출처라벨, 본문텍스트|None, 원본URL|None, extracted_ok).
+
+    extracted_ok=False 면 내용 확보 실패(정크 노트 만들지 말고 사용자에게 안내).
+    """
     m = URL_RE.search(text.strip())
     if not m:
-        return "text", text.strip(), None
+        return "text", text.strip(), None, True
     url = m.group(0).rstrip(").,。")
+    user_note = URL_RE.sub("", text).strip()  # URL 외 사용자가 붙인 텍스트/캡션
+
+    body = None
     if re.search(r"(youtube\.com|youtu\.be)", url):
-        body = _youtube_transcript(url, debug)
-        if body:
-            return url, body, url
-    body = _web_extract(url, debug)
+        body = _youtube_transcript(url, cfg, debug)
+    elif SOCIAL_RE.search(url):
+        body = _ytdlp_caption(url, cfg, debug)  # 캡션/설명(쿠키 있으면 성공)
+    else:
+        body = _web_extract(url, debug)
+
     if body:
-        note = URL_RE.sub("", text).strip()  # URL 외 사용자 메모 보존
-        if note:
-            body = f"[사용자 메모] {note}\n\n{body}"
-        return url, body, url
-    return url, text.strip(), url  # 추출 실패 → 링크/원문만
+        content = f"[사용자 메모] {user_note}\n\n{body}" if user_note else body
+        return url, content, url, True
+    # 추출 실패 — 사용자가 캡션/요점을 함께 붙였으면 그걸로 정리
+    if len(user_note) >= 20:
+        return url, f"[출처] {url}\n\n{user_note}", url, True
+    return url, None, url, False  # 내용 없음
 
 
 def _web_extract(url, debug=False):
@@ -133,13 +155,46 @@ def _web_extract(url, debug=False):
         return None
 
 
-def _youtube_transcript(url, debug=False):
+def _ytdlp_cookie_args(cfg):
+    """config 로 쿠키 지정 시 yt-dlp 인증(인스타 등 로그인 벽 우회)."""
+    args = []
+    ck = cfg.get("ytdlp_cookies")
+    if ck and os.path.exists(os.path.expanduser(ck)):
+        args += ["--cookies", os.path.expanduser(ck)]
+    cb = cfg.get("ytdlp_cookies_from_browser")
+    if cb:
+        args += ["--cookies-from-browser", cb]
+    return args
+
+
+def _ytdlp_base(cfg):
     exe = shutil.which("yt-dlp")
-    cmd = [exe] if exe else [sys.executable, "-m", "yt_dlp"]
+    return ([exe] if exe else [sys.executable, "-m", "yt_dlp"]) + _ytdlp_cookie_args(cfg)
+
+
+def _ytdlp_caption(url, cfg, debug=False):
+    """인스타/틱톡 등: 제목+캡션(description) 메타데이터 추출. 로그인 벽이면 None."""
+    try:
+        r = subprocess.run(_ytdlp_base(cfg) + ["--no-warnings", "--skip-download",
+                           "--print", "%(title)s\n%(description)s", url],
+                           capture_output=True, text=True, timeout=90)
+    except Exception as e:
+        if debug:
+            log(f"yt-dlp caption 실패: {e}")
+        return None
+    out = (r.stdout or "").strip()
+    if r.returncode != 0 or len(out) < 20:
+        if debug:
+            log(f"yt-dlp caption 실패/빈응답: {(r.stderr or '').strip()[:140]}")
+        return None
+    return out
+
+
+def _youtube_transcript(url, cfg, debug=False):
     with tempfile.TemporaryDirectory() as td:
         try:
             subprocess.run(
-                cmd + ["--skip-download", "--write-subs", "--write-auto-subs",
+                _ytdlp_base(cfg) + ["--skip-download", "--write-subs", "--write-auto-subs",
                        "--sub-langs", "ko,en,ko-orig,en-orig,-live_chat", "--sub-format", "vtt/best",
                        "--retries", "3", "--no-warnings", "--quiet",
                        "-o", os.path.join(td, "%(id)s.%(ext)s"), url],
@@ -303,7 +358,15 @@ def write_note(vault_dir, data, source_url, debug=False):
 
 # ─────────────────────────── 파이프라인 ───────────────────────────
 def process(text, cfg, debug=False):
-    source, content, url = extract_content(text, debug)
+    source, content, url, ok = extract_content(text, cfg, debug)
+    if not ok:
+        plat = _platform_name(url or "")
+        return None, (
+            f"⚠️ {plat} 링크는 로그인/접근 제한으로 내용을 자동으로 가져오지 못했어요.\n"
+            f"아래 중 하나로 다시 보내주시면 정리해 드릴게요:\n"
+            f"• 캡션·자막·핵심 텍스트를 링크와 함께 붙여넣기\n"
+            f"• (관리자) config 의 ytdlp_cookies 에 인스타 로그인 쿠키 지정 시 자동 추출\n"
+            f"※ 내용이 없어 노트는 만들지 않았어요(정크 노트 방지).")
     if not content or len(content.strip()) < 5:
         return None, "내용이 비어 있어 정리하지 못했어요. 링크나 학습 텍스트를 보내주세요."
     log(f"콘텐츠 추출: {source} ({len(content)}자)")

@@ -36,6 +36,11 @@ pip install anthropic requests trafilatura yt-dlp
 
 - `telegram_chat_id` 비우면 아무 채팅이나 응답(개인봇). 특정인만 쓰려면 chat id 지정.
 - `study_vault_dir` — 결과가 쌓일 Obsidian 볼트 경로.
+- (선택) `ytdlp_cookies` — 쿠키 파일(Netscape) 경로. **인스타그램·틱톡 등 로그인 벽** 콘텐츠 자동 추출용.
+  (선택) `ytdlp_cookies_from_browser` — 예: `"chrome"` (로그인된 브라우저 프로필이 있는 기기에서만).
+
+> 인스타그램/틱톡은 로그인 벽이라 쿠키 없이는 자동 추출이 안 됩니다. 쿠키 미설정 시 봇이 안내하며,
+> 캡션·자막·핵심 텍스트를 링크와 **함께 붙여** 보내면 그 텍스트로 정리합니다.
 
 ## 실행
 
