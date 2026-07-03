@@ -26,11 +26,11 @@
 | 구성요소 | 스크립트 | 등록 | 스케줄 |
 |---|---|---|---|
 | 등산봇(텔레그램, 상시) | `korean-mountain-hiking/telegram-bot/bot.py --listen` | launchd `com.craig.skill.mountainbot` | 상시(이벤트 응답) |
-| 유튜브 요약봇 | `youtube-telegram-summary/monitor.py` | launchd `com.craig.skill.youtube` | 6시간(0·6·12·18시)+부팅 |
+| 유튜브 요약봇(상시 리스너) | `youtube-telegram-summary/monitor.py --listen` | launchd `com.craig.skill.youtube` | 상시(명령 즉시응답 + 6시간 주기 자동감지) |
 | 자동배포 | `deploy/auto_deploy.sh` | crontab | 10분마다 |
 
 - 등산봇: 산 이름/날짜 → 코스·산악날씨·하산식 맛집. 데이터=`references/mountains.json`(231곳).
-- 유튜브봇: 새 영상 감지 → secondb.ai/Claude 요약 → 텔레그램 전송 → **SkillVault 데일리 로그** 기록 + 밀린 채널명령 처리.
+- 유튜브봇: **상시 리스너** — 채널 명령(추가/삭제/list/run) 즉시 응답 + 같은 프로세스가 `schedule_interval_hours`(config, 기본 6h)마다 새 영상 감지 → secondb.ai/Claude 요약 → 텔레그램 전송 → **SkillVault 데일리 로그** 기록. getUpdates 소유 프로세스가 하나라 충돌 없음.
 
 ---
 

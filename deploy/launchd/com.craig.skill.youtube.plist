@@ -5,15 +5,15 @@
     <key>Label</key>
     <string>com.craig.skill.youtube</string>
 
-    <!-- YouTube 요약봇 — 주기 실행(monitor.py, 인자 없음):
-         새 영상 감지 → secondb.ai/Claude 요약 → 텔레그램 전송 → SkillVault 데일리 로그 기록
-         + 시작 시 밀린 텔레그램 명령(채널 추가/삭제) 처리.
-         ※ --listen(상시 리스너)은 명령 응답만 하고 자동 감지를 안 하므로 쓰지 않는다.
-           주기 실행 1개만 두어 같은 봇 두 프로세스의 getUpdates 충돌을 원천 차단한다. -->
+    <!-- YouTube 요약봇 — 상시 리스너(monitor.py --listen):
+         · 텔레그램 채널 명령(추가/삭제/list/run) 즉시 응답
+         · 같은 프로세스가 schedule_interval_hours(config, 기본 6h)마다 새 영상 자동 감지·요약·전송·볼트로그
+         getUpdates 를 이 프로세스 하나만 소유하므로 별도 주기잡과의 충돌이 없다. -->
     <key>ProgramArguments</key>
     <array>
         <string>/Users/craigpark/anaconda3/bin/python3</string>
         <string>/Users/craigpark/Github/Craig-Skill/youtube-telegram-summary/monitor.py</string>
+        <string>--listen</string>
     </array>
 
     <key>WorkingDirectory</key>
@@ -25,16 +25,13 @@
         <string>/opt/homebrew/bin:/Users/craigpark/anaconda3/bin:/usr/local/bin:/usr/bin:/bin</string>
     </dict>
 
-    <!-- 6시간마다(0·6·12·18시) + 로드/부팅 시 1회 -->
-    <key>StartCalendarInterval</key>
-    <array>
-        <dict><key>Hour</key><integer>0</integer><key>Minute</key><integer>0</integer></dict>
-        <dict><key>Hour</key><integer>6</integer><key>Minute</key><integer>0</integer></dict>
-        <dict><key>Hour</key><integer>12</integer><key>Minute</key><integer>0</integer></dict>
-        <dict><key>Hour</key><integer>18</integer><key>Minute</key><integer>0</integer></dict>
-    </array>
+    <!-- 상시 구동: 로그인 시 시작 + 죽으면 자동 재시작 -->
     <key>RunAtLoad</key>
     <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>ThrottleInterval</key>
+    <integer>10</integer>
 
     <key>StandardOutPath</key>
     <string>/Users/craigpark/Github/Craig-Skill/logs/youtube.out.log</string>

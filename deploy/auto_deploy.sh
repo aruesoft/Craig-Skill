@@ -75,11 +75,11 @@ if ! git merge --ff-only -q "origin/$BRANCH" 2>>"$LOG_DIR/auto_deploy.log"; then
     exit 0
 fi
 
-# 변경 파일 → 재시작할 launchd 서비스 매핑
+# 변경 파일 → 재시작할 launchd 서비스 매핑 (둘 다 상시 프로세스라 코드 변경 시 재시작 필요)
 RELOADED=""
 reload() { launchctl kickstart -k "gui/$(id -u)/com.craig.skill.$1" 2>/dev/null && RELOADED="$RELOADED $2"; }
 echo "$CHANGED" | grep -qE '^korean-mountain-hiking/telegram-bot/' && reload mountainbot "등산봇"
-# youtube 주기잡은 매 실행 최신 파일을 읽으므로 재시작 불필요(다음 주기에 자동 반영)
+echo "$CHANGED" | grep -qE '^youtube-telegram-summary/'          && reload youtube "유튜브봇"
 
 log "배포 완료: ${COMMITS}커밋, 재시작=[${RELOADED:- 없음}]"
 tg "🚀 [Craig-Skill 배포] ${COMMITS}커밋 반영 → $(git rev-parse --short origin/$BRANCH). 재시작:${RELOADED:- 없음(유튜브는 다음 주기 자동 반영)}"

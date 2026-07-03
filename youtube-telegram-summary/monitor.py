@@ -660,11 +660,22 @@ def process_incoming_commands(config, debug=False, run_callback=None, long_poll=
 
 
 def listen_loop(config, debug=False):
-    """--listen: long-poll 로 텔레그램 명령을 즉시 처리 (Ctrl+C 종료)."""
-    log("텔레그램 리스너 시작 (long-poll). 채널명을 보내면 추가됩니다. Ctrl+C 로 종료.")
+    """--listen: long-poll 로 텔레그램 명령을 즉시 처리 + N시간 주기로 새 영상 자동 감지.
+
+    getUpdates 를 소유하는 단일 프로세스가 (1) 명령 즉시 응답과 (2) 주기 감지를 함께 수행한다.
+    → 별도 주기 잡을 두지 않아 같은 봇 두 프로세스의 getUpdates 충돌이 원천 발생하지 않는다.
+    감지 주기는 config 의 schedule_interval_hours(기본 6). 시작 시 1회 즉시 감지한다.
+    """
+    log("텔레그램 리스너 시작 (long-poll + 주기 감지). 채널명을 보내면 추가됩니다. Ctrl+C 로 종료.")
     send_telegram_plain(config, "🤖 요약봇 리스너 시작됨. 채널명을 보내면 추가합니다.\n/help 로 명령 목록 확인.")
+    interval_s = max(float(config.get('schedule_interval_hours', 6)), 0.05) * 3600
+    last_detect = None  # None = 시작 즉시 1회 감지(부팅 직후 monotonic 값에 무관하게 보장)
     while True:
         try:
+            if last_detect is None or (time.monotonic() - last_detect) >= interval_s:
+                log(f"주기 감지 실행 (interval={interval_s/3600:.2g}h)")
+                run_monitor(config, debug)
+                last_detect = time.monotonic()
             process_incoming_commands(
                 config, debug,
                 run_callback=lambda: run_monitor(config, debug),
