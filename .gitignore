@@ -2,3 +2,12 @@ __pycache__/
 *.pyc
 *.log
 .DS_Store
+
+# 로그·잠금 (서버 launchd/자동배포가 씀)
+logs/
+
+# Obsidian 볼트 — Obsidian Sync 가 소유(git 미추적). stock_prediction_project/StockVault 관례와 동일.
+# 이유: 서버가 볼트에 유튜브 요약 로그를 계속 쓰므로 git 추적하면 auto_deploy(ff-only pull)와 충돌한다.
+# 파일은 디스크에 그대로 남고 크로스 디바이스 동기화는 Obsidian Sync 담당.
+# 추적하고 싶으면 이 줄을 지우고 `git add SkillVault` (단, 서버 쓰기와의 충돌 감수).
+SkillVault/

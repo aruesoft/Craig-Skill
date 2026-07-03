@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.craig.skill.mountainbot</string>
+
+    <!-- 한국 등산 텔레그램 봇 — long-poll 상시 대기(bot.py --listen) -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/craigpark/anaconda3/bin/python3</string>
+        <string>/Users/craigpark/Github/Craig-Skill/korean-mountain-hiking/telegram-bot/bot.py</string>
+        <string>--listen</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/craigpark/Github/Craig-Skill/korean-mountain-hiking/telegram-bot</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/Users/craigpark/anaconda3/bin:/usr/local/bin:/usr/bin:/bin</string>
+    </dict>
+
+    <!-- 상시 구동: 로그인 시 시작 + 죽으면 자동 재시작 (텔레그램 단일 인스턴스 철칙: 서버에서만 켠다) -->
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>ThrottleInterval</key>
+    <integer>10</integer>
+
+    <key>StandardOutPath</key>
+    <string>/Users/craigpark/Github/Craig-Skill/logs/mountainbot.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/craigpark/Github/Craig-Skill/logs/mountainbot.err.log</string>
+</dict>
+</plist>
