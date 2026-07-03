@@ -80,6 +80,7 @@ RELOADED=""
 reload() { launchctl kickstart -k "gui/$(id -u)/com.craig.skill.$1" 2>/dev/null && RELOADED="$RELOADED $2"; }
 echo "$CHANGED" | grep -qE '^korean-mountain-hiking/telegram-bot/' && reload mountainbot "등산봇"
 echo "$CHANGED" | grep -qE '^youtube-telegram-summary/'          && reload youtube "유튜브봇"
+echo "$CHANGED" | grep -qE '^craig-telegram-study/'              && reload studybot "학습봇"
 
 log "배포 완료: ${COMMITS}커밋, 재시작=[${RELOADED:- 없음}]"
 tg "🚀 [Craig-Skill 배포] ${COMMITS}커밋 반영 → $(git rev-parse --short origin/$BRANCH). 재시작:${RELOADED:- 없음(유튜브는 다음 주기 자동 반영)}"

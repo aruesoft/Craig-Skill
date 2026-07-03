@@ -9,6 +9,9 @@ Claude / AI 에이전트용 스킬 모음 저장소. 원격: https://github.com/
   - `SKILL.md` — 스킬 워크플로우.
   - `telegram-bot/` — 위 데이터를 텔레그램에서 조회하는 봇 (아래 참고).
 - `youtube-telegram-summary/` — YouTube 새 영상 → secondb.ai 요약 → 텔레그램 전송 파이프라인.
+- `craig-telegram-study/` — 학습봇(@CraigStudyBot). 텔레그램 링크/텍스트 → Claude 정리 → Obsidian StudyVault 노트(인과 [[링크]]·계층 태그). `telegram-bot/study_bot.py`. 본문추출: trafilatura(웹)·yt-dlp(유튜브).
+- `SkillVault/`, `StudyVault/` — Obsidian 볼트(둘 다 git 미추적, Obsidian Sync 소유). SkillVault=이 프로젝트 위키(PARA+카파시 LLM-Wiki), StudyVault=학습봇 결과.
+- `deploy/`, `SERVER_SETUP.md` — 봇들을 맥북 에어 서버에서 launchd 상시가동 + pull 자동배포. plist: `com.craig.skill.{mountainbot,youtube,studybot}`.
 
 ## korean-mountain-hiking 텔레그램 봇 (`telegram-bot/`)
 

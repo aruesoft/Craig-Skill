@@ -11,3 +11,6 @@ logs/
 # 파일은 디스크에 그대로 남고 크로스 디바이스 동기화는 Obsidian Sync 담당.
 # 추적하고 싶으면 이 줄을 지우고 `git add SkillVault` (단, 서버 쓰기와의 충돌 감수).
 SkillVault/
+
+# StudyVault — 학습봇 결과 볼트(Obsidian Sync 소유, git 미추적)
+StudyVault/

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.craig.skill.studybot</string>
+
+    <!-- 학습봇 — long-poll 상시 대기(study_bot.py --listen):
+         링크/텍스트 수신 → Claude 정리 → StudyVault 저장 → 회신 -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/craigpark/anaconda3/bin/python3</string>
+        <string>/Users/craigpark/Github/Craig-Skill/craig-telegram-study/telegram-bot/study_bot.py</string>
+        <string>--listen</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/craigpark/Github/Craig-Skill/craig-telegram-study/telegram-bot</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/Users/craigpark/anaconda3/bin:/usr/local/bin:/usr/bin:/bin</string>
+        <key>PYTHONUNBUFFERED</key>
+        <string>1</string>
+    </dict>
+
+    <!-- 상시 구동: 로그인 시 시작 + 죽으면 자동 재시작 (단일 인스턴스 철칙) -->
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>ThrottleInterval</key>
+    <integer>10</integer>
+
+    <key>StandardOutPath</key>
+    <string>/Users/craigpark/Github/Craig-Skill/logs/studybot.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/craigpark/Github/Craig-Skill/logs/studybot.err.log</string>
+</dict>
+</plist>

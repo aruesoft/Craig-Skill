@@ -4,6 +4,23 @@ Claude / AI 에이전트용 스킬 모음.
 
 ## 스킬 목록
 
+### [craig-telegram-study](craig-telegram-study/)
+
+텔레그램(**@CraigStudyBot**)으로 링크 또는 학습 내용을 보내면, Claude가 정리해
+**Obsidian(StudyVault)**에 학습 노트로 저장하는 스킬 & 봇.
+
+```
+텔레그램(링크/텍스트) → 본문 추출(웹=trafilatura·유튜브=yt-dlp) → Claude 정리(요약·인과관계·태그·[[링크]]) → StudyVault 저장
+```
+
+- 요약·상세정리·**인과관계(A→B)**·계층 태그 자동 생성
+- 기존 노트/개념과 `[[위키링크]]`로 연결, 새 개념은 허브 생성
+- 봇 상시가동: 서버 launchd(`com.craig.skill.studybot`)
+
+자세한 설정·사용법은 [craig-telegram-study/README.md](craig-telegram-study/README.md) 참고.
+
+---
+
 ### [youtube-telegram-summary](youtube-telegram-summary/)
 
 지정한 YouTube 채널에 새 동영상이 올라오면 [secondb.ai](https://secondb.ai/)로 AI 요약을 생성해
