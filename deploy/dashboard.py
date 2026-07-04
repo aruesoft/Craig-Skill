@@ -141,6 +141,72 @@ def system_metrics():
     return {"uptime": up, "sleep_prevented": sleep_ok, "disk": disk}
 
 
+ERR_RE = re.compile(r"(Traceback|Exception|CRITICAL|❌|오류)", re.I)
+WARN_RE = re.compile(r"(Warning|warn|FP16|semaphore)", re.I)
+
+
+def _tail_lines(path, n=500):
+    try:
+        return open(path, encoding="utf-8", errors="ignore").read().splitlines()[-n:]
+    except Exception:
+        return []
+
+
+def error_count(key):
+    lines = _tail_lines(f"{ROOT}/logs/{key}.err.log") + _tail_lines(f"{ROOT}/logs/{key}.out.log")
+    return sum(1 for l in lines if ERR_RE.search(l) and not WARN_RE.search(l))
+
+
+def secondb_status():
+    for l in reversed(_tail_lines(f"{ROOT}/logs/youtube.out.log", 300)):
+        if "quota" in l or "429" in l:
+            return "🟡 quota 초과 감지", False
+        if "완료: " in l or "새 동영상 없음" in l:
+            break
+    return "🟢 정상", True
+
+
+def today_activity():
+    today = datetime.now().strftime("%Y-%m-%d")
+    scfg = read_json("~/.config/craig-telegram-study/config.json")
+    vault = scfg.get("study_vault_dir", "")
+    notes_today = 0
+    nd = os.path.join(vault, "Notes")
+    if os.path.isdir(nd):
+        notes_today = sum(1 for f in os.listdir(nd) if f.startswith(today) and f.endswith(".md"))
+    yt = read_json("~/.config/youtube-telegram-summary/config.json")
+    yv = os.path.expanduser(yt.get("obsidian_daily_dir", "") or "")
+    yt_today = 0
+    if yv:
+        fp = os.path.join(yv, f"{today}.md")
+        if os.path.exists(fp):
+            try:
+                yt_today = open(fp, encoding="utf-8").read().count("\n## [")
+            except Exception:
+                pass
+    return {"notes_today": notes_today, "yt_today": yt_today}
+
+
+def overall(bots, git, errs, secondb_ok, sleep_ok):
+    issues = []
+    for b in bots:
+        if not b["running"]:
+            issues.append(f"{b['name']} 중단")
+    for k, c in errs.items():
+        if c > 0:
+            issues.append(f"{k} 오류 {c}")
+    if not git["synced"]:
+        issues.append("git 미동기화")
+    if not secondb_ok:
+        issues.append("secondb quota")
+    if not sleep_ok:
+        issues.append("절전 미차단")
+    if not issues:
+        return "🟢 모두 정상", "ok", []
+    crit = any("중단" in i for i in issues)
+    return ("🔴 확인 필요" if crit else "🟡 주의"), ("bad" if crit else "warn"), issues
+
+
 def gather():
     ld = launchd_map()
     pr = proc_map()
@@ -155,11 +221,20 @@ def gather():
             "etime": pr_i.get("etime", "-"), "cpu": pr_i.get("cpu", "-"),
             "exit": ld_i.get("exit", "-"), "last_log": log_tail(b["key"]),
         })
+    errs = {b["key"]: error_count(b["key"]) for b in BOTS}
+    for b in bots:
+        b["errors"] = errs.get(b["key"], 0)
+    git = git_status()
+    sysm = system_metrics()
+    secondb_label, secondb_ok = secondb_status()
+    banner, banner_cls, issues = overall(bots, git, errs, secondb_ok, sysm["sleep_prevented"])
     return {
         "ts": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "bots": bots, "git": git_status(), "deploy": deploy_log(),
+        "bots": bots, "git": git, "deploy": deploy_log(),
         "study": studybot_metrics(), "youtube": youtube_metrics(),
-        "mountain": mountain_metrics(), "system": system_metrics(),
+        "mountain": mountain_metrics(), "system": sysm,
+        "activity": today_activity(), "secondb": secondb_label,
+        "banner": banner, "banner_cls": banner_cls, "issues": issues,
     }
 
 
@@ -169,11 +244,13 @@ def render(d):
     rows = ""
     for b in d["bots"]:
         badge = "🟢 실행중" if b["running"] else "🔴 중단"
-        cls = "ok" if b["running"] else "bad"
+        cls = "bad" if (not b["running"] or b.get("errors", 0) > 0) else "ok"
+        errc = b.get("errors", 0)
+        err_cell = (f"<span style='color:#f97583'>⚠ {errc}</span>" if errc else "0")
         rows += (f"<tr class='{cls}'><td><b>{esc(b['name'])}</b><div class='sub'>{esc(b['label'])}</div></td>"
                  f"<td>{badge}</td><td>{esc(b['pid'])}</td><td>{esc(b['etime'])}</td>"
-                 f"<td>{esc(b['cpu'])}%</td><td>exit {esc(b['exit'])}</td>"
-                 f"<td class='log'>{esc(b['last_log'][:80])}</td></tr>")
+                 f"<td>{esc(b['cpu'])}%</td><td>{err_cell}</td>"
+                 f"<td class='log'>{esc(b['last_log'][:70])}</td></tr>")
     g = d["git"]
     git_badge = "🟢 최신" if g["synced"] else "🟡 뒤처짐"
     sy = d["study"]; yt = d["youtube"]; mt = d["mountain"]; sysm = d["system"]
@@ -195,12 +272,27 @@ tr.bad td{{background:#2a1618}}.sub{{color:#8b949e;font-size:11px}}.log{{color:#
 .kv{{background:#0f1115;border:1px solid #21262d;border-radius:8px;padding:10px}}
 .kv .k{{color:#8b949e;font-size:11px}}.kv .v{{font-size:16px;font-weight:600;margin-top:2px}}
 .badge{{font-size:12px}}
+.banner{{text-align:center}}.banner .bannertxt{{font-size:22px;font-weight:700;margin-bottom:4px}}
+.banner.ok{{border-color:#238636;background:#0d1f14}}
+.banner.warn{{border-color:#9e6a03;background:#231a08}}
+.banner.bad{{border-color:#da3633;background:#2a1315}}
 </style></head><body><div class=wrap>
 <h1>🩺 Craig-Skill 헬스체크</h1><div class=ts>업데이트 {esc(d['ts'])} · 30초마다 자동 새로고침</div>
 
+<div class="card banner {esc(d['banner_cls'])}"><div class=bannertxt>{esc(d['banner'])}</div>
+<div class=log>{esc(' · '.join(d['issues']) if d['issues'] else '봇·배포·시스템 모두 정상')}</div></div>
+
 <div class=card><h2>서비스 (launchd)</h2>
-<table><tr><th>서비스</th><th>상태</th><th>PID</th><th>가동</th><th>CPU</th><th>exit</th><th>최근 로그</th></tr>
+<table><tr><th>서비스</th><th>상태</th><th>PID</th><th>가동</th><th>CPU</th><th>오류</th><th>최근 로그</th></tr>
 {rows}</table></div>
+
+<div class=card><h2>오늘 활동 · 알림</h2>
+<div class=grid>
+<div class=kv><div class=k>📝 오늘 학습 노트</div><div class=v>{d['activity']['notes_today']}개</div></div>
+<div class=kv><div class=k>✅ 오늘 복습</div><div class=v>{d['study']['reviews_today']}장</div></div>
+<div class=kv><div class=k>📺 오늘 유튜브 요약</div><div class=v>{d['activity']['yt_today']}건</div></div>
+<div class=kv><div class=k>secondb 상태</div><div class=v style='font-size:13px'>{esc(d['secondb'])}</div></div>
+</div></div>
 
 <div class=card><h2>배포</h2>
 <div class=grid>
