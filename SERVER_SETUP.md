@@ -27,7 +27,11 @@
 |---|---|---|---|
 | 등산봇(텔레그램, 상시) | `korean-mountain-hiking/telegram-bot/bot.py --listen` | launchd `com.craig.skill.mountainbot` | 상시(이벤트 응답) |
 | 유튜브 요약봇(상시 리스너) | `youtube-telegram-summary/monitor.py --listen` | launchd `com.craig.skill.youtube` | 상시(명령 즉시응답 + 6시간 주기 자동감지) |
+| 학습봇(상시 리스너) | `craig-telegram-study/telegram-bot/study_bot.py --listen` | launchd `com.craig.skill.studybot` | 상시(명령·복습·이미지·음성) |
+| 헬스체크 대시보드 | `deploy/dashboard.py --port 8788` | launchd `com.craig.skill.dashboard` | 상시(웹 :8788) |
 | 자동배포 | `deploy/auto_deploy.sh` | crontab | 10분마다 |
+
+> 대시보드: LAN 에서 **`http://<서버>:8788`** (봇·launchd·배포·시스템 상태 한눈에). JSON 점검: `:8788/health`.
 
 - 등산봇: 산 이름/날짜 → 코스·산악날씨·하산식 맛집. 데이터=`references/mountains.json`(231곳).
 - 유튜브봇: **상시 리스너** — 채널 명령(추가/삭제/list/run) 즉시 응답 + 같은 프로세스가 `schedule_interval_hours`(config, 기본 6h)마다 새 영상 감지 → secondb.ai/Claude 요약 → 텔레그램 전송 → **SkillVault 데일리 로그** 기록. getUpdates 소유 프로세스가 하나라 충돌 없음.
