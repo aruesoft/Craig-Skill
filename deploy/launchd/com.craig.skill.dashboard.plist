@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.craig.skill.dashboard</string>
+
+    <!-- 헬스체크 웹 대시보드 (LAN http://<서버>:8788) -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/craigpark/anaconda3/bin/python3</string>
+        <string>/Users/craigpark/Github/Craig-Skill/deploy/dashboard.py</string>
+        <string>--port</string>
+        <string>8788</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/craigpark/Github/Craig-Skill</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/Users/craigpark/anaconda3/bin:/usr/local/bin:/usr/bin:/bin</string>
+        <key>PYTHONUNBUFFERED</key>
+        <string>1</string>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>ThrottleInterval</key>
+    <integer>10</integer>
+
+    <key>StandardOutPath</key>
+    <string>/Users/craigpark/Github/Craig-Skill/logs/dashboard.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/craigpark/Github/Craig-Skill/logs/dashboard.err.log</string>
+</dict>
+</plist>
