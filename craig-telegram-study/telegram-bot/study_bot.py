@@ -32,7 +32,7 @@ import hashlib
 import argparse
 import tempfile
 import subprocess
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import requests
@@ -682,6 +682,8 @@ def list_inbox(vault_dir):
     if not d.exists():
         return items
     for f in sorted(d.glob("*.md")):
+        if f.name.startswith("_"):  # _안내 등 인프라 노트 제외
+            continue
         fm = _read_fm(f)
         if fm.get("status") == "promoted":
             continue
@@ -941,6 +943,242 @@ def process_image(image, media, caption, cfg, debug=False):
     return fpath, _inbox_reply(fpath, data, cfg)
 
 
+# ─────────────────────────── Phase 2: 간격 반복 복습(SM-2) ───────────────────────────
+def _sm2(card, q):
+    """SM-2 간격 반복. q: 0=다시 3=어려움 4=알맞음 5=쉬움. card 를 갱신하고 다음 간격(일) 반환."""
+    ease = float(card.get("ease", 2.5))
+    reps = int(card.get("reps", 0))
+    interval = int(card.get("interval", 0))
+    lapses = int(card.get("lapses", 0))
+    if q < 3:
+        reps, interval, lapses = 0, 1, lapses + 1
+    else:
+        if reps == 0:
+            interval = 1
+        elif reps == 1:
+            interval = 6
+        else:
+            interval = max(1, round(interval * ease))
+        if q == 3:
+            interval = max(1, round(interval * 0.6))
+        elif q == 5:
+            interval = max(1, round(interval * 1.3))
+        reps += 1
+    ease = max(1.3, ease + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02)))
+    now = datetime.now()
+    card.update({"ease": round(ease, 2), "reps": reps, "interval": interval, "lapses": lapses,
+                 "due": (now + timedelta(days=interval)).strftime("%Y-%m-%d"),
+                 "last": now.strftime("%Y-%m-%d")})
+    return interval
+
+
+def _due_cards(vault):
+    sched = _srs_load(vault)
+    today = datetime.now().strftime("%Y-%m-%d")
+    due = [(cid, c) for cid, c in sched.items() if (c.get("due") or "0000-00-00") <= today]
+    due.sort(key=lambda x: (x[1].get("due") or "", -int(x[1].get("lapses", 0))))  # 오래된·약한 것 먼저
+    return [cid for cid, _ in due]
+
+
+def _cloze_hide(q):
+    return re.sub(r"==(.+?)==", "＿＿＿", q)
+
+
+def _cloze_answer(card):
+    if card.get("a"):
+        return card["a"]
+    m = re.search(r"==(.+?)==", card.get("q", ""))
+    return m.group(1) if m else "(정답)"
+
+
+def _log_review(vault, cid, q):
+    try:
+        d = Path(vault) / "_srs"
+        d.mkdir(parents=True, exist_ok=True)
+        with open(d / "reviews.jsonl", "a", encoding="utf-8") as f:
+            f.write(json.dumps({"ts": datetime.now().strftime("%Y-%m-%d %H:%M"), "card": cid, "q": q},
+                               ensure_ascii=False) + "\n")
+    except Exception:
+        pass
+
+
+# 인라인 키보드 텔레그램 헬퍼
+def tg_send_kb(cfg, chat, text, buttons=None):
+    token = cfg["telegram_bot_token"]
+    data = {"chat_id": chat, "text": text}
+    if buttons:
+        data["reply_markup"] = json.dumps({"inline_keyboard": buttons})
+    try:
+        r = requests.post(f"https://api.telegram.org/bot{token}/sendMessage", data=data, timeout=20).json()
+        return r.get("result", {}).get("message_id")
+    except Exception as e:
+        log(f"send_kb 오류: {e}")
+        return None
+
+
+def tg_edit(cfg, chat, mid, text, buttons=None):
+    token = cfg["telegram_bot_token"]
+    data = {"chat_id": chat, "message_id": mid, "text": text}
+    data["reply_markup"] = json.dumps({"inline_keyboard": buttons or []})
+    try:
+        requests.post(f"https://api.telegram.org/bot{token}/editMessageText", data=data, timeout=20)
+    except Exception as e:
+        log(f"edit 오류: {e}")
+
+
+def tg_answer_cb(cfg, cb_id):
+    token = cfg["telegram_bot_token"]
+    try:
+        requests.post(f"https://api.telegram.org/bot{token}/answerCallbackQuery",
+                      data={"callback_query_id": cb_id}, timeout=15)
+    except Exception:
+        pass
+
+
+# 복습 세션 (state["quiz"] = {chat, queue[], current, mid, total, done})
+def start_quiz(cfg, chat):
+    due = _due_cards(cfg["study_vault_dir"])
+    if not due:
+        tg_send(cfg, chat, "🎉 지금 복습할 카드가 없어요. 나중에 또 만나요!")
+        return
+    due = due[:int(cfg.get("quiz_max", 20))]
+    st = load_state()
+    st["quiz"] = {"chat": chat, "queue": due[1:], "current": due[0], "mid": None,
+                  "total": len(due), "done": 0}
+    save_state(st)
+    _send_card(cfg)
+
+
+def _send_card(cfg):
+    st = load_state()
+    qz = st.get("quiz")
+    if not qz or not qz.get("current"):
+        return _finish_quiz(cfg)
+    card = _srs_load(cfg["study_vault_dir"]).get(qz["current"])
+    if not card:
+        return _advance(cfg)
+    disp = _cloze_hide(card["q"]) if card.get("type") == "cloze" else card["q"]
+    text = f"🧠 복습 {qz['done'] + 1}/{qz['total']}\n\n{disp}"
+    mid = tg_send_kb(cfg, qz["chat"], text,
+                     [[{"text": "💡 정답 보기", "callback_data": "show"}],
+                      [{"text": "⏹ 그만", "callback_data": "stop"}]])
+    qz["mid"] = mid
+    st["quiz"] = qz
+    save_state(st)
+
+
+def _reveal(cfg):
+    st = load_state()
+    qz = st.get("quiz")
+    if not qz:
+        return
+    card = _srs_load(cfg["study_vault_dir"]).get(qz.get("current"))
+    if not card:
+        return _advance(cfg)
+    disp = _cloze_hide(card["q"]) if card.get("type") == "cloze" else card["q"]
+    ans = _cloze_answer(card) if card.get("type") == "cloze" else (card.get("a") or "(정답 없음)")
+    text = f"🧠 복습 {qz['done'] + 1}/{qz['total']}\n\n{disp}\n\n💡 {ans}"
+    kb = [[{"text": "❌ 다시", "callback_data": "rate:0"}, {"text": "😓 어려움", "callback_data": "rate:3"}],
+          [{"text": "🙂 알맞음", "callback_data": "rate:4"}, {"text": "😎 쉬움", "callback_data": "rate:5"}]]
+    tg_edit(cfg, qz["chat"], qz["mid"], text, kb)
+
+
+def _grade(cfg, quality):
+    st = load_state()
+    qz = st.get("quiz")
+    if not qz:
+        return
+    vault = cfg["study_vault_dir"]
+    sched = _srs_load(vault)
+    cid = qz.get("current")
+    card = sched.get(cid)
+    if card:
+        interval = _sm2(card, quality)
+        sched[cid] = card
+        _srs_save(vault, sched)
+        _log_review(vault, cid, quality)
+        label = {0: "다시", 3: "어려움", 4: "알맞음", 5: "쉬움"}.get(quality, "")
+        nxt = "내일" if interval <= 1 else f"{interval}일 후"
+        tg_edit(cfg, qz["chat"], qz["mid"], f"✓ {label} · 다음 복습 {nxt}", None)
+    qz["done"] = qz.get("done", 0) + 1
+    st["quiz"] = qz
+    save_state(st)
+    _advance(cfg)
+
+
+def _advance(cfg):
+    st = load_state()
+    qz = st.get("quiz")
+    if not qz:
+        return
+    if qz.get("queue"):
+        qz["current"] = qz["queue"].pop(0)
+        st["quiz"] = qz
+        save_state(st)
+        _send_card(cfg)
+    else:
+        _finish_quiz(cfg)
+
+
+def _finish_quiz(cfg):
+    st = load_state()
+    qz = st.pop("quiz", None)
+    save_state(st)
+    if qz:
+        tg_send(cfg, qz["chat"], f"🏁 복습 완료! {qz.get('done', 0)}장 했어요. 수고했어요 👏")
+
+
+def handle_callback(cfg, chat, data):
+    if data == "show":
+        _reveal(cfg)
+    elif data.startswith("rate:"):
+        _grade(cfg, int(data.split(":")[1]))
+    elif data == "stop":
+        _finish_quiz(cfg)
+    elif data == "start":
+        start_quiz(cfg, chat)
+
+
+def status_text(cfg):
+    vault = cfg["study_vault_dir"]
+    sched = _srs_load(vault)
+    due = _due_cards(vault)
+    today = datetime.now().strftime("%Y-%m-%d")
+    rt = 0
+    rp = Path(vault) / "_srs" / "reviews.jsonl"
+    if rp.exists():
+        try:
+            rt = sum(1 for l in open(rp, encoding="utf-8") if today in l[:30])
+        except Exception:
+            pass
+    return (f"📊 학습 현황\n"
+            f"• 복습 대기: {len(due)}장\n"
+            f"• 전체 카드: {len(sched)}장\n"
+            f"• 오늘 복습: {rt}장\n"
+            f"• 인박스: {len(list_inbox(vault))}개\n\n"
+            f"/quiz 로 복습 시작")
+
+
+def maybe_review_push(cfg):
+    """정한 시각(quiz_times, 기본 8·21시) 지나면 슬롯당 1회 복습 알림(due 있을 때)."""
+    times = sorted(int(x) for x in cfg.get("quiz_times", [8, 21]))
+    now = datetime.now()
+    passed = [h for h in times if now.hour >= h]
+    if not passed:
+        return
+    slot = f"{now.strftime('%Y-%m-%d')}:{passed[-1]}"
+    st = load_state()
+    if st.get("last_review_push") == slot or st.get("quiz"):
+        return
+    st["last_review_push"] = slot
+    save_state(st)
+    due = _due_cards(cfg["study_vault_dir"])
+    chat = str(cfg.get("telegram_chat_id") or st.get("last_chat") or "")
+    if due and chat:
+        tg_send_kb(cfg, chat, f"🧠 복습할 카드 {len(due)}장이 대기 중이에요.",
+                   [[{"text": "지금 복습 시작 ▶", "callback_data": "start"}]])
+
+
 # ─────────────────────────── 텔레그램 루프 ───────────────────────────
 def _remember_chat(chat_id):
     st = load_state()
@@ -994,6 +1232,7 @@ def poll_once(cfg, long_poll=False, debug=False):
         log("텔레그램 토큰 없음")
         return
     maybe_scan(cfg)
+    maybe_review_push(cfg)
     maybe_remind(cfg)
     offset = load_state().get("telegram_update_offset")
     params = {"timeout": 50 if long_poll else 0}
@@ -1011,6 +1250,16 @@ def poll_once(cfg, long_poll=False, debug=False):
     last = None
     for upd in r.get("result", []):
         last = upd["update_id"]
+        cq = upd.get("callback_query")
+        if cq:  # 인라인 버튼(복습 세션)
+            ch = cq.get("message", {}).get("chat", {}).get("id")
+            tg_answer_cb(cfg, cq.get("id"))
+            if _authorized(cfg, ch):
+                try:
+                    handle_callback(cfg, ch, cq.get("data", ""))
+                except Exception as e:
+                    log(f"callback 오류: {e}")
+            continue
         msg = upd.get("message") or upd.get("channel_post") or {}
         chat_id = msg.get("chat", {}).get("id")
         if not _authorized(cfg, chat_id):
@@ -1042,9 +1291,9 @@ def poll_once(cfg, long_poll=False, debug=False):
                             "① 수집: 링크(웹/유튜브/인스타)·텍스트·사진을 보내면 인박스에 모음\n"
                             "② 선별: /curate 로 봇이 주제별로 묶어 승격 제안 → /promote 1 3\n"
                             "   즉시 승격: `!학습` 또는 `[주제]` 로 보내면 바로 학습 노트+카드\n"
-                            "③ 복습: (Phase 2) 카드 간격 반복\n\n"
+                            "③ 복습: 승격된 카드를 간격 반복(SM-2). 매일 알림 + /quiz\n\n"
                             "지시어: #태그(태그 반영) · [주제](주제 노트 이어쓰기) · !학습(즉시 승격)\n"
-                            "명령: /inbox(대기 목록) /curate(묶기 제안) /promote(승격)")
+                            "명령: /inbox /curate /promote · /quiz(복습) /status(현황)")
                     continue
                 if low.startswith("/curate"):
                     tg_send(cfg, chat_id, "🧩 인박스 큐레이션 중…")
@@ -1057,6 +1306,12 @@ def poll_once(cfg, long_poll=False, debug=False):
                     items = list_inbox(cfg["study_vault_dir"])
                     tg_send(cfg, chat_id, (f"📥 인박스 {len(items)}개:\n" +
                             "\n".join(f"- {it['title']}" for it in items[:30])) if items else "📭 인박스 비어있음")
+                    continue
+                if low.startswith("/quiz") or low.startswith("/복습"):
+                    start_quiz(cfg, chat_id)
+                    continue
+                if low.startswith("/status") or low.startswith("/현황"):
+                    tg_send(cfg, chat_id, status_text(cfg))
                     continue
                 log(f"수신: {text[:60]}")
                 tg_send(cfg, chat_id, "🧠 정리 중…")
