@@ -11,6 +11,8 @@
 | `launchd/com.craig.skill.youtube.plist` | 유튜브봇 `monitor.py` 6시간 주기(감지·요약·전송·볼트로그) |
 | `launchd/com.craig.skill.dashboard.plist` | 헬스체크 대시보드(웹 :8788) 상시 |
 | `dashboard.py` | 봇·launchd·배포·시스템 상태 웹 대시보드(의존성 없음). `http://<서버>:8788`, JSON `/health` |
+| `launchd/com.craig.skill.watchdog.plist` | 워치독(5분마다) |
+| `watchdog.py` | 서비스 중단·오류 감지 → 자동 재시작 + 텔레그램 올림보고(복구 시 ✅). stdlib |
 | `bootstrap_server.sh` | 프리플라이트 + launchd 등록 + crontab(자동배포) 한 방 등록. `DRY=1` 지원 |
 | `auto_deploy.sh` | pull 기반 자동배포(개발기 push → 서버 ff-only 당김 + 변경 서비스 재시작 + 텔레그램 통지) |
 

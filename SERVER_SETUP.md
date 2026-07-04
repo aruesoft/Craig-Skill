@@ -29,7 +29,11 @@
 | 유튜브 요약봇(상시 리스너) | `youtube-telegram-summary/monitor.py --listen` | launchd `com.craig.skill.youtube` | 상시(명령 즉시응답 + 6시간 주기 자동감지) |
 | 학습봇(상시 리스너) | `craig-telegram-study/telegram-bot/study_bot.py --listen` | launchd `com.craig.skill.studybot` | 상시(명령·복습·이미지·음성) |
 | 헬스체크 대시보드 | `deploy/dashboard.py --port 8788` | launchd `com.craig.skill.dashboard` | 상시(웹 :8788) |
+| 워치독(중단·오류 감지→재시작·알림) | `deploy/watchdog.py` | launchd `com.craig.skill.watchdog` | 5분마다 |
 | 자동배포 | `deploy/auto_deploy.sh` | crontab | 10분마다 |
+
+> 워치독: 서비스 중단/booted-out·오류 누적 감지 시 **자동 재시작 + 텔레그램 올림보고**(복구 시 ✅). launchd KeepAlive 가 1차 방어, 워치독이 2차.
+> 수동 재시동: 학습봇에게 **`/restart <봇|all>`** (예: `/restart youtube`).
 
 > 대시보드: LAN 에서 **`http://<서버>:8788`** (봇·launchd·배포·시스템 상태 한눈에). JSON 점검: `:8788/health`.
 
