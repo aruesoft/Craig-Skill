@@ -410,7 +410,8 @@ def _build_prompt(source, existing, content_or_hint, user_tags, is_image, mode="
         "- links 는 기존 목록에 실제 존재하는 제목만(없으면 빈 배열).\n"
         "- cards: 능동 인출용 복습 카드 3~5개. 핵심 개념·인과관계를 묻는다(단순 암기 지양, '왜/어떻게' 위주). "
         "basic 은 질문/정답, cloze 는 문장에서 핵심어 하나를 ==표시==(q에 완성 문장, a에 그 핵심어). "
-        "자료로 답할 수 있는 것만.")
+        "자료로 답할 수 있는 것만.\n"
+        "- 기억을 돕는 니모닉·비유가 자연스럽게 있으면 summary_md 끝에 '## 기억법(니모닉)' 섹션을 짧게 추가(억지스러우면 생략).")
     return src_section + body_section + schema
 
 
@@ -1151,12 +1152,17 @@ def status_text(cfg):
             rt = sum(1 for l in open(rp, encoding="utf-8") if today in l[:30])
         except Exception:
             pass
+    stats, dates = _review_stats(vault)
+    mastery = _mastery(stats)
+    streak = _streak(dates)
+    m = f"{mastery}%" if mastery is not None else "-"
     return (f"📊 학습 현황\n"
             f"• 복습 대기: {len(due)}장\n"
             f"• 전체 카드: {len(sched)}장\n"
-            f"• 오늘 복습: {rt}장\n"
+            f"• 오늘 복습: {rt}장 · 연속 {streak}일 🔥\n"
+            f"• 이해도(최근): {m}\n"
             f"• 인박스: {len(list_inbox(vault))}개\n\n"
-            f"/quiz 로 복습 시작")
+            f"/quiz 복습 · /weak 약점 · /plan 계획 · /report 리포트")
 
 
 def maybe_review_push(cfg):
@@ -1177,6 +1183,194 @@ def maybe_review_push(cfg):
     if due and chat:
         tg_send_kb(cfg, chat, f"🧠 복습할 카드 {len(due)}장이 대기 중이에요.",
                    [[{"text": "지금 복습 시작 ▶", "callback_data": "start"}]])
+
+
+# ─────────────────────────── Phase 3~5: 이해도·약점·리포트·계획 ───────────────────────────
+def _review_stats(vault, days=60):
+    """reviews.jsonl → (카드별 {n,fails}, 복습한 날짜 set)."""
+    rp = Path(vault) / "_srs" / "reviews.jsonl"
+    stats, dates = {}, set()
+    if rp.exists():
+        cutoff = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
+        for line in open(rp, encoding="utf-8"):
+            try:
+                r = json.loads(line)
+            except Exception:
+                continue
+            day = str(r.get("ts", ""))[:10]
+            if day < cutoff:
+                continue
+            s = stats.setdefault(r.get("card"), {"n": 0, "fails": 0})
+            s["n"] += 1
+            s["fails"] += 1 if int(r.get("q", 4)) < 3 else 0
+            dates.add(day)
+    return stats, dates
+
+
+def _streak(dates):
+    if not dates:
+        return 0
+    d = datetime.now().date()
+    if d.strftime("%Y-%m-%d") not in dates:
+        d = d - timedelta(days=1)
+    n = 0
+    while d.strftime("%Y-%m-%d") in dates:
+        n += 1
+        d = d - timedelta(days=1)
+    return n
+
+
+def _mastery(stats):
+    tot = sum(s["n"] for s in stats.values())
+    fails = sum(s["fails"] for s in stats.values())
+    return round(100 * (tot - fails) / tot) if tot else None
+
+
+def weak_text(cfg):
+    vault = cfg["study_vault_dir"]
+    sched = _srs_load(vault)
+    stats, _ = _review_stats(vault)
+    weak = [(c, s) for c, s in stats.items() if s["fails"] > 0 and c in sched]
+    weak.sort(key=lambda x: (-x[1]["fails"], -x[1]["fails"] / max(1, x[1]["n"])))
+    if not weak:
+        return "👍 최근 자주 틀린 카드가 없어요. 잘하고 있어요!"
+    lines = ["🔴 약점 카드(자주 틀림):"]
+    for c, s in weak[:10]:
+        lines.append(f"- {sched[c]['q'][:50]} ({s['fails']}/{s['n']} 실패)")
+    lines.append("\n/quiz 는 약점(실패 많은) 카드부터 보여줍니다.")
+    return "\n".join(lines)
+
+
+# Phase 3 — 파인만(설명) 모드
+def explain_start(cfg, chat, topic):
+    vault = cfg["study_vault_dir"]
+    ref, found = "", None
+    for sub in ("Notes", "Concepts"):
+        d = Path(vault) / sub
+        if not d.exists():
+            continue
+        for f in d.glob("*.md"):
+            if topic in f.stem or slugify(topic).lower() in f.stem.lower():
+                ref, found = f.read_text(encoding="utf-8")[:8000], f.stem
+                break
+        if ref:
+            break
+    st = load_state()
+    st["explain"] = {"topic": topic, "ref": ref}
+    save_state(st)
+    hint = f"'{found}' 노트 기준으로 채점할게요." if ref else "(관련 노트가 없어 일반 지식 기준으로 봐요.)"
+    tg_send(cfg, chat, f"🧑‍🏫 파인만 모드: '{topic}'을(를) 아는 대로 설명해보세요.\n{hint}\n(그만두려면 /stop)")
+
+
+def explain_grade(cfg, chat, explanation):
+    st = load_state()
+    ex = st.pop("explain", None)
+    save_state(st)
+    if not ex:
+        return
+    import anthropic
+    key = cfg["anthropic_api_key"]
+    if not key:
+        tg_send(cfg, chat, "anthropic 키가 없어 채점을 못 해요.")
+        return
+    prompt = (f"학습자가 '{ex['topic']}'를 자기 말로 설명했다. 참고자료 기준으로 이해도를 평가하라.\n"
+              f"# 참고자료\n{ex['ref'] or '(없음 — 일반 지식으로 평가)'}\n\n# 학습자 설명\n{explanation}\n\n"
+              "한국어로 간결히:\n✅ 잘 이해한 점:\n⚠️ 빠졌거나 부정확한 점:\n📌 보강 포인트:\n"
+              "마지막 줄에 'SCORE: N'(0~100).")
+    try:
+        client = anthropic.Anthropic(api_key=key)
+        resp = client.messages.create(model=cfg["claude_model"], max_tokens=1200,
+                                       messages=[{"role": "user", "content": prompt}])
+        txt = "".join(b.text for b in resp.content if b.type == "text").strip()
+    except Exception as e:
+        txt = f"채점 오류: {e}"
+    tg_send(cfg, chat, "🧑‍🏫 피드백\n\n" + txt)
+
+
+# Phase 4 — 주간 복습 리포트
+def build_report(cfg, push_chat=None):
+    vault = cfg["study_vault_dir"]
+    now = datetime.now()
+    wk = now.strftime("%Y-W%V")
+    since = now - timedelta(days=7)
+    notes = []
+    nd = Path(vault) / "Notes"
+    if nd.exists():
+        for f in nd.glob("*.md"):
+            try:
+                if datetime.fromtimestamp(f.stat().st_mtime) >= since:
+                    fm = _read_fm(f)
+                    notes.append(fm["title"] + " " + " ".join("#" + t for t in fm["tags"]))
+            except Exception:
+                pass
+    sched = _srs_load(vault)
+    stats, _ = _review_stats(vault, days=8)
+    reviewed = sum(s["n"] for s in stats.values())
+    weak = [sched[c]["q"][:40] for c, s in stats.items() if s["fails"] > 0 and c in sched][:8]
+    ctx = (f"# 이번 주 학습 노트({len(notes)})\n" + "\n".join("- " + n for n in notes[:40]) +
+           f"\n\n# 복습 {reviewed}회 · 약점: {weak}\n# 인박스 대기: {len(list_inbox(vault))}개")
+    body = "(요약 없음)"
+    key = cfg["anthropic_api_key"]
+    if key:
+        import anthropic
+        prompt = ("아래 한 주 학습 활동으로 '주간 복습 리포트'를 옵시디언 마크다운으로 작성하라. 한국어, 간결히.\n"
+                  "섹션: ## 이번 주 배운 것 / ## 개념 간 연결 / ## 약점·복습 필요 / ## 다음 주 집중 제안.\n"
+                  "본문만(프론트매터 없이).\n\n" + ctx)
+        try:
+            client = anthropic.Anthropic(api_key=key)
+            resp = client.messages.create(model=cfg["claude_model"], max_tokens=2000,
+                                           messages=[{"role": "user", "content": prompt}])
+            body = "".join(b.text for b in resp.content if b.type == "text").strip()
+        except Exception as e:
+            body = f"(리포트 생성 오류: {e})"
+    d = Path(vault) / "주간복습"
+    d.mkdir(exist_ok=True)
+    fp = d / f"{wk}.md"
+    fp.write_text(f"---\ntype: weekly-review\ntags: [주간복습]\ncreated: {now.strftime('%Y-%m-%d')}\n---\n\n"
+                  f"# 주간 복습 {wk}\n\n{body}\n", encoding="utf-8")
+    if push_chat:
+        tg_send(cfg, push_chat, f"🗓️ 주간 복습 리포트 ({wk})\n\n{body[:2500]}\n\n📁 주간복습/{wk}.md")
+    return fp
+
+
+def maybe_report(cfg):
+    day = int(cfg.get("report_day", 6))     # 6=일요일
+    hour = int(cfg.get("report_hour", 20))
+    now = datetime.now()
+    if now.weekday() != day or now.hour < hour:
+        return
+    wk = now.strftime("%Y-W%V")
+    st = load_state()
+    if st.get("last_report") == wk:
+        return
+    st["last_report"] = wk
+    save_state(st)
+    chat = str(cfg.get("telegram_chat_id") or st.get("last_chat") or "")
+    build_report(cfg, push_chat=chat or None)
+
+
+# Phase 5 — 적응형 학습 계획
+def build_plan(cfg):
+    vault = cfg["study_vault_dir"]
+    due = _due_cards(vault)
+    sched = _srs_load(vault)
+    stats, _ = _review_stats(vault)
+    weak = [sched[c]["q"][:40] for c, s in stats.items() if s["fails"] > 0 and c in sched][:8]
+    inbox = [it["title"] for it in list_inbox(vault)][:15]
+    key = cfg["anthropic_api_key"]
+    if not key:
+        return "anthropic 키가 없어요."
+    import anthropic
+    prompt = ("학습 코치로서 이번 주 개인 학습 계획을 짧고 실천 가능하게 제안하라(한국어).\n"
+              f"# 복습 대기: {len(due)}장\n# 약점: {weak}\n# 인박스 미선별: {inbox}\n\n"
+              "형식: 🎯 이번 주 목표 / 📌 복습(약점 우선) / 🧩 인박스 승격 추천 / 🆕 새로 학습 추천.")
+    try:
+        client = anthropic.Anthropic(api_key=key)
+        resp = client.messages.create(model=cfg["claude_model"], max_tokens=1200,
+                                       messages=[{"role": "user", "content": prompt}])
+        return "🗺️ 학습 계획\n\n" + "".join(b.text for b in resp.content if b.type == "text").strip()
+    except Exception as e:
+        return f"계획 생성 오류: {e}"
 
 
 # ─────────────────────────── 텔레그램 루프 ───────────────────────────
@@ -1233,6 +1427,7 @@ def poll_once(cfg, long_poll=False, debug=False):
         return
     maybe_scan(cfg)
     maybe_review_push(cfg)
+    maybe_report(cfg)
     maybe_remind(cfg)
     offset = load_state().get("telegram_update_offset")
     params = {"timeout": 50 if long_poll else 0}
@@ -1285,15 +1480,46 @@ def poll_once(cfg, long_poll=False, debug=False):
                     if img else (None, "이미지를 받지 못했어요.")
             elif text:
                 low = text.strip()
+                # 파인만 설명 대기 중이면 이 메시지를 설명으로 채점(명령 제외)
+                if not low.startswith("/") and load_state().get("explain"):
+                    explain_grade(cfg, chat_id, text)
+                    continue
+                if low in ("/stop", "/그만"):
+                    s = load_state()
+                    s.pop("explain", None)
+                    s.pop("quiz", None)
+                    save_state(s)
+                    tg_send(cfg, chat_id, "중단했어요.")
+                    continue
+                if low.startswith("/explain") or low.startswith("/설명"):
+                    parts = text.split(maxsplit=1)
+                    if len(parts) > 1:
+                        explain_start(cfg, chat_id, parts[1].strip())
+                    else:
+                        tg_send(cfg, chat_id, "사용법: /explain 복리")
+                    continue
+                if low.startswith("/weak") or low.startswith("/약점"):
+                    tg_send(cfg, chat_id, weak_text(cfg))
+                    continue
+                if low.startswith("/report") or low.startswith("/리포트"):
+                    tg_send(cfg, chat_id, "🗓️ 주간 리포트 생성 중…")
+                    build_report(cfg, push_chat=chat_id)
+                    continue
+                if low.startswith("/plan") or low.startswith("/계획"):
+                    tg_send(cfg, chat_id, "🗺️ 학습 계획 생성 중…")
+                    tg_send(cfg, chat_id, build_plan(cfg))
+                    continue
                 if low in ("/start", "/help"):
                     tg_send(cfg, chat_id,
                             "📚 학습봇 — 수집 → 선별·재조합 → 학습·복습 파이프라인\n\n"
                             "① 수집: 링크(웹/유튜브/인스타)·텍스트·사진을 보내면 인박스에 모음\n"
                             "② 선별: /curate 로 봇이 주제별로 묶어 승격 제안 → /promote 1 3\n"
                             "   즉시 승격: `!학습` 또는 `[주제]` 로 보내면 바로 학습 노트+카드\n"
-                            "③ 복습: 승격된 카드를 간격 반복(SM-2). 매일 알림 + /quiz\n\n"
-                            "지시어: #태그(태그 반영) · [주제](주제 노트 이어쓰기) · !학습(즉시 승격)\n"
-                            "명령: /inbox /curate /promote · /quiz(복습) /status(현황)")
+                            "③ 복습: 승격 카드 간격 반복(SM-2). 매일 알림 + /quiz\n\n"
+                            "지시어: #태그 · [주제](이어쓰기) · !학습(즉시 승격)\n"
+                            "수집·선별: /inbox /curate /promote\n"
+                            "복습·이해: /quiz(복습) /explain 주제(설명채점) /weak(약점)\n"
+                            "현황·계획: /status /plan(계획) /report(주간리포트)")
                     continue
                 if low.startswith("/curate"):
                     tg_send(cfg, chat_id, "🧩 인박스 큐레이션 중…")
