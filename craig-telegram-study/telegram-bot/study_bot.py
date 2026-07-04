@@ -1333,6 +1333,27 @@ def build_report(cfg, push_chat=None):
     return fp
 
 
+def restart_service(arg):
+    """/restart — launchd 서비스 재시작. studybot 은 마지막(자기 종료 전 나머지 먼저)."""
+    order = [("mountainbot", "등산봇"), ("youtube", "유튜브봇"), ("dashboard", "대시보드"),
+             ("watchdog", "워치독"), ("studybot", "학습봇")]
+    nmap = dict(order)
+    arg = (arg or "").strip()
+    if not arg:
+        return "사용법: /restart studybot|youtube|mountainbot|dashboard|watchdog|all", []
+    tgs = [k for k, _ in order] if arg in ("all", "전체") else ([arg] if arg in nmap else [])
+    if not tgs:
+        return f"알 수 없는 서비스: {arg}", []
+    return "🔄 재시작: " + ", ".join(nmap[t] for t in tgs), tgs
+
+
+def do_restart(targets):
+    uid = os.getuid()
+    for t in targets:  # order 상 studybot 이 마지막
+        subprocess.run(["launchctl", "kickstart", "-k", f"gui/{uid}/com.craig.skill.{t}"],
+                       capture_output=True)
+
+
 def maybe_report(cfg):
     day = int(cfg.get("report_day", 6))     # 6=일요일
     hour = int(cfg.get("report_hour", 20))
@@ -1509,6 +1530,12 @@ def poll_once(cfg, long_poll=False, debug=False):
                     tg_send(cfg, chat_id, "🗺️ 학습 계획 생성 중…")
                     tg_send(cfg, chat_id, build_plan(cfg))
                     continue
+                if low.startswith("/restart") or low.startswith("/재시동"):
+                    parts = text.split(maxsplit=1)
+                    reply, tgs = restart_service(parts[1] if len(parts) > 1 else "")
+                    tg_send(cfg, chat_id, reply)  # 자기 종료 전에 먼저 응답
+                    do_restart(tgs)
+                    continue
                 if low in ("/start", "/help"):
                     tg_send(cfg, chat_id,
                             "📚 학습봇 — 수집 → 선별·재조합 → 학습·복습 파이프라인\n\n"
@@ -1519,7 +1546,8 @@ def poll_once(cfg, long_poll=False, debug=False):
                             "지시어: #태그 · [주제](이어쓰기) · !학습(즉시 승격)\n"
                             "수집·선별: /inbox /curate /promote\n"
                             "복습·이해: /quiz(복습) /explain 주제(설명채점) /weak(약점)\n"
-                            "현황·계획: /status /plan(계획) /report(주간리포트)")
+                            "현황·계획: /status /plan(계획) /report(주간리포트)\n"
+                            "운영: /restart <봇|all>(재시동)")
                     continue
                 if low.startswith("/curate"):
                     tg_send(cfg, chat_id, "🧩 인박스 큐레이션 중…")

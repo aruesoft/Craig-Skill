@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.craig.skill.watchdog</string>
+
+    <!-- 워치독 — 5분마다 봇/서비스 중단·오류 감지 → 자동 재시작 + 텔레그램 올림보고 -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/craigpark/anaconda3/bin/python3</string>
+        <string>/Users/craigpark/Github/Craig-Skill/deploy/watchdog.py</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/craigpark/Github/Craig-Skill</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/Users/craigpark/anaconda3/bin:/usr/local/bin:/usr/bin:/bin</string>
+        <key>PYTHONUNBUFFERED</key>
+        <string>1</string>
+    </dict>
+
+    <!-- 주기 실행(5분) + 로드 시 1회 -->
+    <key>StartInterval</key>
+    <integer>300</integer>
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/Users/craigpark/Github/Craig-Skill/logs/watchdog.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/craigpark/Github/Craig-Skill/logs/watchdog.err.log</string>
+</dict>
+</plist>
