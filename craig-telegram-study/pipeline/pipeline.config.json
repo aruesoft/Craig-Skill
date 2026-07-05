@@ -1,0 +1,8 @@
+{
+  "vault": "/Users/craigpark/Github/Craig-Skill/StudyVault",
+  "categories": ["AI-ML", "Business-Investing"],
+  "srs": { "intervals": [1, 3, 7, 21, 60], "daily_cap": 5 },
+  "video": { "max_minutes": 30, "whisper_model": "small", "langs": ["ko", "en"] },
+  "claude_model": "claude-sonnet-5",
+  "_note": "비밀값(anthropic 키·텔레그램 토큰)은 여기 두지 않는다. ~/.config/craig-telegram-study/config.json 사용."
+}
