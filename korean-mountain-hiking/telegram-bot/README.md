@@ -10,23 +10,31 @@
 
 ## 자유질문 모드 (선택 · Claude tool-use)
 
-`ANTHROPIC_API_KEY` 를 설정하면 **자유로운 질문**에도 답한다. 봇이 Claude(기본 Haiku 4.5)를
-중간에 두고, 아래 도구를 스스로 골라 호출한 뒤 데이터 기반으로 답을 작성한다.
+`ANTHROPIC_API_KEY` 를 설정하면 **자유로운 질문**에도 답한다. 봇이 Claude(기본 **Opus 4.8**,
+adaptive thinking + prompt caching)를 중간에 두고, 아래 도구를 스스로 골라 호출한 뒤
+데이터 기반으로 답을 작성한다.
 
 - `lookup_mountain` — 특정 산 코스·높이·순번·mtId 조회
 - `list_mountains` — 100대 명산 전체 요약(조건 필터·비교·추천용)
+- `resolve_date` — 상대적 날짜 표현 → YYYY-MM-DD
 - `get_mountain_weather` — 산악날씨/단기예보 조회
-- `web_search` — 하산식 맛집·최신 통제정보 등 데이터셋 밖 정보
+- `get_sun_times` — 산 위치 기준 일출·일몰 시각(NOAA 근사식, 로컬 계산)
+- `web_search` — 하산식 맛집·탐방로 통제정보·대중교통 등 데이터셋 밖 정보
+  (최신 모델은 `web_search_20260209`, 구형 모델은 `_20250305` 자동 선택)
 
 ```
 초급 코스만 있는 산 추천해줘
 설악산이랑 지리산 중 어디가 더 높아?
 이번 주말 설악산 등산하고 하산식 맛집 알려줘
+(이어서) 거기 대중교통으로 가는 법은?
 ```
 
+- **멀티턴**: 채팅별 대화 히스토리(최근 6턴, 2시간 TTL)를 유지해 후속 질문이 이어진다.
+  `/reset` 으로 초기화. 저장 위치: `~/.config/korean-mountain-hiking/history.json`.
 - 데이터는 `references/mountains.json` 진실원본에서만 나온다(지어내지 않음).
 - **키가 없거나 실패하면** 위의 규칙기반(산 이름 + 날짜) 응답으로 자동 폴백한다.
-- 설치: `pip install anthropic` (선택). 모델 변경은 config 의 `claude_model`.
+- 설치: `pip install anthropic` (선택). 모델 변경은 config 의 `claude_model`
+  (예: 비용을 낮추려면 `"claude-sonnet-5"` 나 `"claude-haiku-4-5"`).
 - 로컬 미리보기: `python bot.py --check "초급 코스만 있는 산 추천"`
 
 ## 설치
@@ -74,9 +82,11 @@ python bot.py --check "북한산 이번주 토요일"  # 텔레그램 없이 로
 | 보내는 메시지 | 응답 |
 |---|---|
 | `북한산` | 코스·높이·100대 명산 정보 |
-| `설악산 이번주 토요일` | 코스 + 토요일 산악날씨 |
+| `설악산 이번주 토요일` | 코스 + 토요일 산악날씨·일출일몰 |
 | `한라산 내일` | 코스 + 내일 날씨 |
 | `지리산 7월 5일` | 코스 + 해당 날짜 날씨 |
+| `/start` | 인사 + 인기 산 바로가기 버튼 |
+| `/reset` | 대화 맥락 초기화 (자유질문 모드) |
 | `/help` | 도움말 |
 
 날짜 표현: `오늘`, `내일`, `모레`, `글피`, `이번주/다음주 요일`, `주말`, `M월 D일`, `YYYY-MM-DD`.

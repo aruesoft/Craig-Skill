@@ -13,21 +13,29 @@ Claude / AI 에이전트용 스킬 모음 저장소. 원격: https://github.com/
 - `SkillVault/`, `StudyVault/` — Obsidian 볼트(둘 다 git 미추적, Obsidian Sync 소유). SkillVault=이 프로젝트 위키(PARA+카파시 LLM-Wiki), StudyVault=학습봇 결과.
 - `deploy/`, `SERVER_SETUP.md` — 봇들을 맥북 에어 서버에서 launchd 상시가동 + pull 자동배포. plist: `com.craig.skill.{mountainbot,youtube,studybot}`.
 
+## 파생 프로젝트
+
+- **mountain-web** (`~/Github/mountain-web`, 별도 저장소) — korean-mountain-hiking 스킬·봇 로직 기반 웹서비스(Next.js+FastAPI, secondb.ai 스타일). 이 저장소를 git submodule(`vendor/Craig-Skill`)로 참조하므로 **bot.py/agent.py/mountains.json 변경 시 웹에도 영향** — 인터페이스(함수 시그니처·JSON 스키마) 바꿀 때 주의.
+
 ## korean-mountain-hiking 텔레그램 봇 (`telegram-bot/`)
 
 - `bot.py` — 진입점. `compose_reply()`가 라우팅: **ANTHROPIC_API_KEY 있으면 자유질문(AI) 모드, 없거나 실패 시 규칙기반(산 이름+날짜)으로 자동 폴백.**
   - 실행: `--listen`(상시 long-poll) / `--once`(cron) / `--check "텍스트"`(로컬 미리보기, 텔레그램 불필요).
-- `agent.py` — 자유질문 모드. Claude(`claude-haiku-4-5`) tool-use 루프. 도구는 전부 `bot.py` 함수/데이터 재사용:
-  `lookup_mountain` / `list_mountains` / `resolve_date` / `get_mountain_weather` + 서버 `web_search_20250305`(맛집·최신정보).
+  - **멀티턴**: 채팅별 대화 히스토리(최근 6턴·2시간 TTL)를 `~/.config/korean-mountain-hiking/history.json`에 유지, `/reset`으로 초기화. `sun_times()`(NOAA 근사식 일출·일몰), `/start` 인라인 버튼(callback_query 처리), 일자별 사용통계(state.json `usage`)도 bot.py 소관.
+- `agent.py` — 자유질문 모드. Claude(**기본 `claude-opus-4-8`**, config `claude_model`로 변경) tool-use 루프. 최신 모델이면 adaptive thinking + prompt caching(`extra_body` 경유 — 구버전 SDK 호환) 적용. 도구는 전부 `bot.py` 함수/데이터 재사용:
+  `lookup_mountain` / `list_mountains` / `resolve_date` / `get_mountain_weather` / `get_sun_times` + 서버 `web_search`(모델 세대별 `_20260209`/`_20250305` 자동 선택 — 맛집·통제정보·대중교통).
 
 ### 봇 응답 형식 지침 (사용자 요구 — `agent.py` `_system_prompt()`에 인코딩되어 매 요청 강제됨)
 
 특정 산 등산 질문이면 기본으로 아래를 **상세히** 담는다:
 1. **⛰️ 등산 코스** — 전체 코스(구간·거리·소요시간·난이도). `map_url` 있으면 🗺️ 지도 링크.
 2. **추천 코스** — recommended 코스를 ⭐ + 추천 이유 한 줄.
-3. **🌤️ 날씨** — 날짜 언급 시(‘이번 주말’ 포함) `resolve_date`로 정확한 날짜를 구해 산악날씨(기온·강수확률·하늘상태)를 구체적으로. 끝에 기상청 산악날씨 링크. 날짜 없으면 생략+안내.
+3. **🌤️ 날씨·일출일몰** — 날짜 언급 시(‘이번 주말’ 포함) `resolve_date`로 정확한 날짜를 구해 산악날씨(기온·강수확률·하늘상태)를 구체적으로 + `get_sun_times`로 일출·일몰과 ‘늦어도 몇 시 출발’ 계산. 끝에 기상청 산악날씨 링크. 날짜 없으면 생략+안내. **날씨 조회 실패/범위초과 시 산 주소(region) 기반 폴백**: AI모드는 web_search로 ‘{지역} {산} 날씨’ 예보 요약(출처 명시), 규칙기반(`format_weather`)은 기상청+네이버 날씨 링크(`weather_fallback_links`) 안내 — 지어내지 않음.
 4. **🍽️ 하산식 맛집** — 하산 지점/근처 지역 기준 `web_search`, 평점 3.5+ 3~5곳 + 대표메뉴. 끝에 카카오맵 검색 링크.
-5. **🔗 참고 링크** — 국립공원 산이면 국립공원공단 예약/통제(`https://reservation.knps.or.kr`) 반드시 포함.
+5. **🚌 가는 길** — 교통 질문이거나 서울 근교 산이면 `web_search`로 대중교통 경로 요약 + 네이버 길찾기 링크.
+6. **⚠️ 통제·안전** — 국립공원 산이면 `web_search`로 최신 탐방로 통제 확인 후 안내.
+7. **🔗 참고 링크** — 국립공원 산이면 국립공원공단 예약/통제(`https://reservation.knps.or.kr`) 반드시 포함.
+- 멀티턴: 후속 질문(‘거기’, ‘그럼 다음주는?’)은 직전 대화 맥락으로 해석.
 
 - 비교·목록·단순 사실질문 등 특정 산 등산 계획이 아니면 관련 항목만 답한다.
 - 상대적 날짜는 직접 계산하지 말고 `resolve_date` 도구를 쓴다(요일 계산 실수 방지).

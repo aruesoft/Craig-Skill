@@ -22,6 +22,7 @@
 
 import argparse
 import json
+import math
 import os
 import re
 import sys
@@ -37,6 +38,11 @@ MOUNTAINS_JSON = SKILL_DIR / "references" / "mountains.json"
 
 CONFIG_DIR = Path.home() / ".config" / "korean-mountain-hiking"
 STATE_FILE = CONFIG_DIR / "state.json"
+HISTORY_FILE = CONFIG_DIR / "history.json"
+
+# 대화 맥락(멀티턴) 보관 정책: 채팅별 최근 N개 메시지, TTL 지나면 새 대화로 취급
+HISTORY_MAX_MESSAGES = 12   # user/assistant 합산 (6턴)
+HISTORY_TTL_SECONDS = 2 * 3600
 
 UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
@@ -82,6 +88,106 @@ def load_state():
 def save_state(state):
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
     STATE_FILE.write_text(json.dumps(state, ensure_ascii=False, indent=2))
+
+
+def record_usage(kind):
+    """일자별 사용 카운터 (state.json 의 usage 키). 실패해도 봇 동작엔 영향 없음."""
+    try:
+        state = load_state()
+        day = date.today().isoformat()
+        usage = state.setdefault("usage", {})
+        day_stats = usage.setdefault(day, {})
+        day_stats[kind] = day_stats.get(kind, 0) + 1
+        # 30일 이전 기록은 정리
+        for k in [d for d in usage if d < (date.today() - timedelta(days=30)).isoformat()]:
+            usage.pop(k, None)
+        save_state(state)
+    except Exception as e:
+        log(f"usage 기록 실패(무시): {e}")
+
+
+# ──────────────────────────── 대화 히스토리 (멀티턴) ────────────────────────────
+
+def _load_histories():
+    try:
+        return json.loads(HISTORY_FILE.read_text())
+    except Exception:
+        return {}
+
+
+def _save_histories(hist):
+    try:
+        CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+        HISTORY_FILE.write_text(json.dumps(hist, ensure_ascii=False))
+    except Exception as e:
+        log(f"히스토리 저장 실패(무시): {e}")
+
+
+def get_history(chat_id):
+    """채팅별 최근 대화. TTL 지난 히스토리는 버린다. 반환: [{"role","content"}]."""
+    if chat_id is None:
+        return []
+    entry = _load_histories().get(str(chat_id))
+    if not entry:
+        return []
+    if time.time() - entry.get("updated", 0) > HISTORY_TTL_SECONDS:
+        return []
+    return entry.get("messages", [])
+
+
+def append_history(chat_id, user_text, assistant_text):
+    """한 턴(user+assistant)을 히스토리에 추가하고 최근 N개만 유지."""
+    if chat_id is None:
+        return
+    hist = _load_histories()
+    entry = hist.setdefault(str(chat_id), {"messages": []})
+    if time.time() - entry.get("updated", 0) > HISTORY_TTL_SECONDS:
+        entry["messages"] = []
+    entry["messages"] += [
+        {"role": "user", "content": user_text},
+        {"role": "assistant", "content": assistant_text},
+    ]
+    entry["messages"] = entry["messages"][-HISTORY_MAX_MESSAGES:]
+    entry["updated"] = time.time()
+    _save_histories(hist)
+
+
+def clear_history(chat_id):
+    if chat_id is None:
+        return
+    hist = _load_histories()
+    if hist.pop(str(chat_id), None) is not None:
+        _save_histories(hist)
+
+
+# ──────────────────────────── 일출·일몰 ────────────────────────────
+
+def sun_times(lat, lon, target):
+    """NOAA 근사식으로 일출·일몰 시각(KST, HH:MM) 계산. 극단 위도 등 계산 불가 시 None."""
+    try:
+        n = target.timetuple().tm_yday
+        gamma = 2 * math.pi / 365 * (n - 1 + 0.5)
+        eqtime = 229.18 * (0.000075 + 0.001868 * math.cos(gamma) - 0.032077 * math.sin(gamma)
+                           - 0.014615 * math.cos(2 * gamma) - 0.040849 * math.sin(2 * gamma))
+        decl = (0.006918 - 0.399912 * math.cos(gamma) + 0.070257 * math.sin(gamma)
+                - 0.006758 * math.cos(2 * gamma) + 0.000907 * math.sin(2 * gamma)
+                - 0.002697 * math.cos(3 * gamma) + 0.00148 * math.sin(3 * gamma))
+        lat_r = math.radians(lat)
+        cos_ha = (math.cos(math.radians(90.833)) / (math.cos(lat_r) * math.cos(decl))
+                  - math.tan(lat_r) * math.tan(decl))
+        if not -1 <= cos_ha <= 1:
+            return None
+        ha = math.degrees(math.acos(cos_ha))
+        sunrise_utc = 720 - 4 * (lon + ha) - eqtime   # 분 단위 UTC
+        sunset_utc = 720 - 4 * (lon - ha) - eqtime
+
+        def fmt(minutes):
+            m = (minutes + 9 * 60) % 1440  # KST = UTC+9
+            return f"{int(m // 60):02d}:{int(m % 60):02d}"
+
+        return {"sunrise": fmt(sunrise_utc), "sunset": fmt(sunset_utc)}
+    except Exception:
+        return None
 
 
 # ──────────────────────────── 산 데이터 ────────────────────────────
@@ -378,12 +484,24 @@ def _fmt_proxy_day(day):
     return "\n".join(lines) if lines else "  (상세 항목 없음)"
 
 
+def weather_fallback_links(m):
+    """산 주소(region) 기반 날씨 확인 링크 — 산악날씨/단기예보가 없을 때 안내용."""
+    name = m.get("name", "")
+    region = (m.get("region") or "").split("/")[0].strip()
+    naver_q = f"{region} {name} 날씨".strip().replace(" ", "+")
+    return [
+        "• 기상청 산악날씨: https://www.weather.go.kr/w/forecast/life/mountain.do",
+        f"• 네이버 날씨({region + ' ' if region else ''}{name}): "
+        f"https://search.naver.com/search.naver?query={naver_q}",
+    ]
+
+
 def format_weather(m, target):
-    """target(date) 날씨를 조회해 텍스트로. 조회 실패/범위초과 시 안내 링크."""
+    """target(date) 날씨를 조회해 텍스트로. 조회 실패/범위초과 시 주소 기반 안내 링크."""
     cfg = load_config()
     tstr = target.isoformat()
     name = m.get("name", "")
-    kma_link = "https://www.weather.go.kr/w/forecast/life/mountain.do"
+    fallback = "\n".join(weather_fallback_links(m))
 
     # 3-A: mtId 산악날씨
     if m.get("mtId"):
@@ -400,7 +518,7 @@ def format_weather(m, target):
             # mtId 는 되지만 요청 날짜가 범위 밖
             return (f"🌤️ {name}: 요청하신 {tstr} 는 산악날씨 예보 범위를 벗어났습니다.\n"
                     f"제공 가능한 날짜: {order[0]} ~ {order[-1]}\n"
-                    f"그 이후는 {kma_link} 에서 확인해 주세요.")
+                    f"그 이후는 아래에서 직접 확인해 주세요:\n{fallback}")
 
     # 3-B: 단기예보 fallback
     by_date, order = _weather_by_proxy(m.get("lat"), m.get("lon"), target,
@@ -410,11 +528,11 @@ def format_weather(m, target):
     if by_date and order:
         return (f"🌤️ {name}: 요청하신 {tstr} 는 단기예보 범위를 벗어났습니다.\n"
                 f"제공 가능한 날짜: {order[0]} ~ {order[-1]}\n"
-                f"그 이후는 {kma_link} 에서 확인해 주세요.")
+                f"그 이후는 아래에서 직접 확인해 주세요:\n{fallback}")
 
-    # 3-C: 실패
+    # 3-C: 실패 — 산 주소 기반 링크 안내
     return (f"🌤️ {name} {tstr} 날씨를 지금 가져오지 못했습니다.\n"
-            f"{kma_link} 에서 직접 확인해 주세요.")
+            f"아래에서 직접 확인해 주세요:\n{fallback}")
 
 
 # ──────────────────────────── 메시지 → 응답 ────────────────────────────
@@ -425,37 +543,58 @@ def _help_text():
         "🏔️ 한국 등산 봇\n",
         "• 산 이름을 보내면 코스·높이·100대 명산 정보를 알려드려요.",
         "   예) 북한산   |   지리산 추천 코스",
-        "• 날짜를 함께 보내면 그 날짜의 산악날씨도 알려드려요.",
+        "• 날짜를 함께 보내면 그 날짜의 산악날씨·일출·일몰도 알려드려요.",
         "   예) 설악산 이번주 토요일   |   한라산 내일   |   북한산 7월 5일",
     ]
     if key:
         lines += [
-            "• 자유롭게 물어봐도 돼요 (AI 응답).",
+            "• 자유롭게 물어봐도 돼요 (AI 응답). 이어지는 질문도 기억해요.",
             "   예) 초급 코스만 있는 산 추천   |   설악산이랑 지리산 중 어디가 더 높아?",
-            "        이번 주말 설악산 등산하고 하산식 맛집 알려줘",
+            "        이번 주말 설악산 등산 계획 짜줘 → \"거기 대중교통으로 가는 법은?\"",
+            "• /reset — 대화 맥락 초기화 (새 주제로 시작할 때)",
         ]
     lines += ["• /help — 이 도움말\n",
-              f"수록 산: {len(load_mountains())}곳 (산림청 100대 명산)"]
+              f"수록 산: {len(load_mountains())}곳 (산림청 100대 명산 포함)"]
     return "\n".join(lines)
 
 
 HELP = _help_text()
 
+# /start 에서 보여줄 인기 산 바로가기 버튼 (callback_data 가 그대로 질문 텍스트가 됨)
+START_KEYBOARD = {"inline_keyboard": [
+    [{"text": "⛰️ 북한산", "callback_data": "북한산 등산 코스 추천"},
+     {"text": "⛰️ 설악산", "callback_data": "설악산 등산 코스 추천"}],
+    [{"text": "⛰️ 지리산", "callback_data": "지리산 등산 코스 추천"},
+     {"text": "⛰️ 한라산", "callback_data": "한라산 등산 코스 추천"}],
+    [{"text": "❓ 도움말", "callback_data": "/help"}],
+]}
 
-def compose_reply(text, cfg):
-    """API 키가 있으면 Claude tool-use(자유질문) 경로, 없거나 실패하면 규칙기반으로 폴백."""
+_RESET_WORDS = ("/reset", "reset", "초기화", "새대화", "새 대화")
+
+
+def compose_reply(text, cfg, chat_id=None):
+    """API 키가 있으면 Claude tool-use(자유질문) 경로, 없거나 실패하면 규칙기반으로 폴백.
+
+    chat_id 가 있으면 채팅별 대화 히스토리(멀티턴)를 읽고/기록한다.
+    """
     t = (text or "").strip()
     if not t:
         return None
     if t.lower() in ("/start", "/help", "help", "도움말", "시작"):
         return HELP
+    if t.lower() in _RESET_WORDS:
+        clear_history(chat_id)
+        return "🧹 대화 맥락을 초기화했어요. 새 질문을 보내주세요."
     try:
         import agent  # 지연 import — anthropic 미설치 환경에서도 규칙기반은 동작
-        ans = agent.agentic_reply(t, cfg)
+        ans = agent.agentic_reply(t, cfg, history=get_history(chat_id))
         if ans:
+            append_history(chat_id, t, ans)
+            record_usage("ai")
             return ans
     except Exception as e:
         log(f"agent 경로 실패, 규칙기반 폴백: {e}")
+    record_usage("rule")
     return build_reply(t)
 
 
@@ -486,14 +625,17 @@ def build_reply(text):
 
 # ──────────────────────────── 텔레그램 I/O ────────────────────────────
 
-def tg_send(cfg, chat_id, text):
+def tg_send(cfg, chat_id, text, reply_markup=None):
     token = cfg["telegram_bot_token"]
     url = f"https://api.telegram.org/bot{token}/sendMessage"
-    for chunk in [text[i:i + 4000] for i in range(0, len(text), 4000)] or [""]:
+    chunks = [text[i:i + 4000] for i in range(0, len(text), 4000)] or [""]
+    for i, chunk in enumerate(chunks):
+        payload = {"chat_id": chat_id, "text": chunk,
+                   "disable_web_page_preview": True}
+        if reply_markup and i == len(chunks) - 1:  # 버튼은 마지막 메시지에만
+            payload["reply_markup"] = reply_markup
         try:
-            r = requests.post(url, json={
-                "chat_id": chat_id, "text": chunk,
-                "disable_web_page_preview": True}, timeout=10).json()
+            r = requests.post(url, json=payload, timeout=10).json()
             if not r.get("ok"):
                 log(f"Telegram 오류: {r.get('description', r)}")
                 return False
@@ -502,6 +644,23 @@ def tg_send(cfg, chat_id, text):
             return False
         time.sleep(0.3)
     return True
+
+
+def tg_send_typing(cfg, chat_id):
+    """'입력 중...' 표시 — AI 응답이 수십 초 걸릴 수 있어 사용자에게 진행 신호."""
+    try:
+        requests.post(f"https://api.telegram.org/bot{cfg['telegram_bot_token']}/sendChatAction",
+                      json={"chat_id": chat_id, "action": "typing"}, timeout=5)
+    except Exception:
+        pass
+
+
+def tg_answer_callback(cfg, callback_id):
+    try:
+        requests.post(f"https://api.telegram.org/bot{cfg['telegram_bot_token']}/answerCallbackQuery",
+                      json={"callback_query_id": callback_id}, timeout=5)
+    except Exception:
+        pass
 
 
 def process_updates(cfg, long_poll=False):
@@ -529,22 +688,33 @@ def process_updates(cfg, long_poll=False):
     handled = 0
     for upd in updates:
         last_id = upd["update_id"]
-        msg = upd.get("message") or upd.get("channel_post") or {}
-        text = msg.get("text", "")
-        chat_id = msg.get("chat", {}).get("id")
+
+        # 인라인 버튼 클릭 → callback_data 를 질문 텍스트처럼 처리
+        cb = upd.get("callback_query")
+        if cb:
+            tg_answer_callback(cfg, cb.get("id"))
+            text = cb.get("data", "")
+            chat_id = (cb.get("message") or {}).get("chat", {}).get("id")
+        else:
+            msg = upd.get("message") or upd.get("channel_post") or {}
+            text = msg.get("text", "")
+            chat_id = msg.get("chat", {}).get("id")
+
         if not text or chat_id is None:
             continue
         if allow and str(chat_id) != allow:
             log(f"권한 없는 채팅 무시: {chat_id}")
             continue
         log(f"수신: {text!r} (chat {chat_id})")
+        tg_send_typing(cfg, chat_id)
         try:
-            reply = compose_reply(text, cfg)
+            reply = compose_reply(text, cfg, chat_id=chat_id)
         except Exception as e:
             reply = f"처리 중 오류가 발생했어요: {e}"
             log(f"build_reply 오류: {e}")
         if reply:
-            tg_send(cfg, chat_id, reply)
+            markup = START_KEYBOARD if text.strip().lower() in ("/start", "시작") else None
+            tg_send(cfg, chat_id, reply, reply_markup=markup)
             handled += 1
 
     if last_id is not None:
