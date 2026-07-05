@@ -24,7 +24,7 @@ HERE = Path(__file__).resolve().parent
 USER_CFG = Path.home() / ".config" / "craig-telegram-study" / "config.json"
 STATE = Path.home() / ".config" / "craig-telegram-study" / "relay_state.json"
 PROC = {"ingest": "learn_ingest.py", "curate": "learn_curate.py",
-        "garden": "learn_garden.py", "retro": "learn_retro.py"}
+        "garden": "learn_garden.py", "retro": "learn_retro.py", "weekly": "learn_weekly.py"}
 
 
 def log(m):
@@ -137,13 +137,17 @@ def flush_outgoing(cfg):
 
 # ───────── 라우팅 ─────────
 HELP = ("📚 학습 파이프라인 봇\n"
-        "• 링크(웹/유튜브/인스타)·텍스트·사진을 보내면 인박스에 수집\n"
-        "• #ai #biz 로 카테고리 힌트\n"
-        "명령: /status /curate /garden /review /find 키워드")
+        "① 링크(웹/유튜브/인스타)·텍스트·사진을 보내면 인박스에 수집(동영상은 전사)\n"
+        "② /curate → 승인 버튼으로 주제 노트로 승격·병합\n"
+        "③ /review → 오늘 복습 카드(👍👌👎)\n"
+        "• #ai #biz 카테고리 힌트\n"
+        "명령: /status /find 키워드 /curate /garden /review /weekly")
 
 
 def route_text(text):
     low = text.strip().lower()
+    if low.startswith("/weekly"):
+        return "weekly"
     if low.startswith("/garden"):
         return "garden"
     if low.startswith("/curate"):
