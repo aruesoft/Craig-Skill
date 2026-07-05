@@ -30,7 +30,7 @@ HERE = Path(__file__).resolve().parent
 USER_CFG = Path.home() / ".config" / "craig-telegram-study" / "config.json"
 URL_RE = re.compile(r"https?://[^\s]+")
 YT_RE = re.compile(r"(youtube\.com|youtu\.be)")
-SOCIAL_RE = re.compile(r"(instagram\.com|tiktok\.com|facebook\.com|fb\.watch|threads\.net|x\.com|twitter\.com)")
+SOCIAL_RE = re.compile(r"(instagram\.com|tiktok\.com|facebook\.com|fb\.watch|threads\.(net|com)|x\.com|twitter\.com)")
 HASHTAG_RE = re.compile(r"(?:^|\s)#([^\s#]{1,40})")
 CAT_HINT = {"ai": "AI-ML", "ml": "AI-ML", "llm": "AI-ML",
             "biz": "Business-Investing", "invest": "Business-Investing", "econ": "Business-Investing"}
@@ -38,6 +38,14 @@ CAT_HINT = {"ai": "AI-ML", "ml": "AI-ML", "llm": "AI-ML",
 
 def log(m):
     print(f"[{datetime.now():%H:%M:%S}] {m}", flush=True)
+
+
+def _platform_name(url):
+    for pat, name in [(r"instagram", "인스타그램"), (r"threads", "스레드"), (r"tiktok", "틱톡"),
+                      (r"(x\.com|twitter)", "X(트위터)"), (r"facebook|fb\.watch", "페이스북")]:
+        if re.search(pat, url):
+            return name
+    return "이 링크"
 
 
 def load_config():
@@ -187,6 +195,78 @@ def segments_to_transcript(segs):
     return "\n".join(f"[{_fmt_ts(s['t'])}] {s['text']}" for s in segs)
 
 
+# ───────── 소셜 캡션 / 브라우저 렌더 추출(로그인 벽 우회) ─────────
+def ytdlp_caption(url, cfg):
+    """인스타/틱톡 등 제목+캡션(description) 추출. 쿠키 있으면 로그인 벽 통과."""
+    try:
+        r = subprocess.run(_ytdlp_base(cfg) + ["--no-warnings", "--skip-download",
+                           "--print", "%(title)s\n%(description)s", url],
+                           capture_output=True, text=True, timeout=90)
+        out = (r.stdout or "").strip()
+        return out if len(out) >= 20 else None
+    except Exception:
+        return None
+
+
+def _playwright_cookies(cfg):
+    """Netscape cookies.txt(ytdlp_cookies) → playwright 쿠키 dict 목록."""
+    ck = cfg.get("ytdlp_cookies")
+    if not ck or not os.path.exists(os.path.expanduser(ck)):
+        return []
+    out = []
+    for line in open(os.path.expanduser(ck), encoding="utf-8", errors="ignore"):
+        if line.startswith("#") or not line.strip():
+            continue
+        p = line.rstrip("\n").split("\t")
+        if len(p) >= 7:
+            dom, _flag, path, secure, expiry, name, value = p[:7]
+            out.append({"name": name, "value": value, "domain": dom, "path": path or "/",
+                        "secure": secure.upper() == "TRUE",
+                        "expires": int(expiry) if expiry.isdigit() else -1})
+    return out
+
+
+def browser_extract(url, cfg, debug=False):
+    """JS/로그인 벽 페이지를 헤드리스 브라우저(playwright)+쿠키로 렌더해 본문 추출(threads·x 등)."""
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        if debug:
+            log("playwright 미설치")
+        return None
+    cookies = _playwright_cookies(cfg)
+    try:
+        with sync_playwright() as pw:
+            b = pw.chromium.launch(headless=True)
+            ctx = b.new_context(user_agent=("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                                            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122 Safari/537.36"),
+                                locale="ko-KR")
+            if cookies:
+                try:
+                    ctx.add_cookies(cookies)
+                except Exception:
+                    pass
+            pg = ctx.new_page()
+            pg.goto(url, wait_until="domcontentloaded", timeout=30000)
+            pg.wait_for_timeout(3500)
+            html = pg.content()
+            text = None
+            try:
+                import trafilatura
+                text = trafilatura.extract(html, include_comments=False)
+            except Exception:
+                pass
+            if not text or len(text) < 40:
+                text = pg.evaluate("() => document.body ? document.body.innerText : ''")
+            b.close()
+            text = (text or "").strip()
+            return text if len(text) >= 40 else None
+    except Exception as e:
+        if debug:
+            log(f"browser_extract 실패: {e}")
+        return None
+
+
 # ───────── 웹/텍스트/이미지 ─────────
 def web_extract(url):
     try:
@@ -305,14 +385,14 @@ def ingest_one(cfg, text, tags=None, image=None, image_media="image/jpeg"):
     if image:
         source_type = "image"
         original = "(이미지 첨부 — 아래 요약 참조)"
-    elif url and (YT_RE.search(url) or SOCIAL_RE.search(url)):
-        source_type = "youtube" if YT_RE.search(url) else "video"
+    elif url and YT_RE.search(url):
+        source_type = "youtube"
         meta = video_meta(url, cfg)
         try:
             cfg["_duration_min"] = int(float(meta.get("duration") or 0)) // 60
         except Exception:
             cfg["_duration_min"] = 0
-        log(f"동영상 전사: {meta.get('title') or url} ({cfg['_duration_min']}분)")
+        log(f"유튜브 전사: {meta.get('title') or url} ({cfg['_duration_min']}분)")
         segs, how = transcript_segments(url, cfg)
         if segs:
             transcript = segments_to_transcript(segs)
@@ -324,13 +404,39 @@ def ingest_one(cfg, text, tags=None, image=None, image_media="image/jpeg"):
             extra = "\n\n> ⚠️ transcript: failed — 자막/오디오 확보 실패. 링크만 저장."
             body_for_claude = f"동영상 제목: {meta.get('title')}\n(전사 실패, 제목·링크만)"
         data = summarize(cfg, body_for_claude, source_type, cats)
+    elif url and SOCIAL_RE.search(url):
+        source_type = "social"
+        log(f"소셜 추출(캡션→전사→브라우저): {url}")
+        caption = ytdlp_caption(url, cfg)                 # 인스타/틱톡 캡션(쿠키)
+        segs, how = transcript_segments(url, cfg)          # 영상이면 자막/음성
+        parts, extra = [], ""
+        if caption:
+            parts.append(caption)
+        if segs:
+            transcript = segments_to_transcript(segs)
+            extra = f"\n\n## 스크립트 (전문 · {how})\n\n{transcript}"
+            parts.append(transcript)
+        if not parts:                                      # yt-dlp 실패(예: threads) → 브라우저 렌더
+            web = browser_extract(url, cfg)
+            if web:
+                parts.append(web)
+        user_note = URL_RE.sub("", text_clean).strip()
+        if not parts and len(user_note) < 20:
+            plat = _platform_name(url)
+            return None, (f"⚠️ {plat} 내용을 못 가져왔어요.\n"
+                          f"쿠키가 만료됐거나 비공개일 수 있어요 — `refresh_ig_cookies.sh` 재실행 또는 핵심 텍스트를 함께 보내주세요.\n"
+                          f"※ 노트는 만들지 않았어요.")
+        body = "\n\n".join(parts) if parts else user_note
+        original = f"- 출처: {url}" + (f"\n\n{user_note}" if user_note else "")
+        data = summarize(cfg, body, source_type, cats)
     elif url:
         source_type = "web"
         body = web_extract(url)
+        if not body:                                       # 정적 추출 실패 → 브라우저 렌더(JS 벽)
+            body = browser_extract(url, cfg)
         user_note = URL_RE.sub("", text_clean).strip()
         if not body and len(user_note) < 20:
-            # 추출 실패 + 사용자 텍스트 없음 → 정크(placeholder) 노트 만들지 말고 안내
-            return None, ("⚠️ 이 링크는 본문을 자동으로 못 가져왔어요(로그인/JS 벽 등, 예: threads·x).\n"
+            return None, ("⚠️ 이 링크는 본문을 자동으로 못 가져왔어요(로그인/JS 벽 등).\n"
                           "핵심 텍스트를 링크와 함께 붙여 보내주시면 정리해드릴게요.\n"
                           "※ 내용이 없어 노트는 만들지 않았어요.")
         original = body or f"[출처] {url}\n\n{user_note}"
