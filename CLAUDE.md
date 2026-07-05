@@ -22,7 +22,7 @@ Claude / AI 에이전트용 스킬 모음 저장소. 원격: https://github.com/
 - `bot.py` — 진입점. `compose_reply()`가 라우팅: **ANTHROPIC_API_KEY 있으면 자유질문(AI) 모드, 없거나 실패 시 규칙기반(산 이름+날짜)으로 자동 폴백.**
   - 실행: `--listen`(상시 long-poll) / `--once`(cron) / `--check "텍스트"`(로컬 미리보기, 텔레그램 불필요).
   - **멀티턴**: 채팅별 대화 히스토리(최근 6턴·2시간 TTL)를 `~/.config/korean-mountain-hiking/history.json`에 유지, `/reset`으로 초기화. `sun_times()`(NOAA 근사식 일출·일몰), `/start` 인라인 버튼(callback_query 처리), 일자별 사용통계(state.json `usage`)도 bot.py 소관.
-- `agent.py` — 자유질문 모드. Claude(**기본 `claude-opus-4-8`**, config `claude_model`로 변경) tool-use 루프. 최신 모델이면 adaptive thinking + prompt caching(`extra_body` 경유 — 구버전 SDK 호환) 적용. 도구는 전부 `bot.py` 함수/데이터 재사용:
+- `agent.py` — 자유질문 모드. Claude(**기본 `claude-sonnet-5`**, config `claude_model`로 변경) tool-use 루프. 최신 모델이면 adaptive thinking + prompt caching(`extra_body` 경유 — 구버전 SDK 호환) 적용. 도구는 전부 `bot.py` 함수/데이터 재사용:
   `lookup_mountain` / `list_mountains` / `resolve_date` / `get_mountain_weather` / `get_sun_times` + 서버 `web_search`(모델 세대별 `_20260209`/`_20250305` 자동 선택 — 맛집·통제정보·대중교통).
 
 ### 봇 응답 형식 지침 (사용자 요구 — `agent.py` `_system_prompt()`에 인코딩되어 매 요청 강제됨)

@@ -3,7 +3,7 @@
 LLM 백엔드 (Claude tool-use 루프) — 텔레그램 봇의 자유질문 응답.
 
 기존 `bot.py`의 순수 파이썬 함수(match_mountain / format_courses / format_weather 등)를
-Claude(기본 Opus 4.8)의 "도구"로 재사용한다. 사용자가 자유롭게 던진 질문을 Claude가 해석해
+Claude(기본 Sonnet 5)의 "도구"로 재사용한다. 사용자가 자유롭게 던진 질문을 Claude가 해석해
 필요한 도구를 스스로 골라 호출하고, 데이터 기반으로 답을 작성한다.
 
 - 데이터는 항상 `references/mountains.json` 진실원본에서만 나온다(지어내지 않음).
@@ -25,7 +25,7 @@ from datetime import date, datetime
 
 import bot  # 같은 폴더의 bot.py — 데이터/코스/날씨 헬퍼 재사용
 
-DEFAULT_MODEL = "claude-opus-4-8"
+DEFAULT_MODEL = "claude-sonnet-5"
 MAX_ITERS = 8          # tool-use 루프 안전장치
 MAX_TOKENS = 4096
 

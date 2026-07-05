@@ -10,7 +10,7 @@
 
 ## 자유질문 모드 (선택 · Claude tool-use)
 
-`ANTHROPIC_API_KEY` 를 설정하면 **자유로운 질문**에도 답한다. 봇이 Claude(기본 **Opus 4.8**,
+`ANTHROPIC_API_KEY` 를 설정하면 **자유로운 질문**에도 답한다. 봇이 Claude(기본 **Sonnet 5**,
 adaptive thinking + prompt caching)를 중간에 두고, 아래 도구를 스스로 골라 호출한 뒤
 데이터 기반으로 답을 작성한다.
 
@@ -34,7 +34,7 @@ adaptive thinking + prompt caching)를 중간에 두고, 아래 도구를 스스
 - 데이터는 `references/mountains.json` 진실원본에서만 나온다(지어내지 않음).
 - **키가 없거나 실패하면** 위의 규칙기반(산 이름 + 날짜) 응답으로 자동 폴백한다.
 - 설치: `pip install anthropic` (선택). 모델 변경은 config 의 `claude_model`
-  (예: 비용을 낮추려면 `"claude-sonnet-5"` 나 `"claude-haiku-4-5"`).
+  (예: 품질 최우선이면 `"claude-opus-4-8"`, 비용 최소화는 `"claude-haiku-4-5"`).
 - 로컬 미리보기: `python bot.py --check "초급 코스만 있는 산 추천"`
 
 ## 설치
