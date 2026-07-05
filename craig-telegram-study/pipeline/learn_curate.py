@@ -78,13 +78,13 @@ def get_chat(cfg, fallback=None):
     return c
 
 
-def outgoing(cfg, chat_id, text, buttons=None):
+def outgoing(cfg, chat_id, text, buttons=None, edit_mid=None):
     if not chat_id:
         return
     q = Path(cfg["vault"]) / "_System" / "Queue" / "outgoing"
     q.mkdir(parents=True, exist_ok=True)
     fn = f"{datetime.now():%Y%m%d%H%M%S%f}.json"
-    (q / fn).write_text(json.dumps({"chat_id": chat_id, "text": text, "buttons": buttons},
+    (q / fn).write_text(json.dumps({"chat_id": chat_id, "text": text, "buttons": buttons, "edit_mid": edit_mid},
                         ensure_ascii=False), encoding="utf-8")
 
 
