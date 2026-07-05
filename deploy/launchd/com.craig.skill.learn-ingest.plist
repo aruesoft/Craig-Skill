@@ -3,14 +3,15 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.craig.skill.studybot</string>
+    <string>com.craig.skill.learn-ingest</string>
 
-    <!-- 학습봇 = 큐 릴레이(relay_bot.py --listen): 수신→Queue 저장→발신만. 지능은 learn_* 처리기. -->
+    <!-- learn-ingest — incoming 큐 처리(catch-up). relay_bot 이 메시지마다 즉시 트리거하고,
+         이 잡은 5분마다 밀린 큐를 처리하는 안전망. -->
     <key>ProgramArguments</key>
     <array>
         <string>/Users/craigpark/anaconda3/bin/python3</string>
-        <string>/Users/craigpark/Github/Craig-Skill/craig-telegram-study/pipeline/relay_bot.py</string>
-        <string>--listen</string>
+        <string>/Users/craigpark/Github/Craig-Skill/craig-telegram-study/pipeline/learn_ingest.py</string>
+        <string>--queue</string>
     </array>
 
     <key>WorkingDirectory</key>
@@ -24,17 +25,14 @@
         <string>1</string>
     </dict>
 
-    <!-- 상시 구동: 로그인 시 시작 + 죽으면 자동 재시작 (단일 인스턴스 철칙) -->
+    <key>StartInterval</key>
+    <integer>300</integer>
     <key>RunAtLoad</key>
     <true/>
-    <key>KeepAlive</key>
-    <true/>
-    <key>ThrottleInterval</key>
-    <integer>10</integer>
 
     <key>StandardOutPath</key>
-    <string>/Users/craigpark/Github/Craig-Skill/logs/studybot.out.log</string>
+    <string>/Users/craigpark/Github/Craig-Skill/logs/learn-ingest.out.log</string>
     <key>StandardErrorPath</key>
-    <string>/Users/craigpark/Github/Craig-Skill/logs/studybot.err.log</string>
+    <string>/Users/craigpark/Github/Craig-Skill/logs/learn-ingest.err.log</string>
 </dict>
 </plist>

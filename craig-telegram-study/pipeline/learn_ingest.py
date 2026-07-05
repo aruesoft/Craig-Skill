@@ -20,6 +20,7 @@ import hashlib
 import argparse
 import tempfile
 import subprocess
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -365,22 +366,35 @@ def process_queue(cfg):
     qdone = Path(cfg["vault"]) / "_System" / "Queue" / "processed"
     for d in (qin, qout, qdone):
         d.mkdir(parents=True, exist_ok=True)
-    files = sorted(qin.glob("*.json"))
-    if not files:
-        log("incoming 큐 비어있음")
+    # 동시실행 방지(긴 전사 겹침 방지)
+    lock = Path(cfg["vault"]) / "_System" / "Queue" / ".ingest.lock"
+    if lock.exists() and (time.time() - lock.stat().st_mtime) < 1800:
         return 0
+    lock.write_text(str(os.getpid()))
     n = 0
-    for f in files:
-        try:
-            j = json.load(open(f))
-        except Exception:
-            continue
-        fp, msg = ingest_one(cfg, j.get("text", ""), tags=j.get("tags", []))
-        out = {"chat_id": j.get("chat_id"), "text": msg, "reply_to": j.get("msg_id")}
-        (qout / f"{f.stem}.json").write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
-        shutil.move(str(f), str(qdone / f.name))
-        n += 1
-        log(f"처리: {f.name} → {msg[:50]}")
+    try:
+        for f in sorted(qin.glob("*.json")):
+            try:
+                j = json.load(open(f))
+            except Exception:
+                continue
+            if j.get("route", "ingest") != "ingest" or j.get("type") not in ("message", None):
+                continue  # 다른 처리기 몫
+            img, media = None, "image/jpeg"
+            for a in (j.get("attachments") or []):
+                if a and os.path.exists(a):
+                    img = open(a, "rb").read()
+                    media = "image/png" if a.lower().endswith(".png") else "image/jpeg"
+                    break
+            fp, msg = ingest_one(cfg, j.get("text", ""), tags=j.get("tags", []),
+                                 image=img, image_media=media)
+            out = {"chat_id": j.get("chat_id"), "text": msg}
+            (qout / f"{f.stem}_out.json").write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
+            shutil.move(str(f), str(qdone / f.name))
+            n += 1
+            log(f"처리: {f.name} → {msg[:50]}")
+    finally:
+        lock.unlink(missing_ok=True)
     return n
 
 

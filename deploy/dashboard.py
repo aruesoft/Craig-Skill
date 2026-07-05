@@ -27,7 +27,7 @@ BOTS = [
     {"key": "youtube", "name": "유튜브봇", "label": "com.craig.skill.youtube",
      "proc": "youtube-telegram-summary/monitor.py"},
     {"key": "studybot", "name": "학습봇", "label": "com.craig.skill.studybot",
-     "proc": "craig-telegram-study/telegram-bot/study_bot.py"},
+     "proc": "craig-telegram-study/pipeline/relay_bot.py"},
     {"key": "dashboard", "name": "대시보드", "label": "com.craig.skill.dashboard",
      "proc": "deploy/dashboard.py"},
 ]
