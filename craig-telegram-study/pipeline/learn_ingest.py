@@ -327,8 +327,14 @@ def ingest_one(cfg, text, tags=None, image=None, image_media="image/jpeg"):
     elif url:
         source_type = "web"
         body = web_extract(url)
-        original = (body or f"(본문 추출 실패) {url}")
-        data = summarize(cfg, body or text_clean, source_type, cats)
+        user_note = URL_RE.sub("", text_clean).strip()
+        if not body and len(user_note) < 20:
+            # 추출 실패 + 사용자 텍스트 없음 → 정크(placeholder) 노트 만들지 말고 안내
+            return None, ("⚠️ 이 링크는 본문을 자동으로 못 가져왔어요(로그인/JS 벽 등, 예: threads·x).\n"
+                          "핵심 텍스트를 링크와 함께 붙여 보내주시면 정리해드릴게요.\n"
+                          "※ 내용이 없어 노트는 만들지 않았어요.")
+        original = body or f"[출처] {url}\n\n{user_note}"
+        data = summarize(cfg, body or user_note, source_type, cats)
     else:
         data = summarize(cfg, text_clean, "text", cats)
 
@@ -337,6 +343,11 @@ def ingest_one(cfg, text, tags=None, image=None, image_media="image/jpeg"):
 
     if not data:
         return None, "정리 실패(anthropic 키·네트워크 확인)"
+    # placeholder 새어나옴(내용 부족) → 정크 노트 방지
+    if str(data.get("title", "")).strip() in ("간결한 제목", "수집", "") or \
+       str(data.get("value", "")).strip() in ("high|mid|low",):
+        return None, ("⚠️ 내용을 충분히 파악하지 못해 노트를 만들지 않았어요.\n"
+                      "핵심 텍스트를 함께 보내주시면 정리할게요.")
 
     # 중복 검사
     if url:
