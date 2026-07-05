@@ -27,7 +27,11 @@
 |---|---|---|---|
 | 등산봇(텔레그램, 상시) | `korean-mountain-hiking/telegram-bot/bot.py --listen` | launchd `com.craig.skill.mountainbot` | 상시(이벤트 응답) |
 | 유튜브 요약봇(상시 리스너) | `youtube-telegram-summary/monitor.py --listen` | launchd `com.craig.skill.youtube` | 상시(명령 즉시응답 + 6시간 주기 자동감지) |
-| 학습봇(상시 리스너) | `craig-telegram-study/telegram-bot/study_bot.py --listen` | launchd `com.craig.skill.studybot` | 상시(명령·복습·이미지·음성) |
+| 학습봇 = 큐 릴레이 | `craig-telegram-study/pipeline/relay_bot.py --listen` | launchd `com.craig.skill.studybot` | 상시(수신→큐→발신) |
+| learn-ingest(수집) | `pipeline/learn_ingest.py --queue` | launchd `com.craig.skill.learn-ingest` | 5분(+즉시 트리거) |
+| learn-curate(승격/병합) | `pipeline/learn_curate.py --run` | launchd `com.craig.skill.learn-curate` | 일 22시(+/curate) |
+| learn-garden(링크·MOC) | `pipeline/learn_garden.py --run` | launchd `com.craig.skill.learn-garden` | 수·일 21시(+/garden) |
+| learn-retro(복습) | `pipeline/learn_retro.py --run` | launchd `com.craig.skill.learn-retro` | 매일 08시(+/review) |
 | 헬스체크 대시보드 | `deploy/dashboard.py --port 8788` | launchd `com.craig.skill.dashboard` | 상시(웹 :8788) |
 | 워치독(중단·오류 감지→재시작·알림) | `deploy/watchdog.py` | launchd `com.craig.skill.watchdog` | 5분마다 |
 | 자동배포 | `deploy/auto_deploy.sh` | crontab | 10분마다 |
