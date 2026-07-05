@@ -66,9 +66,10 @@ def authorized(cfg, chat_id):
 
 
 # ───────── 텔레그램 ─────────
-def api(cfg, method, **data):
+def api(cfg, method, _http_timeout=20, **data):
     try:
-        return requests.post(f"https://api.telegram.org/bot{cfg['token']}/{method}", data=data, timeout=20).json()
+        return requests.post(f"https://api.telegram.org/bot{cfg['token']}/{method}",
+                             data=data, timeout=_http_timeout).json()
     except Exception as e:
         log(f"{method} 오류: {e}")
         return {}
@@ -253,7 +254,7 @@ def poll_once(cfg, long_poll=False):
     off = st.get("offset")
     if off is not None:
         params["offset"] = off
-    r = api(cfg, "getUpdates", **params)
+    r = api(cfg, "getUpdates", _http_timeout=(55 if long_poll else 20), **params)
     if not r.get("ok"):
         return
     last = None
