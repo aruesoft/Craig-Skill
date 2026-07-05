@@ -23,7 +23,8 @@ import requests
 HERE = Path(__file__).resolve().parent
 USER_CFG = Path.home() / ".config" / "craig-telegram-study" / "config.json"
 STATE = Path.home() / ".config" / "craig-telegram-study" / "relay_state.json"
-PROC = {"ingest": "learn_ingest.py", "curate": "learn_curate.py", "retro": "learn_retro.py"}
+PROC = {"ingest": "learn_ingest.py", "curate": "learn_curate.py",
+        "garden": "learn_garden.py", "retro": "learn_retro.py"}
 
 
 def log(m):
@@ -142,7 +143,9 @@ HELP = ("📚 학습 파이프라인 봇\n"
 
 def route_text(text):
     low = text.strip().lower()
-    if low.startswith(("/curate", "/garden")):
+    if low.startswith("/garden"):
+        return "garden"
+    if low.startswith("/curate"):
         return "curate"
     if low.startswith(("/review", "/quiz", "/복습")):
         return "retro"
@@ -167,6 +170,11 @@ def handle_update(cfg, upd):
     ch = msg.get("chat", {}).get("id")
     if not authorized(cfg, ch):
         return
+    if ch:  # 처리기들이 스케줄 발신 대상으로 쓰도록 마지막 채팅 저장
+        st = load_state()
+        if str(st.get("last_chat")) != str(ch):
+            st["last_chat"] = ch
+            save_state(st)
     text = (msg.get("text") or "").strip()
     caption = (msg.get("caption") or "").strip()
     photos = msg.get("photo")
