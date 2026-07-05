@@ -73,7 +73,7 @@ pgrep -fl "youtube-telegram-summary/monitor.py" | grep -qv "$ROOT" && \
 run "mkdir -p '$ROOT/logs'"
 
 # ── launchd 등록 ───────────────────────────────────────────────────────
-for j in mountainbot youtube studybot dashboard watchdog learn-ingest; do
+for j in mountainbot youtube studybot dashboard watchdog learn-ingest learn-curate learn-garden; do
     SRC="$ROOT/deploy/launchd/com.craig.skill.$j.plist"
     DST="$LAUNCH_DIR/com.craig.skill.$j.plist"
     [ -f "$SRC" ] || { err "plist 없음: $SRC"; continue; }
