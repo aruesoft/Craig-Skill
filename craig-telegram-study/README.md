@@ -1,72 +1,41 @@
-# Craig Telegram Study Bot (craig-telegram-study)
+# Craig Telegram Study — 학습 파이프라인
 
-텔레그램으로 **링크 또는 학습 내용**을 보내면, Claude가 정리해 **Obsidian(StudyVault)**에 학습 노트로 저장하는 스킬 & 봇.
+텔레그램/옵시디언으로 링크·텍스트·이미지를 보내면 **수집 → 선별·승격 → 간격반복 복습**으로 PARA 볼트(StudyVault)에 정리하는 파이프라인. **봇은 큐 릴레이만, 지능은 처리기(learn-\*)가 담당**.
 
 ```
-텔레그램(@CraigStudyBot) → 링크 / 텍스트 / 이미지
-   → 본문 확보(웹=trafilatura · 유튜브/인스타=yt-dlp 자막·캡션, 없으면 whisper 음성인식 · 이미지=Claude 비전)
-   → Claude 정리(요약·상세·인과관계·계층 태그·기존 노트 [[링크]])
-   → StudyVault/Notes 저장 + Concepts 개념 허브 생성 → 텔레그램 회신
+입력 → relay_bot(수신→Queue→발신)
+  → learn-ingest(수집·동영상 타임스탬프 전사) → 00_Inbox
+  → learn-curate(/curate 승인 버튼 → 병합/생성) → 02_Areas 주제노트 + MOC
+  → learn-garden(링크·MOC 정비) · learn-retro(SM-2 복습) · learn-weekly(주간 리트로)
 ```
+
+설계 SSOT: [`학습파이프라인_설계안.md`](학습파이프라인_설계안.md). 상세: [`SKILL.md`](SKILL.md).
 
 ## 특징
+- **다양한 입력**: 웹/유튜브/인스타 링크, 텍스트, 노트·책 사진(이미지 OCR)
+- **동영상 타임스탬프 전사**: 자막API → yt-dlp → whisper. `## 스크립트 (전문)`에 `[MM:SS]`
+- **인간 승인 큐레이션**: `/curate` → 노트별 ✅승인/📁보관/🗑버림 버튼 → 주제노트에 **병합 우선**
+- **PARA 볼트 + MOC**: `02_Areas/{AI-ML,Business-Investing}/_MOC_*` 자동 갱신
+- **간격 반복 복습**: SM-2 라이트(1→3→7→21→60), 텔레그램 카드 👍👌👎
+- **정크 방지**: 로그인 벽(threads·x·인스타) 추출 실패 시 노트 안 만들고 안내
 
-- **다양한 입력**: 웹/유튜브/인스타 링크, 학습 텍스트, **노트·책 사진(이미지 OCR)**
-- **학습 최적화 노트**: 핵심 요약 → 상세 정리 → **인과관계(A → B)** → 왜 중요한가/응용
-- **인과·연관 연결**: 기존 노트/개념을 찾아 `[[위키링크]]`로 연결(그래프 뷰로 지식망 확인)
-- **계층 태그**: `경제/금리`처럼 분야/하위 구조. `#태그` 입력 시 그 태그 반영
-- **[주제] 이어쓰기**: `[주제]`로 시작하면 해당 주제 노트에 누적 저장(없으면 새로)
-- **개념 허브**: `[[개념]]` 참조 시 `Concepts/`에 스텁 자동 생성 → 백링크 형성
-- **음성인식**: 자막 없는 영상은 오디오를 whisper로 전사해 정리
+## 명령
+`/curate`(선별·승격) · `/garden`(정비) · `/review`(복습) · `/weekly`(주간) · `/status` · `/find 키워드` · `#ai`/`#biz` 힌트
 
-## 설치
-
+## 설치·설정
 ```bash
-pip install anthropic requests trafilatura yt-dlp
+pip install anthropic requests trafilatura yt-dlp youtube-transcript-api openai-whisper
 ```
+- config `~/.config/craig-telegram-study/config.json`: `telegram_bot_token`·`anthropic_api_key`(+선택 `telegram_chat_id`·`ytdlp_cookies`·`whisper_model`). **저장소 밖**.
+- 서버 상시가동: `deploy/`(launchd) + `SERVER_SETUP.md`.
 
-## 설정 (`~/.config/craig-telegram-study/config.json`, 저장소 밖·chmod 600)
-
-```json
-{
-  "telegram_bot_token": "BotFather 토큰",
-  "telegram_chat_id": "",
-  "anthropic_api_key": "sk-ant-...",
-  "claude_model": "claude-sonnet-5",
-  "study_vault_dir": "/path/to/StudyVault"
-}
-```
-
-- `telegram_chat_id` 비우면 아무 채팅이나 응답(개인봇). 특정인만 쓰려면 chat id 지정.
-- `study_vault_dir` — 결과가 쌓일 Obsidian 볼트 경로.
-- (선택) `ytdlp_cookies` — 쿠키 파일(Netscape) 경로. **인스타그램·틱톡 등 로그인 벽** 콘텐츠 자동 추출용.
-  (선택) `ytdlp_cookies_from_browser` — 예: `"chrome"` (로그인된 브라우저 프로필이 있는 기기에서만).
-
-> 인스타그램/틱톡은 로그인 벽이라 쿠키 없이는 자동 추출이 안 됩니다. 쿠키 미설정 시 봇이 안내하며,
-> 캡션·자막·핵심 텍스트를 링크와 **함께 붙여** 보내면 그 텍스트로 정리합니다.
-
-## 실행
-
+## 실행(로컬 테스트)
 ```bash
-python telegram-bot/study_bot.py --listen                 # 상시 대기(즉시 응답)
-python telegram-bot/study_bot.py --once                   # 밀린 메시지 1회(cron)
-python telegram-bot/study_bot.py --check "https://... 또는 학습 텍스트"   # 로컬 미리보기
+python pipeline/relay_bot.py --listen                 # 봇(큐 릴레이)
+python pipeline/learn_ingest.py --text "URL 또는 텍스트" # 수집 1건
+python pipeline/learn_curate.py --run                 # 승인 카드 발송
+python pipeline/learn_retro.py --run                  # 복습 카드
 ```
-
-## 사용 예 (텔레그램에서)
-
-| 보내는 것 | 결과 |
-|---|---|
-| 링크/텍스트/사진 (지시어 없음) | **인박스에 수집**(경량, 카드 없음) |
-| `!학습 …` | 즉시 **학습 노트 + 복습 카드**로 승격 |
-| `[주제] …` | 주제 노트에 이어쓰기(없으면 생성) + 카드 |
-| `#태그` 포함 | 그 태그를 반영 |
-| `/curate` → `/promote 1 3` | 인박스 자동 묶기 제안 → 선택 합성 |
-| `/inbox` | 대기 목록 |
-
-> 콘텐츠 확보: 웹=trafilatura · 유튜브=자막(없으면 whisper) · 인스타=캡션(쿠키) · 사진=Claude 비전.
-> 인박스에 쌓이면 `remind_hour`(기본 9시)에 한 번 상기 알림.
 
 ## 라이선스
-
 MIT

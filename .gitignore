@@ -14,3 +14,6 @@ SkillVault/
 
 # StudyVault — 학습봇 결과 볼트(Obsidian Sync 소유, git 미추적)
 StudyVault/
+
+# 프롬프트 로그(봇 토큰 평문 포함) — 커밋 금지
+prompt/
