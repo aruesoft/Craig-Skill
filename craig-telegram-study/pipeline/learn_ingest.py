@@ -226,8 +226,9 @@ def _playwright_cookies(cfg):
     return out
 
 
-def browser_extract(url, cfg, debug=False):
-    """JS/로그인 벽 페이지를 헤드리스 브라우저(playwright)+쿠키로 렌더해 본문 추출(threads·x 등)."""
+def browser_extract(url, cfg, debug=False, scroll=0):
+    """JS/로그인 벽 페이지를 헤드리스 브라우저(playwright)+쿠키로 렌더해 본문 추출(threads·x 등).
+    scroll>0 이면 그만큼 스크롤해 이어지는 콘텐츠(스레드 답글 등)까지 로드한 뒤 전체 텍스트를 반환."""
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
@@ -249,14 +250,17 @@ def browser_extract(url, cfg, debug=False):
             pg = ctx.new_page()
             pg.goto(url, wait_until="domcontentloaded", timeout=30000)
             pg.wait_for_timeout(3500)
-            html = pg.content()
+            for _ in range(scroll):  # 스레드 이어지는 답글 로드
+                pg.mouse.wheel(0, 4000)
+                pg.wait_for_timeout(1500)
             text = None
-            try:
-                import trafilatura
-                text = trafilatura.extract(html, include_comments=False)
-            except Exception:
-                pass
-            if not text or len(text) < 40:
+            if not scroll:  # 단일 페이지는 trafilatura 로 깔끔히
+                try:
+                    import trafilatura
+                    text = trafilatura.extract(pg.content(), include_comments=False)
+                except Exception:
+                    pass
+            if not text or len(text) < 40:  # 스크롤(스레드)은 전체 텍스트로(답글 포함)
                 text = pg.evaluate("() => document.body ? document.body.innerText : ''")
             b.close()
             text = (text or "").strip()
@@ -417,8 +421,15 @@ def ingest_one(cfg, text, tags=None, image=None, image_media="image/jpeg"):
             extra = f"\n\n## 스크립트 (전문 · {how})\n\n{transcript}"
             parts.append(transcript)
         if not parts:                                      # yt-dlp 실패(예: threads) → 브라우저 렌더
-            web = browser_extract(url, cfg)
+            is_threads = "threads." in url
+            web = browser_extract(url, cfg, scroll=6 if is_threads else 0)
             if web:
+                if is_threads:  # 작성자 연속 답글까지 로드됨 → Claude가 작성자 스레드만 합치도록 지시
+                    hm = re.search(r"threads\.(?:net|com)/@([\w.]+)", url)
+                    handle = hm.group(1) if hm else ""
+                    web = (f"[Threads 게시물 페이지 전체 텍스트다. 작성자는 @{handle}. "
+                           f"작성자(@{handle})의 원 게시물과 이어지는 본인 연속 답글(스레드)을 순서대로 하나로 합쳐 정리하고, "
+                           f"다른 사람의 댓글·UI 텍스트(좋아요·팔로우·번역 등)는 무시하라.]\n\n{web}")
                 parts.append(web)
         user_note = URL_RE.sub("", text_clean).strip()
         if not parts and len(user_note) < 20:
