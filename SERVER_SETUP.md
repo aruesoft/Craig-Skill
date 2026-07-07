@@ -35,7 +35,13 @@
 | learn-weekly(주간 리트로) | `pipeline/learn_weekly.py --run` | launchd `com.craig.skill.learn-weekly` | 일 20시(+/weekly) |
 | 헬스체크 대시보드 | `deploy/dashboard.py --port 8788` | launchd `com.craig.skill.dashboard` | 상시(웹 :8788) |
 | 워치독(중단·오류 감지→재시작·알림) | `deploy/watchdog.py` | launchd `com.craig.skill.watchdog` | 5분마다 |
+| Obsidian 상시 실행(Sync 유지) | `open -a Obsidian` | launchd `com.craig.skill.obsidian-keeper` | 5분마다(+부팅 시) |
 | 자동배포 | `deploy/auto_deploy.sh` | crontab | 10분마다 |
+
+> **Obsidian Sync 주의** 🙋: Obsidian Sync 는 **앱이 그 볼트를 열고 실행 중일 때만** 동기화한다(클라우드 데몬 아님).
+> 서버가 StudyVault 에 쓴 파이프라인 노트를 사용자 기기까지 보내려면 서버에서 Obsidian 이 상시 떠 있어야 한다 →
+> `obsidian-keeper` 가 앱을 상시 실행 유지. **1회 셋업(사람)**: 서버 Obsidian 에서 Sync 로그인 + StudyVault 열기 + 그 볼트 Sync 켜기.
+> 대시보드에서 `Obsidian(Sync)` 실행 여부 확인 가능.
 
 > 워치독: 서비스 중단/booted-out·오류 누적 감지 시 **자동 재시작 + 텔레그램 올림보고**(복구 시 ✅). launchd KeepAlive 가 1차 방어, 워치독이 2차.
 > 수동 재시동: 학습봇에게 **`/restart <봇|all>`** (예: `/restart youtube`).
