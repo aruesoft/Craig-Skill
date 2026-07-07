@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>Label</key><string>com.craig.skill.obsidian-keeper</string>
+  <!-- Obsidian 항상 켜두기: Sync는 앱이 실행 중일 때만 동기화. 5분마다 실행 보장(닫히면 재실행, 부팅 시 시작).
+       ※ 사용자가 1회: Obsidian에서 Sync 로그인 + StudyVault 열기 하면, 이후 이 잡이 그 상태를 유지 -->
+  <key>ProgramArguments</key><array>
+    <string>/usr/bin/open</string><string>-g</string><string>-a</string><string>Obsidian</string></array>
+  <key>StartInterval</key><integer>300</integer>
+  <key>RunAtLoad</key><true/>
+  <key>StandardOutPath</key><string>/Users/craigpark/Github/Craig-Skill/logs/obsidian-keeper.out.log</string>
+  <key>StandardErrorPath</key><string>/Users/craigpark/Github/Craig-Skill/logs/obsidian-keeper.err.log</string>
+</dict></plist>

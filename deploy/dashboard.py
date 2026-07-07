@@ -234,6 +234,7 @@ def gather():
         "study": studybot_metrics(), "youtube": youtube_metrics(),
         "mountain": mountain_metrics(), "system": sysm,
         "activity": today_activity(), "secondb": secondb_label,
+        "obsidian": ("🟢 실행중(Sync)" if "Obsidian.app" in sh("ps", "-eo", "command", timeout=8) else "🔴 꺼짐(Sync 중단)"),
         "watchdog": read_json(f"{ROOT}/logs/watchdog_state.json").get("last", "-"),
         "banner": banner, "banner_cls": banner_cls, "issues": issues,
     }
@@ -294,6 +295,7 @@ tr.bad td{{background:#2a1618}}.sub{{color:#8b949e;font-size:11px}}.log{{color:#
 <div class=kv><div class=k>📺 오늘 유튜브 요약</div><div class=v>{d['activity']['yt_today']}건</div></div>
 <div class=kv><div class=k>secondb 상태</div><div class=v style='font-size:13px'>{esc(d['secondb'])}</div></div>
 <div class=kv><div class=k>🐕 워치독 마지막</div><div class=v style='font-size:12px'>{esc(d['watchdog'])}</div></div>
+<div class=kv><div class=k>💎 Obsidian(Sync)</div><div class=v style='font-size:13px'>{esc(d['obsidian'])}</div></div>
 </div></div>
 
 <div class=card><h2>배포</h2>
