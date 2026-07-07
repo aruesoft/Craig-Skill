@@ -1,6 +1,6 @@
 # 한국 등산 텔레그램 봇
 
-`korean-mountain-hiking` 스킬 데이터(`references/mountains.json`, 산림청 100대 명산 100곳)를
+`korean-mountain-hiking` 스킬 데이터(`references/mountains.json`, 총 231개 산 — 산림청 100대 명산 포함)를
 텔레그램에서 바로 조회하는 봇이다.
 
 - **산 이름** → 코스(구간·거리·소요시간·난이도), 높이, 100대 명산 순번, 등산 지도

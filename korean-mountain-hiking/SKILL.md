@@ -1,6 +1,6 @@
 ---
 name: korean-mountain-hiking
-description: 산 이름을 입력하면 등산 코스·날씨·하산식 맛집을 안내한다. 산림청 100대 명산 100곳 데이터 포함. 날짜가 있으면 기상청 산악날씨(최대 5일)를 조회하고, 하산 후 근처 맛집(하산식 식당)도 함께 추천한다. "북한산 등산 코스", "이번 주말 설악산 날씨", "지리산 하산 후 맛집", "한라산 코스 추천" 같은 요청에 사용한다.
+description: 산 이름을 입력하면 등산 코스·날씨·하산식 맛집을 안내한다. 총 231개 산 데이터(산림청 100대 명산 포함). 날짜가 있으면 기상청 산악날씨(최대 5일)를 조회하고, 하산 후 근처 맛집(하산식 식당)도 함께 추천한다. "북한산 등산 코스", "이번 주말 설악산 날씨", "지리산 하산 후 맛집", "한라산 코스 추천" 같은 요청에 사용한다.
 license: MIT
 metadata:
   category: outdoor
@@ -13,7 +13,7 @@ metadata:
 ## What this skill does
 
 - 산 이름을 받아 `references/mountains.json`에 정리된 **등산 코스 정보**(코스명, 구간, 길이, 소요시간, 난이도, 추천 여부)를 안내한다.
-- **산림청 선정 100대 명산** 전체 데이터(`rank_100`, `height_m`)를 포함하며, 코스 상세 데이터가 있는 산은 표 형태로, 없는 산은 기본 정보(높이, 위치)와 함께 공식 출처 안내를 제공한다.
+- **산림청 선정 100대 명산**(`rank_100`, `height_m`)을 포함한 총 231개 산 데이터를 보유하며, 코스 상세 데이터가 있는 산은 표 형태로, 없는 산은 기본 정보(높이, 위치)와 함께 공식 출처 안내를 제공한다.
 - 날짜가 함께 주어지면, **기상청 산악날씨 API**(`mtId` 기반, 5일 예보)로 날씨를 조회한다. `mtId`가 없는 산은 `k-skill-proxy` 단기예보(3일)로 대체한다.
 - **하산 후 맛집(하산식)**: 요청하면 또는 등산 정보와 함께 자동으로 하산 지점 인근 식당을 `naver-map` 스킬 또는 웹 검색으로 조회해 추천한다.
 - 데이터셋에 없는 산이면, 산림청/웹 검색으로 코스 정보를 찾아 정리해 보여주고 `references/mountains.json`에 자동 추가한다.
@@ -34,8 +34,8 @@ metadata:
 
 - optional: `jq`
 - optional: `KSKILL_PROXY_BASE_URL` (self-host 프록시를 쓸 때만 설정. 비우면 기본 hosted `https://k-skill-proxy.nomadamas.org` 를 사용한다.)
-- optional: `naver-map` 스킬 (하산식 맛집 조회 시 활용)
-- optional: Chrome MCP (`mcp__Claude_in_Chrome__*`) — 네이버 카페 회원 전용 게시글 접근 시 필요
+- optional: `kakao-map` / `naver-map` 스킬 (하산식 맛집·지오코딩 시 활용, 없으면 웹 검색으로 대체)
+- optional: Chrome MCP (`mcp__claude-in-chrome__*`) — 네이버 카페 회원 전용 게시글 접근 시 필요
 
 사용자가 별도 API key를 발급받을 필요는 없다.
 
@@ -49,25 +49,25 @@ metadata:
 | 하이킹F (HikingF) | https://cafe.naver.com/hikingf | 등산 코스·일정·맛집 정보 |
 
 **접근 방식**:
-1. **Chrome MCP 연결된 경우**: `mcp__Claude_in_Chrome__navigate`로 해당 카페에 직접 접근 → 로그인 세션 활용해 회원 전용 게시글도 조회 가능.
+1. **Chrome MCP 연결된 경우**: `mcp__claude-in-chrome__navigate`로 해당 카페에 직접 접근 → 로그인 세션 활용해 회원 전용 게시글도 조회 가능.
    - 카페 내 검색: `https://cafe.naver.com/windstopper?search={산 이름}+코스` 형태로 이동
-   - 게시글 내용은 `mcp__Claude_in_Chrome__get_page_text`로 추출
+   - 게시글 내용은 `mcp__claude-in-chrome__get_page_text`로 추출
 2. **Chrome MCP 미연결 또는 로그인 안 된 경우**: 웹 검색으로 `"windstopper" OR "hikingf" {산 이름} 코스` 검색. 공개 게시글이나 구글 캐시에서 내용을 수집한다.
 
 ## Data
 
-`references/mountains.json`에 **100개 산** (산림청 100대 명산 + 자동 추가 항목)의 다음 정보가 들어있다.
+`references/mountains.json`에 **총 231개 산** (산림청 100대 명산 + 블랙야크 명산 + 인기 산 + 자동 추가 항목)의 다음 정보가 들어있다. **개수를 답변에 쓸 때는 파일에서 직접 세어 확인한다** (`jq '.mountains | length'`).
 
 - `name`, `aliases`: 산 이름과 별칭
 - `region`: 위치(시/도)
 - `lat`, `lon`: 날씨 조회용 대표 좌표
 - `height_m`: 정상 높이(m) — 산림청 100대 명산 eBook 기준
-- `rank_100`: 산림청 선정 100대 명산 순번 (가나다 순, 1~100)
+- `rank_100`: 산림청 선정 100대 명산 순번 (가나다 순, 1~100 — 있는 산만; 없으면 100대 명산 아님)
 - `mtId` (선택): 기상청 산악날씨 관측지점 ID. 있는 경우 공식 산악날씨 API로 최대 5일 예보를 가져온다. (현재 20개 산 보유)
 - `courses[]`: 코스별 상세 정보 (현재 19개 산에 상세 데이터 있음)
 - `map_url` (선택): 등산 지도 링크
 
-`source: "pdf-100대명산"` 항목은 PDF 데이터 기반으로 추가된 항목이며, 코스 상세 데이터가 없을 수 있다. `source: "auto-search"` 항목은 웹 검색으로 자동 추가된 항목이다.
+`source` 필드: `"pdf-100대명산"`(산림청 eBook 기반 — 코스 상세 없을 수 있음), `"bac-myeongsan"`(블랙야크 명산), `"popular-search"`(인기 산), `"auto-search"`(웹 검색 자동 추가), `"pdf+web"`(웹 검색으로 코스 보완됨).
 
 ## Workflow
 

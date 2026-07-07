@@ -17,3 +17,6 @@ StudyVault/
 
 # 프롬프트 로그(봇 토큰 평문 포함) — 커밋 금지
 prompt/
+
+# 파생 프로젝트(별도 저장소) — Craig-Skill 에 임베드 금지
+mountain-web/

@@ -1,14 +1,16 @@
 # deploy/ — Craig-Skill 서버 배포
 
-봇 2종을 개발기가 아닌 **운영서버(맥북 에어)**에서 고정 상시 구동하기 위한 산출물.
-패턴은 `stock_prediction_project` 의 서버 운영 방식을 이식했다. 전체 절차: 저장소 루트 **`SERVER_SETUP.md`**.
+봇 3종 + 학습 파이프라인 잡들을 개발기가 아닌 **운영서버(맥북 에어)**에서 고정 상시 구동하기 위한 산출물.
+패턴은 `stock_prediction_project` 의 서버 운영 방식을 이식했다. 전체 절차·운영 SSOT: 저장소 루트 **`SERVER_SETUP.md`**.
 
 ## 구성
 
 | 파일 | 역할 |
 |---|---|
 | `launchd/com.craig.skill.mountainbot.plist` | 등산봇 `bot.py --listen` 상시(KeepAlive) |
-| `launchd/com.craig.skill.youtube.plist` | 유튜브봇 `monitor.py` 6시간 주기(감지·요약·전송·볼트로그) |
+| `launchd/com.craig.skill.youtube.plist` | 유튜브봇 `monitor.py --listen` **상시 리스너**(명령 즉시응답 + 내부 6시간 주기 감지·요약·전송·볼트로그) |
+| `launchd/com.craig.skill.studybot.plist` | 학습봇 `pipeline/relay_bot.py --listen` 상시(큐 릴레이) |
+| `launchd/com.craig.skill.learn-{ingest,curate,garden,retro,weekly}.plist` | 학습 파이프라인 처리기 (5분 / 일 22시 / 수·일 21시 / 매일 08시 / 일 20시) |
 | `launchd/com.craig.skill.dashboard.plist` | 헬스체크 대시보드(웹 :8788) 상시 |
 | `dashboard.py` | 봇·launchd·배포·시스템 상태 웹 대시보드(의존성 없음). `http://<서버>:8788`, JSON `/health` |
 | `launchd/com.craig.skill.watchdog.plist` | 워치독(5분마다) |

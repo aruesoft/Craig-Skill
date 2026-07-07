@@ -6,16 +6,18 @@ Claude / AI 에이전트용 스킬 모음.
 
 ### [craig-telegram-study](craig-telegram-study/)
 
-텔레그램(**@CraigStudyBot**)으로 링크 또는 학습 내용을 보내면, Claude가 정리해
-**Obsidian(StudyVault)**에 학습 노트로 저장하는 스킬 & 봇.
+텔레그램(**@CraigStudyBot**)/옵시디언으로 링크·텍스트·이미지를 보내면 **수집 → 선별·승격 → 간격반복 복습**으로
+**Obsidian PARA 볼트(StudyVault)**에 정리하는 학습 파이프라인. 봇은 큐 릴레이만, 지능은 learn-* 처리기가 담당.
 
 ```
-텔레그램(링크/텍스트) → 본문 추출(웹=trafilatura·유튜브=yt-dlp) → Claude 정리(요약·인과관계·태그·[[링크]]) → StudyVault 저장
+입력 → relay_bot(큐 릴레이) → learn-ingest(수집·전사) → 00_Inbox
+  → learn-curate(/curate 승인 버튼 → 주제노트 병합) → 02_Areas + MOC
+  → learn-garden(링크 정비) · learn-retro(SM-2 복습) · learn-weekly(주간 리트로)
 ```
 
-- 요약·상세정리·**인과관계(A→B)**·계층 태그 자동 생성
-- 기존 노트/개념과 `[[위키링크]]`로 연결, 새 개념은 허브 생성
-- 봇 상시가동: 서버 launchd(`com.craig.skill.studybot`)
+- 동영상 타임스탬프 전사(자막API→yt-dlp→whisper), 웹=trafilatura, 이미지=Claude 비전
+- 기존 주제노트에 **병합 우선**, MOC 자동 갱신, `[[위키링크]]` 정비
+- 서버 상시가동: launchd `com.craig.skill.{studybot,learn-*}`
 
 자세한 설정·사용법은 [craig-telegram-study/README.md](craig-telegram-study/README.md) 참고.
 
@@ -41,15 +43,15 @@ YouTube RSS(새 영상 감지) → secondb.ai REST API(요약) → Telegram Bot(
 
 ### [korean-mountain-hiking](korean-mountain-hiking/)
 
-산림청 선정 **100대 명산** 데이터를 기반으로 등산 코스 안내·날씨 조회·하산 맛집 추천을 한 번에 제공하는 스킬.
+**총 231개 산** 데이터(산림청 100대 명산 포함)를 기반으로 등산 코스 안내·날씨 조회·하산 맛집 추천을 한 번에 제공하는 스킬.
 
 ```
 산 선택 → 코스 안내(네이버 카페 / 산림청 / 웹) → 기상청 산악날씨 5일 예보 → 하산식 맛집 추천
 ```
 
-- **100대 명산** 전체 수록 — 높이·위치·대표 코스 포함
+- **231개 산 수록**(100대 명산 포함) — 높이·위치·대표 코스 포함
 - **기상청 산악날씨 API** 연동 — mtId 기반 5일 3시간 간격 예보 (mtId 없는 산은 단기예보 fallback)
-- **네이버 카페 우선 검색** — [윈드스토퍼](https://cafe.naver.com/windstopper) · [등산의정석](https://cafe.naver.com/hikingf) 실제 후기 반영
+- **네이버 카페 우선 검색** — [바람막이](https://cafe.naver.com/windstopper) · [하이킹F](https://cafe.naver.com/hikingf) 실제 후기 반영
 - **하산식 맛집 추천** — 등산 후 근처 식당을 naver-map 스킬 또는 웹 검색으로 안내
 - 설치형 패키지: [`korean-mountain-hiking.skill`](korean-mountain-hiking.skill)
 

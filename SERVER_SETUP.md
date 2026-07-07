@@ -1,6 +1,6 @@
 # 🖥 Craig-Skill 봇 서버 운영 런북 — 맥북 에어
 
-> 목적: Craig-Skill 의 봇 2종(**등산봇** + **유튜브 요약봇**)을 개발기가 아닌 **운영서버(맥북 에어)**에서
+> 목적: Craig-Skill 의 봇 3종(**등산봇** + **유튜브 요약봇** + **학습봇/learn-\* 파이프라인**)을 개발기가 아닌 **운영서버(맥북 에어)**에서
 > 고정 상시 구동한다. 방식은 `stock_prediction_project` 서버 운영 패턴을 이식했다.
 >
 > 전제: 이 맥북 에어는 이미 `stock_prediction_project` 를 `com.craig.stock.*` launchd + crontab 으로
@@ -32,6 +32,7 @@
 | learn-curate(승격/병합) | `pipeline/learn_curate.py --run` | launchd `com.craig.skill.learn-curate` | 일 22시(+/curate) |
 | learn-garden(링크·MOC) | `pipeline/learn_garden.py --run` | launchd `com.craig.skill.learn-garden` | 수·일 21시(+/garden) |
 | learn-retro(복습) | `pipeline/learn_retro.py --run` | launchd `com.craig.skill.learn-retro` | 매일 08시(+/review) |
+| learn-weekly(주간 리트로) | `pipeline/learn_weekly.py --run` | launchd `com.craig.skill.learn-weekly` | 일 20시(+/weekly) |
 | 헬스체크 대시보드 | `deploy/dashboard.py --port 8788` | launchd `com.craig.skill.dashboard` | 상시(웹 :8788) |
 | 워치독(중단·오류 감지→재시작·알림) | `deploy/watchdog.py` | launchd `com.craig.skill.watchdog` | 5분마다 |
 | 자동배포 | `deploy/auto_deploy.sh` | crontab | 10분마다 |

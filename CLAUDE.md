@@ -4,18 +4,29 @@ Claude / AI 에이전트용 스킬 모음 저장소. 원격: https://github.com/
 
 ## 구성
 
-- `korean-mountain-hiking/` — 한국 등산 안내 스킬 (산림청 100대 명산 코스 + 기상청 산악날씨 + 하산식 맛집)
-  - `references/mountains.json` — **데이터 진실원본**. 100개 산(코스·높이·위치·rank·mtId·map_url).
+- `korean-mountain-hiking/` — 한국 등산 안내 스킬 (등산 코스 + 기상청 산악날씨 + 하산식 맛집)
+  - `references/mountains.json` — **데이터 진실원본**. **총 231개 산**(산림청 100대 명산 `rank_100` 98곳 + 블랙야크 명산·인기 산·자동 추가). 코스 상세 19곳, 기상청 `mtId` 20곳. 산 개수를 문서에 쓸 때는 이 파일에서 세어 확인한다.
   - `SKILL.md` — 스킬 워크플로우.
   - `telegram-bot/` — 위 데이터를 텔레그램에서 조회하는 봇 (아래 참고).
-- `youtube-telegram-summary/` — YouTube 새 영상 → secondb.ai 요약 → 텔레그램 전송 파이프라인.
-- `craig-telegram-study/` — 학습봇(@CraigStudyBot). 텔레그램 링크/텍스트 → Claude 정리 → Obsidian StudyVault 노트(인과 [[링크]]·계층 태그). `telegram-bot/study_bot.py`. 본문추출: trafilatura(웹)·yt-dlp(유튜브).
-- `SkillVault/`, `StudyVault/` — Obsidian 볼트(둘 다 git 미추적, Obsidian Sync 소유). SkillVault=이 프로젝트 위키(PARA+카파시 LLM-Wiki), StudyVault=학습봇 결과.
-- `deploy/`, `SERVER_SETUP.md` — 봇들을 맥북 에어 서버에서 launchd 상시가동 + pull 자동배포. plist: `com.craig.skill.{mountainbot,youtube,studybot}`.
+- `youtube-telegram-summary/` — YouTube 새 영상 → secondb.ai 요약(실패 시 Claude 폴백) → 텔레그램 전송 파이프라인. 서버에선 `monitor.py --listen` 상시 리스너 1개가 명령 응답 + 6시간 주기 감지를 겸한다.
+- `craig-telegram-study/` — 학습 파이프라인(@CraigStudyBot). **봇/지능 분리**: `pipeline/relay_bot.py`는 큐 릴레이만, 지능은 `pipeline/learn_{ingest,curate,garden,retro,weekly}.py`가 담당. 설계 SSOT는 `학습파이프라인_설계안.md`. ⚠️ `telegram-bot/study_bot.py`는 **폐기된 프로토타입** — 수정하지 말 것.
+- `SkillVault/`, `StudyVault/` — Obsidian 볼트(둘 다 git 미추적, Obsidian Sync 소유). SkillVault=이 프로젝트 위키(PARA+카파시 LLM-Wiki), StudyVault=학습 파이프라인 결과.
+- `deploy/`, `SERVER_SETUP.md` — 봇들을 맥북 에어 서버에서 launchd 상시가동 + pull 자동배포. plist: `com.craig.skill.{mountainbot,youtube,studybot,learn-ingest,learn-curate,learn-garden,learn-retro,learn-weekly,dashboard,watchdog}`. **운영·배포 절차의 SSOT는 `SERVER_SETUP.md`**.
+
+## 진실원본(SSOT) 맵 — 어디를 고쳐야 하는가
+
+| 바꾸려는 것 | 고칠 곳 | 함께 갱신할 곳 |
+|---|---|---|
+| 산 데이터(코스·좌표·mtId) | `korean-mountain-hiking/references/mountains.json` | 개수 언급하는 README/SKILL.md 수치 |
+| 등산봇 응답 형식·톤 | `telegram-bot/agent.py` `_system_prompt()` | 이 문서의 "봇 응답 형식 지침" 요약 + `--listen` 재시작 |
+| 학습 파이프라인 동작 | `craig-telegram-study/학습파이프라인_설계안.md` 먼저, 그다음 `pipeline/learn_*.py` | `SKILL.md`·`README.md` |
+| 서버 운영·스케줄 | `SERVER_SETUP.md` + `deploy/launchd/*.plist` | `deploy/README.md` |
+| bot.py/agent.py 함수 시그니처·mountains.json 스키마 | 해당 코드 | **mountain-web에 영향** — 아래 파생 프로젝트 참고 |
 
 ## 파생 프로젝트
 
 - **mountain-web** (`~/Github/mountain-web`, 별도 저장소) — korean-mountain-hiking 스킬·봇 로직 기반 웹서비스(Next.js+FastAPI, secondb.ai 스타일). 이 저장소를 git submodule(`vendor/Craig-Skill`)로 참조하므로 **bot.py/agent.py/mountains.json 변경 시 웹에도 영향** — 인터페이스(함수 시그니처·JSON 스키마) 바꿀 때 주의.
+- 이 저장소의 `mountain-web/` 폴더는 **기획 문서만**(CLAUDE.md·SPEC.md) 담는다. 웹 코드 작업은 `~/Github/mountain-web`에서 한다 — 여기서 웹 코드를 만들지 말 것.
 
 ## korean-mountain-hiking 텔레그램 봇 (`telegram-bot/`)
 
@@ -47,5 +58,27 @@ Claude / AI 에이전트용 스킬 모음 저장소. 원격: https://github.com/
 ## 운영 주의
 
 - **봇 인스턴스는 하나만.** 텔레그램은 봇당 `getUpdates` long-poll을 동시에 하나만 허용 — 두 번 띄우면 `Conflict` 에러. 재시작 전 기존 프로세스 종료(`pgrep -f "bot.py --listen"`).
-- **비밀값은 저장소 밖.** 텔레그램 토큰·`anthropic_api_key`는 `~/.config/korean-mountain-hiking/config.json`(chmod 600). `config.json`은 `.gitignore` 처리됨. 키를 코드/커밋에 넣지 않는다.
-- 의존성: 규칙기반은 `requests`만, 자유질문 모드는 `anthropic` 추가(`pip install anthropic`).
+- **비밀값은 저장소 밖.** 텔레그램 토큰·`anthropic_api_key`는 `~/.config/{korean-mountain-hiking,youtube-telegram-summary,craig-telegram-study}/config.json`(chmod 600). `config.json`은 `.gitignore` 처리됨. 키를 코드/커밋/문서에 넣지 않는다.
+- 의존성: 등산봇 규칙기반은 `requests`만, 자유질문 모드는 `anthropic` 추가(`pip install anthropic`).
+
+## 흔한 실수 (하지 말 것)
+
+- `study_bot.py`(프로토타입)를 고치는 것 — 학습봇 작업은 전부 `craig-telegram-study/pipeline/`에서.
+- 상대 날짜를 직접 계산해 코드/프롬프트에 박는 것 — 봇은 `resolve_date` 도구를 쓴다.
+- 산 개수·데이터 수치를 기억으로 쓰는 것 — 반드시 `mountains.json`에서 세어 쓴다.
+- `agent.py` 프롬프트만 고치고 재시작을 안 하는 것 — 반영 안 됨(아래 검증 절차 참고).
+- `--listen` 프로세스를 종료 확인 없이 새로 띄우는 것 — `Conflict`.
+- SkillVault/StudyVault를 git에 추가하는 것 — Obsidian Sync 소유.
+
+## 검증 명령 (수정 후 필수)
+
+```bash
+# 등산봇: 텔레그램 없이 로컬로 응답 확인 (프롬프트/로직 수정 후 항상)
+python korean-mountain-hiking/telegram-bot/bot.py --check "이번 주말 북한산 등산"
+
+# 데이터 수치 확인
+python3 -c "import json; d=json.load(open('korean-mountain-hiking/references/mountains.json'))['mountains']; print(len(d), sum(1 for m in d if m.get('courses')), sum(1 for m in d if m.get('mtId')))"
+
+# 실행 중 봇 확인 (재시작 전)
+pgrep -fl "bot.py --listen|relay_bot.py --listen|monitor.py --listen"
+```
