@@ -496,12 +496,151 @@ def weather_fallback_links(m):
     ]
 
 
+# ──────────── 중기예보 fallback (기상청 날씨누리 10일 예보, API 키 불필요) ────────────
+#
+# 산악날씨(5일)·단기예보(3일) 범위를 벗어난 날짜는 산 좌표(lat/lon) 기준으로
+# 날씨누리 디지털예보(10일)의 중기 구간을 가져온다.
+# 흐름: lat/lon → DFS 격자(x,y) → rest/zone/find/dong.do (법정동코드)
+#       → wnuri digital-forecast.do?code= (10일 HTML) → data-midterm-forecast 일자 파싱
+
+def _dfs_xy(lat, lon):
+    """위경도 → 기상청 DFS 격자 (Lambert Conformal Conic, 표준 공식)."""
+    RE, GRID = 6371.00877, 5.0
+    SLAT1, SLAT2, OLON, OLAT = 30.0, 60.0, 126.0, 38.0
+    XO, YO = 43, 136
+    DEGRAD = math.pi / 180.0
+    re_ = RE / GRID
+    slat1, slat2 = SLAT1 * DEGRAD, SLAT2 * DEGRAD
+    olon, olat = OLON * DEGRAD, OLAT * DEGRAD
+    sn = math.tan(math.pi * 0.25 + slat2 * 0.5) / math.tan(math.pi * 0.25 + slat1 * 0.5)
+    sn = math.log(math.cos(slat1) / math.cos(slat2)) / math.log(sn)
+    sf = math.tan(math.pi * 0.25 + slat1 * 0.5)
+    sf = sf ** sn * math.cos(slat1) / sn
+    ro = math.tan(math.pi * 0.25 + olat * 0.5)
+    ro = re_ * sf / ro ** sn
+    ra = math.tan(math.pi * 0.25 + lat * DEGRAD * 0.5)
+    ra = re_ * sf / ra ** sn
+    theta = lon * DEGRAD - olon
+    if theta > math.pi:
+        theta -= 2.0 * math.pi
+    if theta < -math.pi:
+        theta += 2.0 * math.pi
+    theta *= sn
+    x = int(ra * math.sin(theta) + XO + 0.5)
+    y = int(ro - ra * math.cos(theta) + YO + 0.5)
+    return x, y
+
+
+def _dong_code(lat, lon):
+    """산 좌표에서 가장 가까운 법정동 코드/이름. 실패 시 (None, None)."""
+    x, y = _dfs_xy(lat, lon)
+    url = ("https://www.weather.go.kr/w/rest/zone/find/dong.do"
+           f"?x={x}&y={y}&lat={lat}&lon={lon}&lang=kor")
+    try:
+        r = requests.get(url, headers={"User-Agent": UA,
+                                       "X-Requested-With": "XMLHttpRequest"},
+                         timeout=15, verify=False)
+        arr = r.json()
+        if arr:
+            return arr[0].get("code"), arr[0].get("name", "")
+    except Exception as e:
+        log(f"동코드 조회 실패: {e}")
+    return None, None
+
+
+_MID_SLIDE_PAT = re.compile(
+    r'class="dfs-daily-slide"\s+data-date="(\d{4}-\d{2}-\d{2})"\s+'
+    r'data-midterm-forecast="true".*?(?=class="dfs-daily-slide"|</body|$)',
+    re.DOTALL)
+
+
+def _weather_mid(lat, lon):
+    """날씨누리 디지털예보(10일)에서 중기 구간만 파싱.
+
+    반환: ({date: {tmin, tmax, am:{sky,pop}, pm:{sky,pop}, allday:{sky,pop}}}, order, 동이름)
+    """
+    if lat is None or lon is None:
+        return {}, [], None
+    code, dong_name = _dong_code(lat, lon)
+    if not code:
+        return {}, [], None
+    url = ("https://www.weather.go.kr/w/wnuri-fct2021/main/digital-forecast.do"
+           f"?code={code}&unit=m%2Fs&hr1=Y")
+    try:
+        html = requests.get(url, headers={"User-Agent": UA,
+                                          "X-Requested-With": "XMLHttpRequest"},
+                            timeout=15, verify=False).text
+    except Exception as e:
+        log(f"중기예보 요청 실패: {e}")
+        return {}, [], None
+
+    results, order = {}, []
+    for m in _MID_SLIDE_PAT.finditer(html):
+        d, seg = m.group(1), m.group(0)
+        day = {}
+        tmin = re.search(r"최저 : </strong><span>(-?\d+)℃", seg)
+        tmax = re.search(r"최고 : </strong><span>(-?\d+)℃", seg)
+        if tmin:
+            day["tmin"] = tmin.group(1) + "℃"
+        if tmax:
+            day["tmax"] = tmax.group(1) + "℃"
+        am_sky = re.search(r'title="오전 날씨 ([^"]+)"', seg)
+        pm_sky = re.search(r'title="오후 날씨 ([^"]+)"', seg)
+        all_sky = re.search(r'title="날씨 ([^"]+)"', seg)
+        am_pop = re.search(r'>오전 강수확률</strong><span>(\d+)%', seg)
+        pm_pop = re.search(r'>오후 강수확률</strong><span>(\d+)%', seg)
+        all_pop = re.search(r'"hid">강수확률</strong><span>(\d+)%', seg)
+        if am_sky or pm_sky:
+            if am_sky:
+                day["am"] = {"sky": am_sky.group(1),
+                             "pop": (am_pop.group(1) + "%") if am_pop else None}
+            if pm_sky:
+                day["pm"] = {"sky": pm_sky.group(1),
+                             "pop": (pm_pop.group(1) + "%") if pm_pop else None}
+        elif all_sky:
+            day["allday"] = {"sky": all_sky.group(1),
+                             "pop": (all_pop.group(1) + "%") if all_pop else None}
+        if day:
+            results[d] = day
+            order.append(d)
+    return results, order, dong_name
+
+
+def _format_mid_day(name, tstr, day, dong_name):
+    lines = [f"🌤️ {name} 날씨 — {tstr} (중기예보)"]
+    if day.get("tmin") or day.get("tmax"):
+        lines.append(f"  최저 {day.get('tmin', '-')} / 최고 {day.get('tmax', '-')}")
+    if day.get("allday"):
+        a = day["allday"]
+        pop = f"  강수확률 {a['pop']}" if a.get("pop") else ""
+        lines.append(f"  종일  {a['sky']}{pop}")
+    else:
+        for label, k in (("오전", "am"), ("오후", "pm")):
+            if day.get(k):
+                s = day[k]
+                pop = f"  강수확률 {s['pop']}" if s.get("pop") else ""
+                lines.append(f"  {label}  {s['sky']}{pop}")
+    where = f"{dong_name} 기준" if dong_name else "산 좌표 인근 기준"
+    lines.append(f"\n(기상청 중기예보 · {where} — 정상 부근은 기온이 더 낮을 수 있어요)")
+    return "\n".join(lines)
+
+
 def format_weather(m, target):
-    """target(date) 날씨를 조회해 텍스트로. 조회 실패/범위초과 시 주소 기반 안내 링크."""
+    """target(date) 날씨를 조회해 텍스트로.
+
+    범위초과·실패 시 중기예보(10일)를 먼저 시도하고, 그래도 없으면 주소 기반 안내 링크.
+    """
     cfg = load_config()
     tstr = target.isoformat()
     name = m.get("name", "")
     fallback = "\n".join(weather_fallback_links(m))
+
+    def _mid_fallback():
+        """범위 밖 날짜용 중기예보 시도. 해당 날짜가 있으면 텍스트, 없으면 None."""
+        mid, _, dong_name = _weather_mid(m.get("lat"), m.get("lon"))
+        if mid and tstr in mid:
+            return _format_mid_day(name, tstr, mid[tstr], dong_name)
+        return None
 
     # 3-A: mtId 산악날씨
     if m.get("mtId"):
@@ -515,7 +654,10 @@ def format_weather(m, target):
             body.append("\n(기상청 공식 산악날씨 · 최대 5일)")
             return "\n".join(body)
         if results and order:
-            # mtId 는 되지만 요청 날짜가 범위 밖
+            # mtId 는 되지만 요청 날짜가 범위 밖 → 중기예보(10일) 시도
+            mid = _mid_fallback()
+            if mid:
+                return mid
             return (f"🌤️ {name}: 요청하신 {tstr} 는 산악날씨 예보 범위를 벗어났습니다.\n"
                     f"제공 가능한 날짜: {order[0]} ~ {order[-1]}\n"
                     f"그 이후는 아래에서 직접 확인해 주세요:\n{fallback}")
@@ -526,11 +668,17 @@ def format_weather(m, target):
     if by_date and tstr in by_date:
         return f"🌤️ {name} 날씨 — {tstr} (단기예보)\n{_fmt_proxy_day(by_date[tstr])}"
     if by_date and order:
+        mid = _mid_fallback()
+        if mid:
+            return mid
         return (f"🌤️ {name}: 요청하신 {tstr} 는 단기예보 범위를 벗어났습니다.\n"
                 f"제공 가능한 날짜: {order[0]} ~ {order[-1]}\n"
                 f"그 이후는 아래에서 직접 확인해 주세요:\n{fallback}")
 
-    # 3-C: 실패 — 산 주소 기반 링크 안내
+    # 3-C: 단기 실패 → 중기라도 시도 후 주소 기반 링크 안내
+    mid = _mid_fallback()
+    if mid:
+        return mid
     return (f"🌤️ {name} {tstr} 날씨를 지금 가져오지 못했습니다.\n"
             f"아래에서 직접 확인해 주세요:\n{fallback}")
 
