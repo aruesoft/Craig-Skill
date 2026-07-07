@@ -142,7 +142,7 @@ def system_metrics():
 
 
 ERR_RE = re.compile(r"(Traceback|Exception|CRITICAL|❌|오류)", re.I)
-WARN_RE = re.compile(r"(Warning|warn|FP16|semaphore)", re.I)
+WARN_RE = re.compile(r"(Warning|warn|FP16|semaphore|RSS 오류|요약 실패|quota|재시도|다음 실행)", re.I)
 
 
 def _tail_lines(path, n=500):
