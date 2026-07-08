@@ -41,7 +41,8 @@
       ],
       "mtId": "11B001P1",
       "height_m": 835.6,
-      "rank_100": 45
+      "rank_100": 45,
+      "blackyak_100": true
     },
     {
       "name": "관악산",
@@ -69,11 +70,28 @@
           "difficulty": "중급",
           "recommended": false,
           "note": "초반 완만하다가 정상부 경사가 급해지는 코스"
+        },
+        {
+          "name": "불성사능선(안양유원지) 코스",
+          "trailhead": "안양예술공원 공영주차장",
+          "route": "안양유원지 - 삼성천계곡 - 불성사계곡 - 불성사 - 연주암 - 관악산 정상(연주대)",
+          "difficulty": "중급",
+          "note": "상시 개방으로 전환된 불성사 방면 능선, 계곡 구간이 많아 여름 산행지로 인기",
+          "recommended": false
+        },
+        {
+          "name": "과천향교 코스",
+          "trailhead": "과천향교",
+          "route": "과천향교 - 대피소 - 약수터 - 연주암 - 관악산 정상(연주대)",
+          "difficulty": "초급",
+          "note": "과천시 공식 등산로, 초보자도 오르기 좋은 완만한 코스",
+          "recommended": false
         }
       ],
       "mtId": "11B014P0",
       "height_m": 632.2,
-      "rank_100": 10
+      "rank_100": 10,
+      "blackyak_100": true
     },
     {
       "name": "도봉산",
@@ -101,11 +119,42 @@
           "difficulty": "중급",
           "recommended": false,
           "note": "비교적 완만한 능선길 위주"
+        },
+        {
+          "name": "포대능선 코스 (망월사·포대·회룡코스)",
+          "trailhead": "원도봉탐방지원센터",
+          "route": "원도봉탐방지원센터 - 덕재샘 - 망월사 - 포대능선 - 회룡사거리 - 회룡사",
+          "length_km": 5.5,
+          "duration": "2시간 20분",
+          "difficulty": "초급",
+          "note": "북한산국립공원 공식 탐방코스. 망월사(신라 고찰)와 포대능선 조망이 특징",
+          "recommended": false
+        },
+        {
+          "name": "사패산 코스",
+          "trailhead": "송추분소",
+          "route": "송추분소 - 회룡사거리 - 사패산 - 원각사 - 사패산입구",
+          "length_km": 5.5,
+          "duration": "3시간",
+          "difficulty": "초급",
+          "note": "도봉산 북단 사패산(552m) 정상을 지나는 북한산국립공원 공식 탐방코스",
+          "recommended": false
+        },
+        {
+          "name": "오봉 코스",
+          "trailhead": "송추분소",
+          "route": "송추분소 - 송추폭포 - 오봉삼거리 - 오봉 - 여성봉 - 오봉탐방지원센터",
+          "length_km": 6.5,
+          "duration": "3시간 30분",
+          "difficulty": "초급",
+          "note": "북한산국립공원 송추지구 대표 탐방로. 송추폭포와 오봉·여성봉 기암 조망",
+          "recommended": false
         }
       ],
       "mtId": "11B007P1",
       "height_m": 740.2,
-      "rank_100": 27
+      "rank_100": 27,
+      "blackyak_100": true
     },
     {
       "name": "청계산",
@@ -133,9 +182,28 @@
           "difficulty": "중급",
           "recommended": false,
           "note": "청계산 최고봉까지 오르는 코스"
+        },
+        {
+          "name": "서울대공원 코스",
+          "trailhead": "대공원역",
+          "route": "대공원역 - 산림욕장 입구 - 능선길 - 절고개 - 이수봉 - 매봉",
+          "difficulty": "중급",
+          "note": "서울대공원 외곽을 크게 도는 장거리 코스",
+          "recommended": false
+        },
+        {
+          "name": "청계사 코스",
+          "trailhead": "청계사 공영주차장",
+          "route": "청계사 공영주차장 - 매봉 - 이수봉 - 국사봉 - 청계사 공영주차장(원점회귀)",
+          "length_km": 12.9,
+          "duration": "5시간 20분",
+          "difficulty": "상급",
+          "note": "의왕 청계사에서 출발해 매봉·이수봉·국사봉을 잇는 종주 코스",
+          "recommended": false
         }
       ],
-      "mtId": "11B011P1"
+      "mtId": "11B011P1",
+      "blackyak_100": true
     },
     {
       "name": "설악산",
@@ -177,7 +245,8 @@
       ],
       "mtId": "11D001P1",
       "height_m": 1708.1,
-      "rank_100": 50
+      "rank_100": 50,
+      "blackyak_100": true
     },
     {
       "name": "지리산",
@@ -206,11 +275,42 @@
           "difficulty": "초급",
           "recommended": false,
           "note": "성삼재에서 비교적 짧게 오를 수 있는 코스"
+        },
+        {
+          "name": "백무동 코스",
+          "trailhead": "백무동탐방지원센터",
+          "route": "백무동탐방지원센터 - 하동바위 - 소지봉 - 장터목대피소 - 천왕봉",
+          "length_km": 7.5,
+          "duration": "5~5시간 30분",
+          "difficulty": "상급",
+          "note": "함양 백무동에서 장터목을 거쳐 천왕봉으로 오르는 코스, 중산리 코스보다 완만",
+          "recommended": false
+        },
+        {
+          "name": "대원사(유평) 코스",
+          "trailhead": "유평탐방지원센터",
+          "route": "유평탐방지원센터 - 유평마을 - 치밭목대피소 - 천왕봉",
+          "length_km": 13.7,
+          "duration": "8~8시간 30분",
+          "difficulty": "상급",
+          "note": "산청 대원사계곡을 따라 오르는 최장 축에 속하는 천왕봉 코스",
+          "recommended": false
+        },
+        {
+          "name": "뱀사골 코스",
+          "trailhead": "뱀사골탐방지원센터(반선)",
+          "route": "반선 - 요룡대 - 병소 - 간장소 - 화개재",
+          "length_km": 9.2,
+          "duration": "약 4시간 20분",
+          "difficulty": "중급",
+          "note": "계곡을 따르는 완만한 탐방로, 일부 데크길로 접근성 좋음",
+          "recommended": false
         }
       ],
       "mtId": "11F002P2",
       "height_m": 1915.4,
-      "rank_100": 75
+      "rank_100": 75,
+      "blackyak_100": true
     },
     {
       "name": "한라산",
@@ -239,11 +339,32 @@
           "difficulty": "중급",
           "recommended": false,
           "note": "윗세오름까지만 운영, 정상은 별도 코스 필요"
+        },
+        {
+          "name": "관음사 코스",
+          "trailhead": "관음사 탐방로 입구",
+          "route": "관음사 탐방로 입구 - 삼각봉 - 백록담(정상)",
+          "length_km": 8.7,
+          "duration": "9~10시간(왕복)",
+          "difficulty": "상급",
+          "note": "한라산 코스 중 최고난도, 탐방예약 필수(2026년 8~9월 삼각봉~정상 구간 공사로 통제)",
+          "recommended": false
+        },
+        {
+          "name": "돈내코 코스",
+          "trailhead": "돈내코 탐방로 입구",
+          "route": "돈내코 탐방로 입구 - 평궤대피소 - 남벽분기점",
+          "length_km": 7.0,
+          "duration": "3시간 30분",
+          "difficulty": "중급",
+          "note": "정상(백록담)까지 연결되지 않고 남벽분기점까지 오르는 코스",
+          "recommended": false
         }
       ],
       "mtId": "11G001P1",
       "height_m": 1947.3,
-      "rank_100": 91
+      "rank_100": 91,
+      "blackyak_100": true
     },
     {
       "name": "속리산",
@@ -272,11 +393,28 @@
           "difficulty": "상급",
           "recommended": false,
           "note": "속리산 최고봉(1,058m)까지 오르는 코스"
+        },
+        {
+          "name": "문장대 코스 (화북)",
+          "trailhead": "화북탐방지원센터",
+          "route": "화북탐방지원센터 - 문장대",
+          "difficulty": "중급",
+          "note": "경북 상주 화북면 방면 들머리에서 문장대로 오르는 코스, 법주사 코스보다 짧음",
+          "recommended": false
+        },
+        {
+          "name": "천왕봉 종주코스 (화북-법주사)",
+          "trailhead": "화북탐방지원센터",
+          "route": "화북탐방지원센터 - 문장대 - 신선대 - 천왕봉 - 세심정 - 법주사",
+          "difficulty": "상급",
+          "note": "문장대와 천왕봉을 모두 잇는 능선 종주코스, 법주사로 하산",
+          "recommended": false
         }
       ],
       "mtId": "11C002P1",
       "height_m": 1058.4,
-      "rank_100": 54
+      "rank_100": 54,
+      "blackyak_100": true
     },
     {
       "name": "가야산",
@@ -305,11 +443,32 @@
           "difficulty": "중급",
           "recommended": false,
           "note": "경북 성주 방면 출발 코스"
+        },
+        {
+          "name": "해인사 최단코스(토신골)",
+          "trailhead": "토신골 탐방지원센터(해인사)",
+          "route": "해인사 성보박물관 주차장 - 일주문 - 토신골 탐방지원센터 - 석조여래입상 - 봉천대 - 상왕봉",
+          "length_km": 4.0,
+          "duration": "2시간 30분",
+          "difficulty": "중급",
+          "note": "백운동을 거치지 않고 해인사 쪽에서 곧바로 상왕봉으로 오르는 최단코스",
+          "recommended": false
+        },
+        {
+          "name": "법전리 칠불능선 코스",
+          "trailhead": "법전리 공영주차장(성주 가천면)",
+          "route": "법전리 공영주차장 - 법전탐방지원센터 - 칠불능선 - 칠불봉 - 상왕봉 - 법전리 공영주차장",
+          "length_km": 10.6,
+          "duration": "4시간~4시간 30분",
+          "difficulty": "상급",
+          "note": "2023년 52년 만에 개방된 신규 탐방로, 이끼 원시림과 철계단 구간 포함",
+          "recommended": false
         }
       ],
       "height_m": 1432.6,
       "rank_100": 3,
-      "mtId": "11H002P1"
+      "mtId": "11H002P1",
+      "blackyak_100": true
     },
     {
       "name": "덕유산",
@@ -338,11 +497,31 @@
           "difficulty": "중급",
           "recommended": false,
           "note": "도보로만 정상에 오르는 전통적인 코스"
+        },
+        {
+          "name": "육구종주",
+          "trailhead": "육십령",
+          "route": "육십령 - 할미봉 - 서봉 - 남덕유산 - 삿갓재대피소 - 무룡산 - 동엽령 - 중봉 - 향적봉 - 백련사 - 구천동탐방지원센터",
+          "duration": "12~14시간(무박 종주)",
+          "difficulty": "상급",
+          "note": "지리산·설악산 종주와 함께 국내 3대 종주로 꼽히는 백두대간 구간. 삿갓재대피소 예약 시 1박2일 산행도 가능",
+          "recommended": false
+        },
+        {
+          "name": "안성 코스(동엽령)",
+          "trailhead": "안성탐방지원센터",
+          "route": "안성탐방지원센터 - 칠연계곡 - 동엽령 - 백암봉 - 중봉 - 향적봉 - 설천봉(곤돌라 하산)",
+          "length_km": 9.3,
+          "duration": "5시간",
+          "difficulty": "중급",
+          "note": "덕유산 남쪽 안성(무주) 방면 들머리. 국립공원 공식 탐방코스이며 탐방예약제 운영",
+          "recommended": false
         }
       ],
       "mtId": "11F004P1",
       "height_m": 1614.2,
-      "rank_100": 24
+      "rank_100": 24,
+      "blackyak_100": true
     },
     {
       "name": "소백산",
@@ -371,11 +550,32 @@
           "difficulty": "중급",
           "recommended": false,
           "note": "경사가 비교적 완만한 능선 코스"
+        },
+        {
+          "name": "어의곡 코스",
+          "trailhead": "어의곡탐방지원센터",
+          "route": "어의곡탐방지원센터 - 어의곡삼거리 - 비로봉",
+          "length_km": 5.1,
+          "duration": "약 2시간 40분",
+          "difficulty": "중급",
+          "note": "충북 단양 가곡면 쪽에서 비로봉까지 최단 시간에 오르는 코스, 경사가 시종일관 이어짐",
+          "recommended": false
+        },
+        {
+          "name": "희방사 코스",
+          "trailhead": "희방탐방지원센터",
+          "route": "희방탐방지원센터 - 희방폭포 - 희방사 - 연화봉",
+          "length_km": 7.4,
+          "duration": "약 3시간 30분",
+          "difficulty": "중급",
+          "note": "희방폭포와 깔딱고개 돌계단 구간을 지나 연화봉으로 오르는 경북 영주 쪽 코스(왕복 거리 기준)",
+          "recommended": false
         }
       ],
       "mtId": "11H003P1",
       "height_m": 1439.7,
-      "rank_100": 52
+      "rank_100": 52,
+      "blackyak_100": true
     },
     {
       "name": "무등산",
@@ -404,11 +604,31 @@
           "difficulty": "중급",
           "recommended": false,
           "note": "서석대 코스에 입석대를 추가로 경유"
+        },
+        {
+          "name": "원효사 코스 (규봉암 종주)",
+          "trailhead": "원효사 주차장(무등산 옛길 입구)",
+          "route": "원효사주차장 - 물통거리 - 목교 - 서석대 - 입석대 - 장불재 - 규봉암(광석대) - 억새평전 - 꼬막재 - 원효사주차장(원점회귀)",
+          "length_km": 13.3,
+          "duration": "약 4시간 10분(순수 보행시간)",
+          "difficulty": "중급",
+          "note": "증심사 반대편인 원효사에서 출발해 서석대·입석대·규봉암(주상절리)을 두루 도는 원점회귀 종주코스",
+          "recommended": false
+        },
+        {
+          "name": "새인봉-입석대 코스",
+          "trailhead": "증심사 주차장",
+          "route": "증심사주차장 - 운소봉 - 새인봉 - 서인봉 - 장불재 - 입석대 - 서석대",
+          "duration": "약 3시간 30분",
+          "difficulty": "중급",
+          "note": "기존 중머리재 경유 코스와 달리 새인봉·서인봉 암봉 능선을 타고 장불재로 오르는 조망 좋은 코스",
+          "recommended": false
         }
       ],
       "mtId": "11F019P1",
       "height_m": 1186.8,
-      "rank_100": 35
+      "rank_100": 35,
+      "blackyak_100": true
     },
     {
       "name": "계룡산",
@@ -437,11 +657,32 @@
           "difficulty": "중급",
           "recommended": false,
           "note": "갑사 방면 출발, 일출 명소로도 알려짐"
+        },
+        {
+          "name": "신원사 코스",
+          "trailhead": "신원사 주차장",
+          "route": "신원사 주차장 - 신원사 - 중악단 - 고왕암 - 연천봉",
+          "length_km": 3.2,
+          "duration": "2시간",
+          "difficulty": "초급",
+          "note": "공주 방면 남쪽 진입로, 계룡8경 연천봉 낙조와 중악단 등 문화재 탐방 겸용",
+          "recommended": false
+        },
+        {
+          "name": "천정(남매탑) 코스",
+          "trailhead": "천정탐방지원센터",
+          "route": "천정탐방지원센터 - 문골삼거리 - 큰배재 - 남매탑 - 계룡산탐방안내소",
+          "length_km": 5.8,
+          "duration": "3시간",
+          "difficulty": "초급",
+          "note": "동학사를 거치지 않고 남매탑(오누이탑)으로 바로 오르는 완만한 코스",
+          "recommended": false
         }
       ],
       "mtId": "11C001P1",
       "height_m": 846.5,
-      "rank_100": 7
+      "rank_100": 7,
+      "blackyak_100": true
     },
     {
       "name": "내장산",
@@ -470,11 +711,32 @@
           "difficulty": "중급",
           "recommended": false,
           "note": "단풍 명소로 유명한 능선 코스"
+        },
+        {
+          "name": "서래봉코스",
+          "trailhead": "내장산 탐방안내소(일주문)",
+          "route": "탐방안내소(일주문) - 벽련암 - 서래봉 - 불출봉 - 원적암 - 내장사 - 일주문",
+          "length_km": 5.9,
+          "duration": "4시간",
+          "difficulty": "중급",
+          "note": "탐방객이 많이 찾는 대표 코스 중 하나로, 중간에 급경사 철계단 구간이 있음",
+          "recommended": false
+        },
+        {
+          "name": "전망대코스",
+          "trailhead": "내장산 탐방안내소",
+          "route": "탐방안내소 - 케이블카 - 전망대 - 내장사 - 탐방안내소",
+          "length_km": 1.8,
+          "duration": "50분",
+          "difficulty": "초급",
+          "note": "케이블카를 이용해 전망대까지 짧게 다녀오는 초급 코스",
+          "recommended": false
         }
       ],
       "mtId": "11F003P1",
       "height_m": 763.5,
-      "rank_100": 19
+      "rank_100": 19,
+      "blackyak_100": true
     },
     {
       "name": "치악산",
@@ -503,11 +765,22 @@
           "difficulty": "중급",
           "recommended": false,
           "note": "상대적으로 짧지만 경사가 가파른 구간 포함"
+        },
+        {
+          "name": "부곡 코스",
+          "trailhead": "부곡탐방지원센터",
+          "route": "부곡탐방지원센터 - 곧은재 - 능선 - 비로봉(정상)",
+          "length_km": 8.9,
+          "duration": "3시간",
+          "difficulty": "중급",
+          "note": "계곡을 따라 걷는 완만한 구간이 많아 겨울에도 부담이 적은 코스",
+          "recommended": false
         }
       ],
       "mtId": "11D003P1",
       "height_m": 1282.0,
-      "rank_100": 84
+      "rank_100": 84,
+      "blackyak_100": true
     },
     {
       "name": "월출산",
@@ -568,7 +841,8 @@
       "map_url": "https://www.knps.or.kr/download/park/map/월출산국립공원안내도.jpg",
       "mtId": "11F001P1",
       "height_m": 810.7,
-      "rank_100": 65
+      "rank_100": 65,
+      "blackyak_100": true
     },
     {
       "name": "장산",
@@ -664,7 +938,8 @@
       ],
       "mtId": "11D008P1",
       "height_m": 328.2,
-      "rank_100": 89
+      "rank_100": 89,
+      "blackyak_100": true
     },
     {
       "name": "오대산",
@@ -733,7 +1008,8 @@
         }
       ],
       "height_m": 1565.4,
-      "rank_100": 57
+      "rank_100": 57,
+      "blackyak_100": true
     },
     {
       "name": "가리산",
@@ -760,10 +1036,29 @@
           "difficulty": "중급",
           "note": "정상부 3개 암봉을 지나는 장거리 순환코스",
           "recommended": false
+        },
+        {
+          "name": "소양호 물로리 코스",
+          "trailhead": "가리산자연휴양림",
+          "route": "가리산자연휴양림 - 가삽고개 - 정상 - 석간수 샘터 - 소양호 물로리",
+          "duration": "4시간 30분",
+          "difficulty": "상급",
+          "note": "정상에서 소양호 방면으로 하산하는 편도 코스, 물로리 선착장에서 소양댐행 배편(1일 2회) 이용 가능",
+          "recommended": false
+        },
+        {
+          "name": "철정리 코스",
+          "trailhead": "가리산자연휴양림",
+          "route": "가리산자연휴양림 - 가삽고개 - 정상 - 석간수 샘터 - 철정리",
+          "duration": "4시간 30분",
+          "difficulty": "상급",
+          "note": "정상에서 철정리(가리산교) 방면으로 하산하는 편도 코스",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "가리왕산",
@@ -791,10 +1086,19 @@
           "difficulty": "중급",
           "note": "가장 빠르게 정상에 오르는 최단코스, 초반 급경사",
           "recommended": false
+        },
+        {
+          "name": "중봉 하산코스(회동)",
+          "trailhead": "가리왕산자연휴양림 매표소",
+          "route": "가리왕산자연휴양림 매표소 - 마항치삼거리 - 정상 - 중봉 - 회동휴양지 - 매표소",
+          "difficulty": "중급",
+          "note": "마항치삼거리로 올라 중봉을 거쳐 회동휴양지 방면으로 원점회귀하는 변형 코스",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "가지산",
@@ -821,10 +1125,30 @@
           "difficulty": "상급",
           "note": "밀양 쪽에서 오르는 전통 산행코스, 거리가 길고 힘든 편",
           "recommended": false
+        },
+        {
+          "name": "운문령 코스",
+          "trailhead": "운문령",
+          "route": "운문령 - 귀바위 - 상운산 - 쌀바위 - 가지산 정상 - 운문령(원점회귀)",
+          "length_km": 14.0,
+          "duration": "6시간",
+          "difficulty": "중급",
+          "note": "코스 절반이 임도라 가지산 정상 코스 중 가장 완만함, 쌀바위는 블랙야크 명산 인증지점",
+          "recommended": false
+        },
+        {
+          "name": "가지산~운문산 종주코스",
+          "trailhead": "석남터널",
+          "route": "석남터널 - 중봉 - 가지산 정상 - 아랫재 - 운문산 정상 - 아랫재 - 상양마을",
+          "duration": "6시간~6시간 30분",
+          "difficulty": "상급",
+          "note": "영남알프스 대표 종주코스, 가지산에서 운문산까지 이어 상양마을로 하산",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "감악산",
@@ -852,10 +1176,41 @@
           "difficulty": "초급",
           "note": "약수터를 경유해 정상으로 오르는 코스",
           "recommended": false
+        },
+        {
+          "name": "3코스 (까치봉 코스)",
+          "trailhead": "감악산 휴게소(설마리)",
+          "route": "감악산 휴게소 - 운계능선 - 까치봉 - 감악산 정상",
+          "length_km": 4.2,
+          "duration": "2시간 20분",
+          "difficulty": "중급",
+          "note": "파주시 공식 3코스, 설마리 휴게소 주차장에서 시작",
+          "recommended": false
+        },
+        {
+          "name": "4코스 (산촌마을 코스)",
+          "trailhead": "산촌마을 주차장(객현리)",
+          "route": "산촌마을 주차장 - 약수터 - 감악산 정상",
+          "length_km": 2.3,
+          "duration": "1시간 20분",
+          "difficulty": "초급",
+          "note": "파주시 공식 4코스, 최단코스 중 하나",
+          "recommended": false
+        },
+        {
+          "name": "신암저수지 코스(임꺽정봉)",
+          "trailhead": "감악산주차장(양주 남면 신암리)",
+          "route": "신암저수지 - 얼굴바위 - 감악약수터 - 임꺽정봉 - 감악산 정상",
+          "length_km": 4.5,
+          "duration": "3시간 30분",
+          "difficulty": "중급",
+          "note": "양주시 방면 진입 코스, 임진강 전망 하늘길과 얼굴바위가 볼거리",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "강천산",
@@ -924,7 +1279,8 @@
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "공작산",
@@ -980,10 +1336,29 @@
           "difficulty": "중급",
           "note": "가장 짧게 정상을 왕복하는 최단코스",
           "recommended": false
+        },
+        {
+          "name": "뱀골 코스",
+          "trailhead": "송현리",
+          "route": "송현리 - 갈평 - 뱀골 - 구병산 정상",
+          "difficulty": "중급",
+          "note": "구병산 3대 기점 중 하나인 송현리 방면 코스, 암릉 구간 있어 주의 필요",
+          "recommended": false
+        },
+        {
+          "name": "구병리 코스",
+          "trailhead": "구병리 마을회관",
+          "route": "구병리 마을회관 - 능선길 - 정상 - 계곡길 - 구병리 마을회관(원점회귀)",
+          "length_km": 4.0,
+          "duration": "2시간",
+          "difficulty": "중급",
+          "note": "구병리 마을 기점 원점회귀 코스, 경사가 가파르고 계단 구간이 많음",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "금산",
@@ -1046,10 +1421,21 @@
           "difficulty": "상급",
           "note": "계곡과 능선을 아우르는 장거리 코스, 난이도가 높음",
           "recommended": false
+        },
+        {
+          "name": "용담폭포·망덕봉 순환코스",
+          "trailhead": "상천주차장",
+          "route": "상천휴게소 - 용담폭포삼거리 - 금수산 정상 - 망덕봉 - 용담폭포삼거리 - 상천휴게소",
+          "length_km": 8.2,
+          "duration": "5시간",
+          "difficulty": "상급",
+          "note": "정상 등정 후 망덕봉을 추가로 올라 용담폭포 방향으로 원점회귀, 가파른 계단 구간 주의",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "금오산",
@@ -1079,7 +1465,8 @@
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "금정산",
@@ -1106,10 +1493,29 @@
           "difficulty": "중급",
           "note": "금정산성 성곽길을 따라 걷는 종주형 코스",
           "recommended": false
+        },
+        {
+          "name": "만덕고개~고당봉 코스",
+          "trailhead": "만덕사거리(만덕역 2번 출구)",
+          "route": "만덕사거리 - 상학초등학교 - 천룡사지 - 남문 - 동문 - 의상봉 - 원효봉 - 북문 - 고당봉",
+          "duration": "4시간",
+          "difficulty": "중급",
+          "note": "부산 북구청 공식 지정 코스, 만덕동에서 남문을 거쳐 오르는 남쪽 접근로",
+          "recommended": false
+        },
+        {
+          "name": "화명동~고당봉 코스",
+          "trailhead": "화신중학교(화명역 6번 출구)",
+          "route": "화신중학교 - 서문 - 중리 - 정수암 - 북문 - 고당봉",
+          "duration": "3시간",
+          "difficulty": "중급",
+          "note": "부산 북구청 공식 지정 코스, 화명동에서 서문을 거쳐 오르는 서쪽 접근로",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "깃대봉",
@@ -1157,10 +1563,31 @@
           "difficulty": "초급",
           "note": "용장사지 마애여래좌상 등을 지나 계곡으로 하산하는 코스",
           "recommended": false
+        },
+        {
+          "name": "포석정~늠비봉 코스",
+          "trailhead": "포석정 공영주차장",
+          "route": "포석정(부엉골) - 부흥사 - 늠비봉(오층석탑)",
+          "length_km": 2.0,
+          "duration": "40~50분",
+          "difficulty": "초급",
+          "note": "남산 유일의 오층석탑이 있는 늠비봉까지 오르는 짧고 쉬운 코스, 초보자 적합",
+          "recommended": false
+        },
+        {
+          "name": "칠불암·신선암 코스",
+          "trailhead": "통일전 주차장",
+          "route": "통일전 - 남산동 동·서삼층석탑 - 염불사지 - 칠불암 - 신선암",
+          "length_km": 2.5,
+          "duration": "1시간~1시간 20분",
+          "difficulty": "중급",
+          "note": "동남산 대표 문화유산 코스, 국보 칠불암 마애불상군과 신선암 마애보살반가상 경유",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "내연산",
@@ -1188,10 +1615,21 @@
           "difficulty": "상급",
           "note": "삼지봉 정상까지 완주하는 코스",
           "recommended": false
+        },
+        {
+          "name": "향로봉 종주코스",
+          "trailhead": "보경사주차장",
+          "route": "보경사주차장 - 보경사 - 12폭포 - 시명리 - 향로봉 - 삼지봉 - 문수봉 - 보경사주차장",
+          "length_km": 20.0,
+          "duration": "7시간~7시간 30분",
+          "difficulty": "상급",
+          "note": "12폭포를 모두 지나 내연산 최고봉 향로봉(930m)까지 오른 뒤 원점회귀하는 장거리 종주",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "대둔산",
@@ -1218,10 +1656,31 @@
           "difficulty": "초급",
           "note": "케이블카를 이용해 짧게 정상 부근까지 오르는 코스",
           "recommended": false
+        },
+        {
+          "name": "안심사코스",
+          "trailhead": "안심사(완주군 운주면 완창리)",
+          "route": "안심사 - 지장암 - 서각봉 - 마천대(정상)",
+          "length_km": 3.4,
+          "duration": "2시간 20분",
+          "difficulty": "중급",
+          "note": "완주군 공식 코스로, 안심사를 들머리로 서각봉을 지나 정상에 오름",
+          "recommended": false
+        },
+        {
+          "name": "태고사코스",
+          "trailhead": "행정주차장",
+          "route": "행정주차장 - 태고사광장 - 낙조대 - 마천대(정상)",
+          "length_km": 5.6,
+          "duration": "3시간",
+          "difficulty": "중급",
+          "note": "완주군 공식 코스로, 태고사와 낙조대 전망 명소를 경유해 정상에 오름",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "대암산",
@@ -1246,6 +1705,16 @@
           "duration": "3시간",
           "difficulty": "초급",
           "note": "정상 없이 용늪만 탐방하는 짧은 코스, 사전 탐방예약 필요",
+          "recommended": false
+        },
+        {
+          "name": "광치자연휴양림코스",
+          "trailhead": "광치자연휴양림(강원 양구군 동면)",
+          "route": "광치자연휴양림 - 대암산 용늪 - 도솔산전투위령비",
+          "length_km": 16.7,
+          "duration": "8시간",
+          "difficulty": "상급",
+          "note": "양구 방향 생태탐방로. 용늪 구간은 사전 예약 필수(탐방 20일 전 신청)",
           "recommended": false
         }
       ],
@@ -1279,7 +1748,8 @@
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "덕숭산",
@@ -1298,6 +1768,15 @@
           "difficulty": "초급",
           "note": "천년고찰 수덕사를 품은 '호서의 금강산' 대표 코스",
           "recommended": true
+        },
+        {
+          "name": "정혜사 코스",
+          "trailhead": "수덕사 주차장",
+          "route": "수덕사 주차장 - 수덕사 - 정혜사 - 덕숭산 정상 - 전월사 - 향운각 - 수덕사 - 수덕사 주차장",
+          "duration": "2~3시간",
+          "difficulty": "초급",
+          "note": "수덕사 경내 사찰(정혜사·견성암·향운각 등)을 두루 거치는 완만한 계곡길로, 기존 능선(저수지·바위전망대) 코스와는 다른 진입로",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
@@ -1331,7 +1810,8 @@
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "도락산",
@@ -1359,10 +1839,21 @@
           "difficulty": "상급",
           "note": "제봉·채운봉 등 연속 암봉을 지나는 암릉 코스",
           "recommended": false
+        },
+        {
+          "name": "내궁기 코스",
+          "trailhead": "내궁기(하룻밤궁궐터 인근)",
+          "route": "내궁기 - 사모폭포 - 내궁기 삼거리 - 신선봉 - 도락산 정상(왕복)",
+          "length_km": 3.4,
+          "duration": "2~3시간",
+          "difficulty": "상급",
+          "note": "도락산 최단코스지만 초반부터 오르막·암릉이 이어지는 급경사 왕복 코스. 주차공간 협소(약 7대)",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "두륜산",
@@ -1389,10 +1880,21 @@
           "difficulty": "초급",
           "note": "케이블카로 오르는 유일한 봉우리로 다른 봉우리로 이동은 불가",
           "recommended": false
+        },
+        {
+          "name": "오소재 코스 (오소재~대흥사 종주)",
+          "trailhead": "오소재 약수터",
+          "route": "오소재 약수터 - 오심재 - 노승봉 - 가련봉(정상) - 두륜봉(구름다리) - 대흥사 주차장",
+          "length_km": 8.5,
+          "duration": "4시간",
+          "difficulty": "상급",
+          "note": "대흥사 반대편(오소재)에서 시작해 노승봉·가련봉·두륜봉을 모두 종주하는 코스",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "두타산",
@@ -1430,7 +1932,8 @@
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "마니산",
@@ -1458,10 +1961,19 @@
           "difficulty": "초급",
           "note": "능선길과 흙길 위주로 완만해 풍경을 즐기며 걷기 좋음",
           "recommended": false
+        },
+        {
+          "name": "정수사 코스",
+          "trailhead": "정수사",
+          "route": "정수사 - 암릉구간 - 칠선녀계단 - 참성단",
+          "difficulty": "상급",
+          "note": "사찰(정수사)을 경유하며 서해 조망이 좋은 암릉 코스. 4개 코스 중 가장 험난하다는 평가",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "마이산",
@@ -1488,10 +2000,31 @@
           "difficulty": "초급",
           "note": "탑사 등 관광 명소 위주로 도는 최단 코스",
           "recommended": false
+        },
+        {
+          "name": "합미산성-광대봉 코스",
+          "trailhead": "합미산성",
+          "route": "합미산성 - 광대봉(609m) - 고금당 - 비룡대(527m) - 봉두봉(540m) - 마이산 석탑군(탑사)",
+          "length_km": 8.4,
+          "duration": "4시간 40분",
+          "difficulty": "상급",
+          "note": "진안군 공식 등산로 안내상 장거리 코스. 광대봉 구간은 로프 구간이 있어 주로 전문 산악인이 이용",
+          "recommended": false
+        },
+        {
+          "name": "보흥사-광대봉 코스",
+          "trailhead": "보흥사",
+          "route": "보흥사 - 광대봉(609m) - 고금당 - 비룡대(527m) - 봉두봉(540m) - 마이산 석탑군(탑사)",
+          "length_km": 5.4,
+          "duration": "3시간 40분",
+          "difficulty": "상급",
+          "note": "합미산성 코스보다 짧아 진안군이 일반인에게 권장하는 광대봉 방면 코스. 봄·가을 산불방지기간 폐쇄 가능",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "명성산",
@@ -1567,7 +2100,8 @@
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "모악산",
@@ -1606,7 +2140,8 @@
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "무학산",
@@ -1633,6 +2168,16 @@
           "duration": "3~4시간",
           "difficulty": "중급",
           "note": "암릉인 학봉을 넘어가는 코스",
+          "recommended": false
+        },
+        {
+          "name": "백운사 코스",
+          "trailhead": "백운사 주차장(서원곡)",
+          "route": "백운사주차장 - 용주암입구 - 걱정바위전망대 - 365계단 - 서마지기 - 무학산 정상(원점회귀)",
+          "length_km": 5.0,
+          "duration": "약 2시간 30분",
+          "difficulty": "중급",
+          "note": "서원곡 백운사 무료주차장에서 원점회귀하는 코스",
           "recommended": false
         }
       ],
@@ -1665,6 +2210,24 @@
           "difficulty": "중급",
           "note": "바위 구간이 있어 등산 경험자에게 적합, 미륵사지와 연계 가능",
           "recommended": false
+        },
+        {
+          "name": "A코스(전북과학고 코스)",
+          "trailhead": "전북과학고등학교",
+          "route": "전북과학고등학교 - (계단구간) - 미륵산 정상",
+          "length_km": 1.9,
+          "difficulty": "중급",
+          "note": "거리는 짧지만 계단 구간이 많음. 주차 여건이 좋아 이용객이 많은 코스",
+          "recommended": false
+        },
+        {
+          "name": "D코스(구룡마을-사자암 코스)",
+          "trailhead": "구룡마을",
+          "route": "구룡마을 - 사자암 - 미륵산 정상",
+          "length_km": 2.0,
+          "difficulty": "중급",
+          "note": "사자암을 경유하며, 사자암 대웅전 앞 전망대에서 익산 시내 조망 가능",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
@@ -1696,10 +2259,29 @@
           "difficulty": "상급",
           "note": "충북·전북·경북 3도 경계 삼도봉까지 잇는 장거리 종주코스",
           "recommended": false
+        },
+        {
+          "name": "각호산 원점회귀 코스(B코스)",
+          "trailhead": "물한계곡주차장",
+          "route": "물한계곡주차장 - 각호산 - 대피소 - 민주지산 정상 - 물한계곡주차장",
+          "length_km": 10.8,
+          "duration": "약 4시간",
+          "difficulty": "중급",
+          "note": "석기봉·삼도봉을 거치지 않고 각호산~정상만 원점회귀하는 코스",
+          "recommended": false
+        },
+        {
+          "name": "민주지산자연휴양림 코스",
+          "trailhead": "민주지산자연휴양림",
+          "route": "민주지산자연휴양림 - 대피소 - 민주지산 정상",
+          "difficulty": "초급",
+          "note": "정상으로 가는 최단코스로 소개되나 출처마다 거리 정보가 상이해 정확한 거리·시간은 미확인",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "방장산",
@@ -1727,10 +2309,31 @@
           "difficulty": "상급",
           "note": "호남 삼신산 능선을 잇는 종주코스, 쓰리봉까지 급경사 업다운 구간",
           "recommended": false
+        },
+        {
+          "name": "온천교-상원사 코스",
+          "trailhead": "온천교(고창읍 월곡리)",
+          "route": "고창읍 온천교 - 상원사 - 방장산 정상",
+          "length_km": 4.5,
+          "duration": "편도 1시간 20분",
+          "difficulty": "중급",
+          "note": "천년고찰 상원사를 경유해 정상으로 바로 오르는 편도 코스",
+          "recommended": false
+        },
+        {
+          "name": "용추골 코스",
+          "trailhead": "신림면 신기마을",
+          "route": "신기마을(용추골) - 용추폭포 - 헬기장 - 방장산(벽오봉)",
+          "length_km": 5.5,
+          "duration": "편도 2시간",
+          "difficulty": "중급",
+          "note": "용추폭포를 지나는 계곡 코스",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "방태산",
@@ -1770,7 +2373,8 @@
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "백덕산",
@@ -1797,10 +2401,21 @@
           "difficulty": "중급",
           "note": "영월 방면 원점회귀 코스, 법흥사 인근에서 접근",
           "recommended": false
+        },
+        {
+          "name": "비네소골 원점회귀 코스",
+          "trailhead": "비네소골 주차장(평창군 방림면 운교리)",
+          "route": "비네소골(운교리) - 당재 - 백덕산 정상 - 비네소골(원점회귀)",
+          "length_km": 10.0,
+          "duration": "4시간~4시간 40분",
+          "difficulty": "중급",
+          "note": "운교리 주차장에서 출발하는 최단 원점회귀 코스, 문재·관음사 코스와 다른 들머리",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "백암산",
@@ -1818,10 +2433,30 @@
           "difficulty": "중급",
           "note": "천년고찰 백양사에서 출발하는 대표 순환코스",
           "recommended": true
+        },
+        {
+          "name": "청류암 코스(순창 방면)",
+          "trailhead": "청류암(순창군 복흥면)",
+          "route": "청류암 - 사자봉 - 상왕봉(정상) - 백학봉 - 백양사",
+          "duration": "5시간",
+          "difficulty": "중급",
+          "note": "전북 순창 복흥면 청류암에서 백양사로 하산하는 코스, 동학농민운동 당시 전봉준 피신처",
+          "recommended": false
+        },
+        {
+          "name": "구암사 코스(순창)",
+          "trailhead": "구암사 주차장(순창군 복흥면)",
+          "route": "구암사 주차장 - 구암사갈림길 - 상왕봉(정상) - 구암사 주차장",
+          "length_km": 6.0,
+          "duration": "2~3시간",
+          "difficulty": "초급",
+          "note": "순창 복흥면 구암사에서 출발하는 최단 원점회귀 코스",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "백운산",
@@ -1887,10 +2522,21 @@
           "difficulty": "중급",
           "note": "내변산분소에서 출발해 관음봉을 돌아오는 순환코스",
           "recommended": false
+        },
+        {
+          "name": "의상봉 코스",
+          "trailhead": "청림마을",
+          "route": "청림마을 - 새재 - 지장봉 - 쇠뿔바위봉 - 의상봉 - 투구봉 - 구시골 - 청림마을",
+          "length_km": 9.2,
+          "duration": "7시간 40분",
+          "difficulty": "상급",
+          "note": "변산 최고봉 의상봉 일대 종주 코스. 의상봉 정상부는 군사시설로 출입통제 중이며 쇠뿔바위봉까지만 정식 탐방 가능",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "비슬산",
@@ -1909,10 +2555,29 @@
           "difficulty": "중급",
           "note": "국내 최대 참꽃(진달래) 군락지와 천년고찰 대견사를 지나는 대표 코스",
           "recommended": true
+        },
+        {
+          "name": "용연사 코스",
+          "trailhead": "용연사",
+          "route": "용연사 - 약수터 - 천왕봉(정상) - 유가사",
+          "duration": "약 5시간 50분",
+          "difficulty": "상급",
+          "note": "용연사에서 출발해 약수터를 거쳐 정상에 오른 뒤 유가사로 하산하는 장거리 코스",
+          "recommended": false
+        },
+        {
+          "name": "소재사(자연휴양림)-조화봉 코스",
+          "trailhead": "비슬산자연휴양림(소재사)",
+          "route": "소재사(자연휴양림) - 암괴류 관찰로 - 대견사 - 참꽃 군락지 - 조화봉 - 비슬산자연휴양림",
+          "duration": "4~5시간",
+          "difficulty": "중급",
+          "note": "자연휴양림에서 암괴류 지대와 대견사를 지나 조화봉까지 다녀오는 순환 코스(천왕봉 미경유)",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "삼악산",
@@ -1952,7 +2617,8 @@
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "서대산",
@@ -1970,6 +2636,33 @@
           "difficulty": "중급",
           "note": "충남 최고봉을 오르는 대표 코스, 기암괴석 구간이 많아 체감 난이도가 높음",
           "recommended": true
+        },
+        {
+          "name": "개덕사-드림리조트 종주코스",
+          "trailhead": "개덕사",
+          "route": "개덕사 - 개덕폭포 - 옥녀직금대 - 돌탑공원 - 서대산 정상 - 서대산드림리조트",
+          "duration": "약 4시간",
+          "difficulty": "중급",
+          "note": "개덕사 주차장에서 산행을 시작해 드림리조트로 하산하는 대표 종주 코스",
+          "recommended": false
+        },
+        {
+          "name": "청소년수련원-안보광리 코스",
+          "trailhead": "서대산청소년수련원",
+          "route": "서대산청소년수련원 - 닭벼슬바위 - 옥녀직금대 - 서대산 정상 - 안보광리",
+          "duration": "약 4시간",
+          "difficulty": "상급",
+          "note": "청소년수련원에서 출발해 닭벼슬바위 암릉을 지나 안보광리로 하산하는 코스",
+          "recommended": false
+        },
+        {
+          "name": "장룡산자연휴양림 코스",
+          "trailhead": "장룡산자연휴양림",
+          "route": "장룡산자연휴양림 - 546봉 - 도계삼거리 - 마당바위 - 신선바위 - 서대산 정상 - 서대산청소년수련원",
+          "duration": "약 5시간 45분",
+          "difficulty": "상급",
+          "note": "가장 긴 서대산 코스로 초보자에게는 권장되지 않음",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
@@ -2013,7 +2706,8 @@
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "성인봉",
@@ -2038,6 +2732,26 @@
           "duration": "4시간",
           "difficulty": "중급",
           "note": "급경사 데크 계단 구간이 많아 도동코스보다 체감 난이도가 높음",
+          "recommended": false
+        },
+        {
+          "name": "대원사 코스",
+          "trailhead": "대원사(울릉 도동)",
+          "route": "대원사 - 팔각정 - 성인봉(정상) - 신령수 - 나리분지",
+          "length_km": 8.7,
+          "duration": "4~5시간",
+          "difficulty": "중급",
+          "note": "도동 KBS중계소 코스보다 더 길고 시간이 더 걸리는 별도 등로",
+          "recommended": false
+        },
+        {
+          "name": "안평전 코스",
+          "trailhead": "안평전(울릉 사동)",
+          "route": "사동(안평전) - 바람등대 - 성인봉(정상) - 신령수 - 나리분지",
+          "length_km": 7.7,
+          "duration": "4~5시간",
+          "difficulty": "중급",
+          "note": "사동 안평전에서 출발해 바람등대를 지나 나리분지로 이어지는 코스",
           "recommended": false
         }
       ],
@@ -2087,7 +2801,8 @@
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "신불산",
@@ -2132,7 +2847,8 @@
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "연화산",
@@ -2210,7 +2926,8 @@
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "용문산",
@@ -2255,7 +2972,8 @@
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "용화산",
@@ -2295,7 +3013,8 @@
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "운문산",
@@ -2383,7 +3102,8 @@
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "운장산",
@@ -2422,7 +3142,8 @@
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "월악산",
@@ -2471,7 +3192,8 @@
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "유명산",
@@ -2511,7 +3233,8 @@
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "응봉산",
@@ -2539,10 +3262,29 @@
           "difficulty": "중급",
           "note": "덕풍계곡 용소들을 거쳐 오르는 코스",
           "recommended": false
+        },
+        {
+          "name": "사곡분교 코스",
+          "trailhead": "사곡분교(삼척 가곡면)",
+          "route": "사곡분교 - 재량박골 - 응봉산 서북릉 - 정상 - 덕구온천",
+          "duration": "6시간 10분",
+          "difficulty": "상급",
+          "note": "삼척 쪽 남릉으로 오르는 코스로 등산객이 적어 원시림이 잘 보존됨",
+          "recommended": false
+        },
+        {
+          "name": "보리교 코스",
+          "trailhead": "보리교",
+          "route": "보리교 - 보리골 - 862봉 - 응봉산 서북릉 - 정상 - 덕구온천",
+          "duration": "6시간",
+          "difficulty": "상급",
+          "note": "보리골 계곡을 따라 오르는 코스",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "장안산",
@@ -2591,7 +3333,8 @@
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "재약산",
@@ -2631,7 +3374,8 @@
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "적상산",
@@ -2656,6 +3400,15 @@
           "duration": "4시간30분",
           "difficulty": "중급",
           "note": "치목마을로 하산하는 종주형 코스",
+          "recommended": false
+        },
+        {
+          "name": "안국사 원점회귀 코스",
+          "trailhead": "안국사 주차장(적상호)",
+          "route": "안국사 주차장 - 안국사 - 안부삼거리 - 향로봉(정상) - 안렴대 - 안국사 주차장",
+          "duration": "1시간 이내",
+          "difficulty": "초급",
+          "note": "적상호까지 차량 진입 후 짧게 정상과 안렴대를 둘러보는 가족 단위 코스",
           "recommended": false
         }
       ],
@@ -2718,10 +3471,21 @@
           "difficulty": "중급",
           "note": "보리밥집과 천연기념물 쌍향수를 경유",
           "recommended": false
+        },
+        {
+          "name": "선암사 원점회귀 코스",
+          "trailhead": "선암사 매표소",
+          "route": "선암사매표소 - 선암사 - 대각암 - 장군봉(정상) - 비로암 - 선암사 - 선암사매표소",
+          "length_km": 9.0,
+          "duration": "약 5시간",
+          "difficulty": "중급",
+          "note": "송광사까지 가지 않고 선암사에서 정상만 다녀오는 원점회귀 코스",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "주왕산",
@@ -2748,10 +3512,21 @@
           "difficulty": "중급",
           "note": "가장 많은 탐방객이 찾는 코스, 기암절벽·계곡·폭포를 모두 조망",
           "recommended": false
+        },
+        {
+          "name": "가메봉코스(절골코스)",
+          "trailhead": "절골탐방지원센터",
+          "route": "절골탐방지원센터 - 대문다리 - 가메봉 - 후리메기삼거리 - 용연폭포 - 용추폭포 - 대전사 - 상의주차장",
+          "length_km": 12.5,
+          "duration": "약 6시간",
+          "difficulty": "상급",
+          "note": "절골계곡 징검다리를 따라 가메봉에 오른 뒤 대전사로 하산, 탐방예약제 시행 구간",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "주흘산",
@@ -2788,7 +3563,8 @@
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "지리산(통영)",
@@ -2807,6 +3583,24 @@
           "difficulty": "상급",
           "note": "사량도의 대표 암릉 종주코스, 철계단·로프 구간이 많아 사고 위험 주의",
           "recommended": true
+        },
+        {
+          "name": "옥동마을 코스",
+          "trailhead": "옥동마을(사량도)",
+          "route": "옥동마을 - 옥녀봉",
+          "duration": "약 3시간",
+          "difficulty": "중급",
+          "note": "옥동마을에서 바로 옥녀봉으로 오르는 짧은 코스",
+          "recommended": false
+        },
+        {
+          "name": "대항마을 코스",
+          "trailhead": "대항마을(사량도)",
+          "route": "대항마을 - 옥녀봉 - 금평항",
+          "duration": "약 1시간 30분~2시간",
+          "difficulty": "초급",
+          "note": "가장 짧은 코스로 초보자에게 적합하나 옥녀봉 구간은 암릉",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
@@ -2838,10 +3632,31 @@
           "difficulty": "초급",
           "note": "정상까지 가지 않는 짧고 완만한 초보자용 코스",
           "recommended": false
+        },
+        {
+          "name": "구룡봉 코스",
+          "trailhead": "천관문학관",
+          "route": "천관문학관 - 탑산사 - 구룡봉 - 환희대",
+          "length_km": 4.2,
+          "duration": "2시간",
+          "difficulty": "중급",
+          "note": "탑산사를 지나 기암 구룡봉을 오르는 코스",
+          "recommended": false
+        },
+        {
+          "name": "자연휴양림 코스",
+          "trailhead": "천관산자연휴양림",
+          "route": "천관산자연휴양림 - 진죽봉 - 환희대",
+          "length_km": 2.8,
+          "duration": "1시간 30분",
+          "difficulty": "초급",
+          "note": "휴양림에서 출발하는 짧고 완만한 코스",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "천마산",
@@ -2859,10 +3674,41 @@
           "difficulty": "중급",
           "note": "가장 많이 이용하는 대중코스, 봄철 야생화 산행지로 유명",
           "recommended": true
+        },
+        {
+          "name": "천마산역 코스",
+          "trailhead": "천마산역",
+          "route": "천마산역 - 주먹바위 - 뾰족봉 - 천마산 정상",
+          "length_km": 3.3,
+          "duration": "1시간 40분",
+          "difficulty": "중급",
+          "note": "아찔한 암릉 구간이 포함된 코스",
+          "recommended": false
+        },
+        {
+          "name": "천마산관리소 코스",
+          "trailhead": "천마산군립공원 관리소",
+          "route": "천마산군립공원 관리소 - 구름다리 - 약수터 - 깔딱고개 - 뾰족봉 - 천마산 정상",
+          "length_km": 2.9,
+          "duration": "1시간 30분",
+          "difficulty": "중급",
+          "note": "관리소에서 출발해 깔딱고개를 오르는 코스",
+          "recommended": false
+        },
+        {
+          "name": "가곡리 코스",
+          "trailhead": "보광사 입구",
+          "route": "보광사 입구 - 팔현리 갈림길 - 멸도봉 - 천마산 정상",
+          "length_km": 4.0,
+          "duration": "2시간",
+          "difficulty": "상급",
+          "note": "천마산 코스 중 최고난이도 구간",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "천성산",
@@ -2880,10 +3726,29 @@
           "difficulty": "중급",
           "note": "화엄늪 고산습지와 홍룡폭포를 잇는 가장 인기 있는 종주 코스",
           "recommended": true
+        },
+        {
+          "name": "원효암 코스",
+          "trailhead": "백동마을(법수원 입구)",
+          "route": "백동마을 - 법수원 - 비로봉(정상) - 은수고개 - 원효암(원효봉) - 홍룡사 주차장",
+          "duration": "4시간 20분",
+          "difficulty": "중급",
+          "note": "천성산 세 코스 중 최단코스로 원효봉과 비로봉을 모두 오름",
+          "recommended": false
+        },
+        {
+          "name": "대성마을(성불암) 코스",
+          "trailhead": "대성마을(성불암계곡 입구)",
+          "route": "대성마을 - 성불암계곡 입구 - 공룡능선 - 집북재 - 비로봉(정상) - 은수고개 - 원효암(원효봉) - 무지개폭포 - 장흥",
+          "duration": "6시간 20분",
+          "difficulty": "상급",
+          "note": "공룡능선을 타는 천성산 최장 코스",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "천태산",
@@ -2908,10 +3773,31 @@
           "difficulty": "중급",
           "note": "계곡을 따라 오르는 금산(충남) 방면 코스",
           "recommended": false
+        },
+        {
+          "name": "B코스",
+          "trailhead": "영국사 주차장",
+          "route": "영국사 주차장 - 영국사 - 원각국사비 - 헬기장 - 천태산 정상",
+          "length_km": 3.8,
+          "duration": "2시간 20분",
+          "difficulty": "중급",
+          "note": "문화유산을 둘러보며 오르는 비교적 완만한 코스",
+          "recommended": false
+        },
+        {
+          "name": "C코스",
+          "trailhead": "영국사 주차장",
+          "route": "영국사 주차장 - 영국사 - 남고개 - 헬기장 - 천태산 정상",
+          "length_km": 4.9,
+          "duration": "2시간 20분",
+          "difficulty": "중급",
+          "note": "능선코스 중 가장 긴 최장 코스",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "청량산",
@@ -2929,10 +3815,31 @@
           "difficulty": "중급",
           "note": "청량사와 하늘다리를 모두 둘러보는 가장 대중적인 코스",
           "recommended": true
+        },
+        {
+          "name": "청량폭포 코스 (최단코스)",
+          "trailhead": "청량폭포",
+          "route": "청량폭포 - 두들마을 - 장인봉 갈림길 - 장인봉(정상) - 원점회귀",
+          "length_km": 3.8,
+          "duration": "2시간",
+          "difficulty": "중급",
+          "note": "거리는 짧지만 체감 난이도가 높은 코스",
+          "recommended": false
+        },
+        {
+          "name": "축융봉 코스",
+          "trailhead": "탐방안내소(산성입구)",
+          "route": "탐방안내소 - 축융봉 - 산성 입구 - 자소봉 - 탁필봉 - 하늘다리 - 장인봉(정상) - 선학정",
+          "length_km": 8.2,
+          "duration": "5시간 30분",
+          "difficulty": "상급",
+          "note": "축융봉을 포함해 여러 봉우리를 잇는 종주 코스",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "추월산",
@@ -2957,6 +3864,24 @@
           "duration": "약 1시간",
           "difficulty": "초급",
           "note": "순창 방면에서 오르는 갈림길 없는 최단·완만 코스",
+          "recommended": false
+        },
+        {
+          "name": "월계리 코스",
+          "trailhead": "월계리 태웅산장",
+          "route": "월계리 태웅산장 - 북릉 안부 - 추월산(정상) - 보리암 정상 - 보리암 - 관리사무소 주차장",
+          "duration": "3시간",
+          "difficulty": "중급",
+          "note": "이용객이 적어 조용한 산행이 가능한 코스",
+          "recommended": false
+        },
+        {
+          "name": "쌍태리 코스",
+          "trailhead": "쌍태리",
+          "route": "쌍태리 - 보리암 정상 - 추월산(정상) - 관리사무소 주차장",
+          "duration": "3시간",
+          "difficulty": "중급",
+          "note": "들머리가 떨어져 있어 한적하고 대중교통 접근이 편리",
           "recommended": false
         }
       ],
@@ -3025,10 +3950,30 @@
           "difficulty": "상급",
           "note": "칠갑산 등산로 중 가장 험한 코스",
           "recommended": false
+        },
+        {
+          "name": "천장로 코스",
+          "trailhead": "천장호 출렁다리 주차장",
+          "route": "천장호 출렁다리 주차장 - 출렁다리 - 칠갑산 정상(왕복)",
+          "duration": "3시간",
+          "difficulty": "초급",
+          "note": "출렁다리를 건너 왕복하는 초보자용 코스",
+          "recommended": false
+        },
+        {
+          "name": "칠갑로 코스",
+          "trailhead": "구기자타운",
+          "route": "구기자타운 - 등산로 입구 - 산장로 삼거리 - 칠갑산 정상",
+          "length_km": 3.8,
+          "duration": "2시간",
+          "difficulty": "중급",
+          "note": "구기자타운에서 출발, 하산은 약 50분 소요",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "태백산",
@@ -3055,11 +4000,22 @@
           "difficulty": "중급",
           "note": "당골광장에서 문수봉을 거쳐 오르는 코스",
           "recommended": false
+        },
+        {
+          "name": "천계곡 코스",
+          "trailhead": "현불사 주차장",
+          "route": "현불사 주차장 - 백천계곡 - 문수봉 - 천제단",
+          "length_km": 5.1,
+          "duration": "2시간 30분",
+          "difficulty": "중급",
+          "note": "봉화 방면에서 오르는 계곡길, 열목어 서식지 백천계곡을 지남",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
       "added_at": "2026-06-26",
-      "mtId": "11D004P1"
+      "mtId": "11D004P1",
+      "blackyak_100": true
     },
     {
       "name": "태화산",
@@ -3098,7 +4054,8 @@
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "팔공산",
@@ -3138,7 +4095,8 @@
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "팔영산",
@@ -3156,10 +4114,19 @@
           "difficulty": "중급",
           "note": "여덟 개 암봉을 잇고 다도해를 조망하는 팔영산 대표 코스",
           "recommended": true
+        },
+        {
+          "name": "선녀봉 코스",
+          "trailhead": "강산마을(강산리)",
+          "route": "강산마을 - 강산폭포 - 선녀봉 - 유영봉(1봉) - 능가사",
+          "difficulty": "상급",
+          "note": "팔영산 코스 중 가장 험하고 이용객이 적은 코스",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "화악산",
@@ -3187,10 +4154,19 @@
           "difficulty": "중급",
           "note": "계곡을 따라 내려오는 하산코스, 우천 시 계곡물 증가 주의",
           "recommended": false
+        },
+        {
+          "name": "관청리 코스",
+          "trailhead": "큰골(관청리)",
+          "route": "큰골(관청리) - 서릉 삼거리 - 중봉 삼거리 - 중봉(정상)",
+          "difficulty": "중급",
+          "note": "가평 관청리 방면에서 오르는 코스",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "화왕산",
@@ -3230,7 +4206,8 @@
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "황매산",
@@ -3270,7 +4247,8 @@
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "황석산",
@@ -3307,7 +4285,8 @@
         }
       ],
       "source": "pdf-100대명산",
-      "added_at": "2026-06-26"
+      "added_at": "2026-06-26",
+      "blackyak_100": true
     },
     {
       "name": "황악산",
@@ -3334,11 +4313,22 @@
           "difficulty": "상급",
           "note": "백두대간 능선을 잇는 최장코스",
           "recommended": false
+        },
+        {
+          "name": "운수암 코스",
+          "trailhead": "운수암 주차장",
+          "route": "운수암 주차장 - 백운봉 - 황악산(정상, 왕복)",
+          "length_km": 6.4,
+          "duration": "3시간",
+          "difficulty": "중급",
+          "note": "차량으로 운수암까지 이동 후 오르는 최단 코스",
+          "recommended": false
         }
       ],
       "source": "pdf-100대명산",
       "added_at": "2026-06-26",
-      "mtId": "11B001P2"
+      "mtId": "11B001P2",
+      "blackyak_100": true
     },
     {
       "name": "황장산",
@@ -3394,6 +4384,16 @@
           "duration": "4시간20분",
           "difficulty": "중급",
           "note": "희양산 정상만 다녀오는 왕복 코스",
+          "recommended": false
+        },
+        {
+          "name": "홍문정마을 코스",
+          "trailhead": "홍문정마을(문경 가은읍 원북리)",
+          "route": "홍문정마을 - 희양산성 - 희양산(정상)",
+          "length_km": 4.4,
+          "duration": "2시간 30분",
+          "difficulty": "상급",
+          "note": "문경 가은읍에서 오르는 코스, 희양산성을 지남",
           "recommended": false
         }
       ],
@@ -3552,6 +4552,24 @@
           "difficulty": "초급",
           "note": "정상까지 20~40분이면 도달하는 최단 코스, 흙길·바윗길·계단 혼재",
           "recommended": false
+        },
+        {
+          "name": "안산 능선 종주 코스",
+          "trailhead": "독립문역",
+          "route": "독립문역 - 안산공원 입구 - 안산 정상(봉수대) - 능선 전망대 - 연세대 후문",
+          "length_km": 5.5,
+          "duration": "2시간 20분",
+          "difficulty": "중급",
+          "note": "독립문역~연세대 후문을 잇는 종주형 코스, 누적고도 260m",
+          "recommended": false
+        },
+        {
+          "name": "독립문역 봉수대 왕복 코스",
+          "trailhead": "독립문역",
+          "route": "독립문역 - 안산공원 입구 - 자락길 갈림길 - 봉수대 터 - 안산 정상(왕복)",
+          "difficulty": "초급",
+          "note": "정상을 찍고 같은 길로 되돌아오는 단순 왕복 코스, 초행자에게 적합",
+          "recommended": false
         }
       ],
       "source": "popular-search",
@@ -3584,11 +4602,32 @@
           "difficulty": "중급",
           "note": "학림사·용굴암 경유, 등산로 정비가 잘 된 대중적 종주 코스",
           "recommended": false
+        },
+        {
+          "name": "노원골 코스",
+          "trailhead": "수락산역 3번 출구",
+          "route": "수락산역 3번 출구 - 노원골 입구 - 약수터 - 도솔봉 - 치마바위·하강바위·코끼리바위·철모바위 - 정상",
+          "length_km": 2.3,
+          "duration": "1시간 10분",
+          "difficulty": "중급",
+          "note": "약수터까지 평탄, 도솔봉 이후 암릉 능선 구간",
+          "recommended": false
+        },
+        {
+          "name": "석림사 코스",
+          "trailhead": "석림사 입구(장암역 1번 출구에서 도보 20분)",
+          "route": "석림사 입구 - 제1쉼터 - 주봉 방면 - 정상",
+          "length_km": 2.2,
+          "duration": "1시간 30분",
+          "difficulty": "상급",
+          "note": "기차바위로 유명한 최단코스, 로프 구간이 있어 난이도 있음",
+          "recommended": false
         }
       ],
       "source": "popular-search",
       "source_note": "위키백과 수락산 637.7m 최고봉좌표",
-      "added_at": "2026-07-02"
+      "added_at": "2026-07-02",
+      "blackyak_100": true
     },
     {
       "name": "불암산",
@@ -3661,6 +4700,24 @@
           "difficulty": "중급",
           "note": "누적고도 380m, 가파른 구간이 간간이 있어 페이스 조절 필요",
           "recommended": false
+        },
+        {
+          "name": "자연학습장 코스(1코스)",
+          "trailhead": "대모산 자연학습장",
+          "route": "자연학습장 - 불국사 - 능선길 - 대모산 정상",
+          "length_km": 1.3,
+          "difficulty": "초급",
+          "note": "강남구청 공식 1코스, 자연학습장과 불국사 경유",
+          "recommended": false
+        },
+        {
+          "name": "일원터널 코스(2코스)",
+          "trailhead": "일원터널",
+          "route": "일원터널 - 체력단련장 사거리 - 능선길 - 대모산 정상",
+          "length_km": 2.6,
+          "difficulty": "초급",
+          "note": "강남구청 공식 2코스, 일원터널·한솔아파트 방면에서 접근",
+          "recommended": false
         }
       ],
       "source": "popular-search",
@@ -3692,6 +4749,14 @@
           "duration": "3시간 20분",
           "difficulty": "중급",
           "note": "대모산과 이어 걷는 능선 종주, 오르막이 적어 걷기 좋음",
+          "recommended": false
+        },
+        {
+          "name": "개암약수터 코스",
+          "trailhead": "개암약수터(개포동 산53-40)",
+          "route": "개암약수터 - 대모산 능선 - 구룡산 정상",
+          "difficulty": "초급",
+          "note": "강남구청 공식 코스, 대모산 정상을 거치지 않고 능선을 통해 구룡산으로 직행",
           "recommended": false
         }
       ],
@@ -3769,6 +4834,26 @@
           "difficulty": "중급",
           "note": "광교산 정상인 시루봉까지 오르는 코스, 절터·노루목·토재 3갈래 중 노루목이 최단",
           "recommended": false
+        },
+        {
+          "name": "형제봉-비로봉 종주 코스",
+          "trailhead": "광교 공영주차장(광교저수지)",
+          "route": "광교 공영주차장 - 형제봉 - 비로봉(종루봉) - 상광교마을회관",
+          "length_km": 7.2,
+          "duration": "2시간 45분",
+          "difficulty": "중급",
+          "note": "형제봉을 지나 비로봉까지 능선을 타고 상광교로 하산하는 종주형 코스",
+          "recommended": false
+        },
+        {
+          "name": "조광조 선생묘 코스",
+          "trailhead": "조광조 선생묘(용인 상현동)",
+          "route": "조광조 선생묘 - 매봉약수터 - 버들치고개 - 천년약수터 - 형제봉",
+          "length_km": 5.3,
+          "duration": "2시간~2시간 30분",
+          "difficulty": "초급",
+          "note": "용인 방면 들머리로 경사가 완만한 코스",
+          "recommended": false
         }
       ],
       "source": "popular-search",
@@ -3802,6 +4887,26 @@
           "duration": "4~5시간",
           "difficulty": "중급",
           "note": "원점회귀형 순환 코스",
+          "recommended": false
+        },
+        {
+          "name": "배알미 코스",
+          "trailhead": "기와집순두부 등산객 주차장(하남시 윗배알미길)",
+          "route": "기와집순두부 주차장 - 윗배알미길 - 검단산 정상 - 아랫배알미길 - 배알미동마을회관",
+          "length_km": 7.3,
+          "duration": "3시간 50분",
+          "difficulty": "중급",
+          "note": "계곡을 끼고 있어 여름 산행에 좋으나 원점회귀 시 도로 구간이 있어 대중교통·택시 이용 권장",
+          "recommended": false
+        },
+        {
+          "name": "산곡초교 코스",
+          "trailhead": "산곡초등학교(하남시 산곡동)",
+          "route": "산곡초등학교 - 통일기원돌탑 - 곰터약수터 - 정상",
+          "length_km": 3.1,
+          "duration": "1시간 50분",
+          "difficulty": "초급",
+          "note": "나무·돌계단이 잘 갖춰진 완만한 힐링 코스",
           "recommended": false
         }
       ],
@@ -3838,6 +4943,26 @@
           "difficulty": "상급",
           "note": "능선 오르내림이 심해 체력 소모가 큰 종주 코스",
           "recommended": false
+        },
+        {
+          "name": "도곡리-새재고개 코스",
+          "trailhead": "도곡리마을버스종점",
+          "route": "도곡리마을버스종점 - 새재고개 - 적갑산 - 철문봉 - 예봉산 정상",
+          "length_km": 6.2,
+          "duration": "3시간 5분",
+          "difficulty": "중급",
+          "note": "적갑산 원점회귀 산행이 가능하며 새재고개 아래까지 차량 진입 가능",
+          "recommended": false
+        },
+        {
+          "name": "예빈산 종주 코스",
+          "trailhead": "천주교공원묘지(남양주 능내리)",
+          "route": "천주교공원묘지 - 승원봉 - 견우봉 - 직녀봉(예빈산) - 율리봉 - 벚나무쉼터 - 예봉산 정상",
+          "length_km": 5.2,
+          "duration": "2시간 40분",
+          "difficulty": "상급",
+          "note": "오르내림이 많아 체력 소모가 큰 종주형 코스, 팔당호 조망이 뛰어남",
+          "recommended": false
         }
       ],
       "source": "popular-search",
@@ -3870,6 +4995,14 @@
           "duration": "1시간 20분",
           "difficulty": "초급",
           "note": "정상까지 가지 않고 수종사까지만 다녀오는 가벼운 코스",
+          "recommended": false
+        },
+        {
+          "name": "송촌리 코스",
+          "trailhead": "송촌리(남양주 조안면)",
+          "route": "송촌리 - 수종사 - 서북능선 - 운길산 정상",
+          "difficulty": "중급",
+          "note": "디지털남양주문화대전에 소개된 코스, 하산은 왔던 길 또는 송촌리·덕소리 방면 선택 가능",
           "recommended": false
         }
       ],
@@ -3944,6 +5077,20 @@
           "difficulty": "중급",
           "note": "억새 산행 후 구덕산으로 이어가는 능선 종주",
           "recommended": false
+        },
+        {
+          "name": "화엄사 코스",
+          "trailhead": "화엄사(부산 사상구 엄궁동)",
+          "route": "엄궁동 화엄사 - 승학약수터 - 헐떡고개 - 승학산 정상",
+          "note": "엄궁동 화엄사에서 승학약수터·헐떡고개를 거쳐 정상에 오르는 사상구청 안내 등산로",
+          "recommended": false
+        },
+        {
+          "name": "밤골약수터 코스",
+          "trailhead": "주례1동 밤골약수터 입구",
+          "route": "주례1동 - 밤골약수터 - 삼운정약수터 - 꽃마을 - KT송전소 - 승학산 정상",
+          "note": "주례1동에서 여러 약수터와 꽃마을을 지나 정상으로 오르는 사상구청 안내 등산로",
+          "recommended": false
         }
       ],
       "source": "popular-search",
@@ -3974,12 +5121,29 @@
           "difficulty": "초급",
           "note": "신라시대 고찰 백련사에서 정상까지 가장 짧게 오르는 코스",
           "recommended": false
+        },
+        {
+          "name": "비끼재 순환 코스",
+          "trailhead": "비끼재(원주 신림면 명암리 방면 고개)",
+          "route": "비끼재 - 재사골재 - 남동릉 - 감악산 정상 - 감악고개 - 비끼재마을",
+          "duration": "약 5시간",
+          "note": "감악산 주차장이 아닌 비끼재를 들머리·날머리로 삼는 순환 코스",
+          "recommended": false
+        },
+        {
+          "name": "창촌-재사동 종주 코스",
+          "trailhead": "창촌(원주 신림면 황둔리)",
+          "route": "창촌 - 백련사 - 감악산 정상 - 885봉 - 재사동",
+          "duration": "약 4시간 30분",
+          "note": "창촌에서 백련사를 거쳐 정상에 오른 뒤 원점회귀 없이 885봉을 넘어 재사동으로 하산하는 종주형 코스",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
       "coord_confidence": "medium",
       "source_note": "PeakVisor 원주·제천 감악산. 파주 감악산(675m)과 구분",
-      "added_at": "2026-07-02"
+      "added_at": "2026-07-02",
+      "blackyak_100": true
     },
     {
       "name": "구봉대산",
@@ -4038,6 +5202,16 @@
           "difficulty": "상급",
           "note": "설악산 서북능선 전체를 잇는 장거리 종주코스",
           "recommended": false
+        },
+        {
+          "name": "한계령-장수대 코스",
+          "trailhead": "한계령휴게소",
+          "route": "한계령휴게소 - 한계령삼거리 - 귀때기청봉 - 1408봉 - 대승령 - 대승폭포 - 장수대",
+          "length_km": 12.6,
+          "duration": "6~9시간",
+          "difficulty": "상급",
+          "note": "서북능선 종주 중 남교리 대신 대승폭포 방면 장수대로 하산하는 코스, 공룡능선급 난이도로 평가됨",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -4061,6 +5235,15 @@
           "difficulty": "중급",
           "note": "금학산과 고대산을 잇는 능선 종주코스, 암릉 구간이 많음",
           "recommended": true
+        },
+        {
+          "name": "매바위 원점회귀 코스",
+          "trailhead": "철원여고 공영주차장(철원여중고)",
+          "route": "철원여중고 - 금학체육공원 - 매바위 - 정승바위 - 정상 - 용바위 - 마애불상 - 거북이약수터 - 철원여중고",
+          "duration": "2~3시간",
+          "difficulty": "중급",
+          "note": "고대산까지 가지 않고 금학산 정상만 원점회귀로 다녀오는 코스, 매바위·정승바위·마애불상 등을 지난다",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -4098,7 +5281,8 @@
       "source": "bac-myeongsan",
       "coord_confidence": "medium",
       "source_note": "PeakVisor 오대산국립공원",
-      "added_at": "2026-07-02"
+      "added_at": "2026-07-02",
+      "blackyak_100": true
     },
     {
       "name": "노추산",
@@ -4115,6 +5299,16 @@
           "difficulty": "중급",
           "note": "한 어머니가 26년간 쌓은 모정탑(돌탑) 3천여 개를 지나는 코스",
           "recommended": true
+        },
+        {
+          "name": "아리랑산-노추산-사달산 종주 코스",
+          "trailhead": "오장폭포주차장",
+          "route": "오장폭포주차장 - 절골입구 - 조주선관 삼거리 - 이성대 - 아리랑산 정상 - 노추산 정상 - 사달산 정상 - 사달골 - 중동마을",
+          "length_km": 12.6,
+          "duration": "약 6시간 20분",
+          "difficulty": "상급",
+          "note": "강릉 모정탑길 반대편인 정선 여량면 방면에서 오르며 이성대·아리랑산·사달산을 잇는 장거리 종주 코스",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -4146,6 +5340,15 @@
           "duration": "4시간20분",
           "difficulty": "중급",
           "note": "국내 최고령급 1,400년 주목 군락을 지나는 코스",
+          "recommended": false
+        },
+        {
+          "name": "자미원 코스",
+          "trailhead": "자미원역",
+          "route": "자미원역 - 자뭇골 갈림길 - 샘터(해발 1225m) - 산죽밭 - 단곡계곡 코스 합류점 - 철쭉군락지 - 두위봉 정상",
+          "duration": "4~6시간",
+          "difficulty": "중급",
+          "note": "태백선 자미원역에서 출발해 해발 1400m 지점에서 기존 단곡계곡 코스와 합류하는 코스",
           "recommended": false
         }
       ],
@@ -4202,6 +5405,22 @@
           "difficulty": "중급",
           "note": "백두대간 능선 파노라마 조망이 뛰어난 순환 코스",
           "recommended": false
+        },
+        {
+          "name": "발구덕 코스",
+          "trailhead": "발구덕마을",
+          "route": "발구덕마을 - 민둥산 정상",
+          "difficulty": "중급",
+          "note": "해발 약 800m 발구덕마을에서 출발하는 최단 들머리, 고랭지밭 사이를 지나는 풍경",
+          "recommended": false
+        },
+        {
+          "name": "화암약수 코스",
+          "trailhead": "화암약수",
+          "route": "화암약수 - 능선 - 민둥산 정상",
+          "difficulty": "상급",
+          "note": "숲길·능선길·억새밭을 두루 지나는 숙련자용 최장 코스",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -4233,6 +5452,16 @@
           "duration": "5시간",
           "difficulty": "중급",
           "note": "마을길에서 산길로 이어지는 트레킹형 코스",
+          "recommended": false
+        },
+        {
+          "name": "엄홍길 코스",
+          "trailhead": "용평리조트 골드슬로프 하단",
+          "route": "골드슬로프 하단 - 목교 - 목장길쉼터 - 이끼계곡 - 철쭉오름쉼터 - 골드슬로프 정상 - 발왕산 평화봉(정상)",
+          "length_km": 4.8,
+          "duration": "2시간 30분",
+          "difficulty": "중급",
+          "note": "산악인 엄홍길 이름을 딴 코스로 이끼계곡·독일가문비숲·주목 군락지를 지나는 고도차 700m 오르막",
           "recommended": false
         }
       ],
@@ -4307,12 +5536,33 @@
           "difficulty": "상급",
           "note": "정선방면 급경사 코스, 경력자에게만 권장",
           "recommended": false
+        },
+        {
+          "name": "연포생태체험학교 코스",
+          "trailhead": "연포생태체험학교",
+          "route": "연포생태체험학교 - 하늘벽구름다리 - 칠족령 - 백운산 정상",
+          "length_km": 5.3,
+          "duration": "3시간 10분",
+          "difficulty": "상급",
+          "note": "하늘벽 구름다리와 암릉 구간을 지나는 정선 방면 최장 코스",
+          "recommended": false
+        },
+        {
+          "name": "제장마을 코스",
+          "trailhead": "제장마을",
+          "route": "제장마을 - 칠족령 - 백운산 정상",
+          "length_km": 3.1,
+          "duration": "2시간 30분",
+          "difficulty": "상급",
+          "note": "좁은 능선을 오르내리는 아찔한 구간이 많은 동강 조망 코스",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
       "coord_confidence": "high",
       "source_note": "영위키 동강 백운산(정선·평창)",
-      "added_at": "2026-07-02"
+      "added_at": "2026-07-02",
+      "blackyak_100": true
     },
     {
       "name": "사명산",
@@ -4465,6 +5715,16 @@
           "difficulty": "중급",
           "note": "암봉과 능선이 아름다우나 깔딱고개 급사면 구간이 최대 난코스",
           "recommended": true
+        },
+        {
+          "name": "삼근암마을 코스",
+          "trailhead": "삼근암마을",
+          "route": "삼근암마을 - 십자로안부 - 804봉 - 951봉 헬기장 - 운무산 정상 - 헬기장 - 십자로안부 - 삼근암마을",
+          "length_km": 8.4,
+          "duration": "4시간 10분",
+          "difficulty": "중급",
+          "note": "삼근암마을에서 능선을 타고 정상에 오른 뒤 같은 능선으로 내려오는 원점회귀 코스",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -4497,6 +5757,16 @@
           "difficulty": "초급",
           "note": "가족 단위로 가볍게 걷기 좋은 산책로",
           "recommended": false
+        },
+        {
+          "name": "제1·2등산로 순환 코스",
+          "trailhead": "청태산자연휴양림 대형주차장",
+          "route": "청태산자연휴양림 대형주차장 - 야영장 - 제1등산로 - 헬기장 - 청태산 정상 - 제2등산로 - 숲체험데크로드 - 대형주차장",
+          "length_km": 4.6,
+          "duration": "2시간",
+          "difficulty": "중급",
+          "note": "오름길과 내림길을 달리하는 원점회귀 순환 코스",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -4520,6 +5790,14 @@
           "difficulty": "초급",
           "note": "동해8경 중 하나로 정상에서 강릉~삼척 해안까지 조망",
           "recommended": true
+        },
+        {
+          "name": "묵호고-북평고 코스",
+          "trailhead": "묵호고등학교",
+          "route": "묵호고등학교 옆 등산로 입구 - 초록봉 정상 - 북평고 방면",
+          "difficulty": "초급",
+          "note": "묵호 쪽에서 올라 북평 방면으로 내려오는 종주형 코스",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -4566,7 +5844,8 @@
       "source": "bac-myeongsan",
       "coord_confidence": "high",
       "source_note": "PeakVisor 태백·정선",
-      "added_at": "2026-07-02"
+      "added_at": "2026-07-02",
+      "blackyak_100": true
     },
     {
       "name": "고대산",
@@ -4673,6 +5952,22 @@
           "difficulty": "중급",
           "note": "지하철 양주역에서 접근이 편리한 코스",
           "recommended": false
+        },
+        {
+          "name": "백화암 코스",
+          "trailhead": "유양초등학교",
+          "route": "유양초등학교 - 임꺽정 생가터 - 백화암 - 마애삼존불 - 상봉(정상) - 백화암 - 유양초등학교",
+          "difficulty": "초급",
+          "note": "신라고찰 백화암과 마애삼존불을 지나는 짧은 원점회귀 코스",
+          "recommended": false
+        },
+        {
+          "name": "산북동 종주 코스",
+          "trailhead": "유양초등학교",
+          "route": "유양초등학교 - 백화암 - 상봉(정상) - 임꺽정봉 - 부흥사 - 불곡산장 - 산북동 읍내말",
+          "difficulty": "중급",
+          "note": "불곡산 코스 중 가장 긴 코스로 산북동 방면으로 하산",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -4696,6 +5991,24 @@
           "difficulty": "중급",
           "note": "수리산 4봉(관모봉·태을봉·슬기봉·수암봉)을 잇는 대표 환종주 코스",
           "recommended": true
+        },
+        {
+          "name": "수리산역 코스",
+          "trailhead": "수리산역",
+          "route": "수리산역 - 능내터널 위 - 임도오거리 - 슬기봉 - 태을봉 - 관모봉 - 수리약수터",
+          "length_km": 8.7,
+          "duration": "4시간 30분",
+          "difficulty": "중급",
+          "note": "수리산역에서 슬기봉·태을봉·관모봉 세 봉우리를 잇는 군포시 안내 종주 코스",
+          "recommended": false
+        },
+        {
+          "name": "안산 수암봉 코스",
+          "trailhead": "이익선생묘",
+          "route": "이익선생묘 - 너구리산 - 바람고개 - 수암봉 - 관모봉 - 태을봉 - 슬기봉",
+          "difficulty": "중급",
+          "note": "안산시 방면에서 수암봉을 거쳐 주능선으로 이어지는 코스",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -4728,12 +6041,23 @@
           "difficulty": "초급",
           "note": "징검다리·출렁다리가 놓인 완만한 계곡길, 가족 단위에 적합",
           "recommended": false
+        },
+        {
+          "name": "마일리 우정능선 코스",
+          "trailhead": "국수당마을",
+          "route": "국수당마을 - 우정고개 - 우정봉 - 연인산 정상",
+          "length_km": 6.0,
+          "duration": "3시간",
+          "difficulty": "상급",
+          "note": "조종면 마일리에서 우정능선을 타고 오르는 코스로 야생화 산행지로 알려짐",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
       "coord_confidence": "high",
       "source_note": "위키백과 인포박스",
-      "added_at": "2026-07-02"
+      "added_at": "2026-07-02",
+      "blackyak_100": true
     },
     {
       "name": "종자산",
@@ -4757,6 +6081,15 @@
           "duration": "3시간",
           "difficulty": "중급",
           "note": "정상을 직접 경유하는 코스",
+          "recommended": false
+        },
+        {
+          "name": "늘거리-지장산 코스",
+          "trailhead": "늘거리",
+          "route": "늘거리 - 굴(종자바위) - 종자산 정상 - 북쪽 능선 - 바위봉 - 서북능선 억새밭 - 지장산 입구 간이주차장",
+          "duration": "3시간 30분",
+          "difficulty": "중급",
+          "note": "정상에서 북쪽 능선을 타고 지장산 방면으로 하산하는 코스",
           "recommended": false
         }
       ],
@@ -4817,6 +6150,16 @@
           "duration": "4시간",
           "difficulty": "중급",
           "note": "남동릉과 북릉을 잇는 순환 코스",
+          "recommended": false
+        },
+        {
+          "name": "용문산매표소 코스",
+          "trailhead": "용문산관광단지 매표소",
+          "route": "용문산매표소 - 용계계곡 - 너덜지대 - 중원산 정상 - 상현마을",
+          "length_km": 6.5,
+          "duration": "4시간",
+          "difficulty": "중급",
+          "note": "서쪽 용계계곡을 따라 오르는 코스로 용문산 관광지에서 접근",
           "recommended": false
         }
       ],
@@ -5106,6 +6449,34 @@
           "difficulty": "중급",
           "note": "흔들바위·천지못·모은암을 두루 지나는 김해 대표 순환 코스",
           "recommended": true
+        },
+        {
+          "name": "마현고개 코스",
+          "trailhead": "마현고개",
+          "route": "마현고개 - 백운암 - 정상(신선봉) - 마현고개",
+          "length_km": 5.0,
+          "duration": "2시간 30분",
+          "difficulty": "중급",
+          "note": "마현고개에서 백운암을 거쳐 정상을 다녀오는 왕복 코스. 누적고도 약 400m, 정상부 흔들바위 조망.",
+          "recommended": false
+        },
+        {
+          "name": "용산교 코스",
+          "trailhead": "용산교 주차장",
+          "route": "용산교 - 흔들바위 - 부부소나무 - 모은암/백운암 - 용산교",
+          "length_km": 7.0,
+          "duration": "3시간 30분",
+          "difficulty": "중급",
+          "note": "용산교를 들머리·날머리로 삼는 왕복 코스. 누적고도 약 550m, 숲길·암릉·너덜 등 지형 변화가 다양함.",
+          "recommended": false
+        },
+        {
+          "name": "원동역 용당나루 코스",
+          "trailhead": "용당나루(양산 원동역)",
+          "route": "용당나루 - 백운암 - 정상(신선봉)",
+          "difficulty": "중급",
+          "note": "양산 원동역 쪽에서 나룻배(용당나루, 1일 약 6회 운항)로 낙동강을 건너 오르는 코스로 다수 자료에 언급되나 정확한 거리·소요시간은 확인되지 않음.",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -5175,6 +6546,16 @@
           "difficulty": "상급",
           "note": "고견사에서 출발하는 장거리 코스",
           "recommended": false
+        },
+        {
+          "name": "우두산-비계산 연계종주 코스",
+          "trailhead": "새터마을(합천 가야면 죽전리)",
+          "route": "새터마을 - 작은가야산 - 우두산 - 비계산 - 매안리(합천 가야면)",
+          "length_km": 19.5,
+          "duration": "8시간 12분",
+          "difficulty": "상급",
+          "note": "가야산국립공원 인근 작은가야산·우두산을 잇는 장거리 종주코스. 암릉 구간이 많아 상급자용.",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -5205,6 +6586,14 @@
           "duration": "편도 1시간~1시간 30분",
           "difficulty": "중급",
           "note": "삼신봉 정상만 왕복하는 단축 코스",
+          "recommended": false
+        },
+        {
+          "name": "쌍계사 코스",
+          "trailhead": "쌍계사(쌍계석문)",
+          "route": "쌍계사 - 불일폭포 갈림길 - 상불재 - 내삼신봉 - 삼신봉 - (청학동 하산)",
+          "difficulty": "상급",
+          "note": "화개면 쌍계사에서 지리산 남부능선을 타고 삼신봉에 오르는 코스. 쌍계사~삼신봉 편도 약 9.0km로 확인되나, 청학동 하산 구간을 포함한 전체 거리·소요시간은 자료마다 달라(블로그 기록상 약 6시간20분) 확정하기 어려움.",
           "recommended": false
         }
       ],
@@ -5266,6 +6655,24 @@
           "duration": "4시간 58분",
           "difficulty": "상급",
           "note": "흰대미산·양각산을 잇는 장거리 종주 코스",
+          "recommended": false
+        },
+        {
+          "name": "청암사 코스",
+          "trailhead": "청암사",
+          "route": "청암사 - 수도암 갈림길 - 수도산",
+          "length_km": 5.1,
+          "difficulty": "중급",
+          "note": "청암사에서 시작해 수도암 갈림길을 지나 정상에 오르는 코스. 소요시간은 확인되지 않음",
+          "recommended": false
+        },
+        {
+          "name": "우두령 코스",
+          "trailhead": "우두령",
+          "route": "우두령 - 시코봉 - 신선봉 - 수도산",
+          "length_km": 5.7,
+          "difficulty": "중급",
+          "note": "거창 우두령에서 능선을 따라 시코봉·신선봉을 거쳐 정상에 오르는 코스. 소요시간은 확인되지 않음",
           "recommended": false
         }
       ],
@@ -5369,6 +6776,26 @@
           "difficulty": "중급",
           "note": "필봉산을 다녀와 왕산 정상으로 되돌아오는 원점회귀 코스",
           "recommended": false
+        },
+        {
+          "name": "류의태 약수터 코스",
+          "trailhead": "구형왕릉",
+          "route": "구형왕릉 - 류의태 약수터 - 평전샘 - 왕산 정상",
+          "length_km": 3.9,
+          "duration": "2시간",
+          "difficulty": "초급",
+          "note": "산청군청 안내 1코스. 구형왕릉에서 출발하나 여우재·필봉산을 거치지 않고 류의태 약수터·평전샘을 지나는 별도 경로",
+          "recommended": false
+        },
+        {
+          "name": "강구폭포 코스",
+          "trailhead": "강구폭포",
+          "route": "강구폭포 - 삼거리 - 팔봉산 정상 - 왕산 정상",
+          "length_km": 3.9,
+          "duration": "2~3시간",
+          "difficulty": "중급",
+          "note": "산청군청 안내 5코스. 자료에 따라 팔봉산/필봉산으로 표기가 혼용됨",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -5401,6 +6828,16 @@
           "difficulty": "중급",
           "note": "의상봉과 마장재를 지나는 장거리 순환 코스",
           "recommended": false
+        },
+        {
+          "name": "바리봉·장군봉 종주코스",
+          "trailhead": "고견사 주차장",
+          "route": "고견사 주차장 - 바리봉 - 장군봉 - 지남산 - 의상봉 - 우두산 상봉 - 마장재 - 고견사 주차장",
+          "length_km": 10.0,
+          "duration": "6시간",
+          "difficulty": "상급",
+          "note": "기암괴석과 암릉 구간이 이어지는 장거리 종주 코스",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -5431,6 +6868,15 @@
           "duration": "6~7시간",
           "difficulty": "상급",
           "note": "가장 많이 이용되는 코스로 지리산 천왕봉 조망이 좋음",
+          "recommended": false
+        },
+        {
+          "name": "어천마을 코스",
+          "trailhead": "어천마을",
+          "route": "어천마을 - 성심원 갈림길 - 십자봉 - 웅석봉 정상 - 어천계곡 - 어천마을",
+          "duration": "4시간30분",
+          "difficulty": "중급",
+          "note": "순수 걷는시간 약 4시간30분 기준(휴식 제외), 원점회귀 순환코스. 정확한 총거리는 확인되지 않음",
           "recommended": false
         }
       ],
@@ -5464,6 +6910,22 @@
           "difficulty": "중급",
           "note": "저수지를 지나 능선으로 오르는 코스",
           "recommended": false
+        },
+        {
+          "name": "서상코스",
+          "trailhead": "남령재",
+          "route": "서상면소재지 - 영각사 - 남령재(차량이동) - 수리덤 - 월봉산 정상",
+          "difficulty": "중급",
+          "note": "남령재까지 차량으로 이동 후 가파른 능선을 타는 코스, 수리덤(암봉)을 지남 (경남신문 취재 기준, 거리·소요시간 미확인)",
+          "recommended": false
+        },
+        {
+          "name": "내계마을코스",
+          "trailhead": "월성리 내계마을",
+          "route": "월성리 내계마을 - 수망령 - 큰목재 - 월봉산 정상",
+          "difficulty": "중급",
+          "note": "노상마을(대남리)과는 다른 행정리인 월성리 내계마을에서 수망령을 넘어 큰목재 능선에 합류하는 코스 (경남신문 취재 기준, 거리·소요시간 미확인)",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -5487,6 +6949,16 @@
           "difficulty": "중급",
           "note": "편백숲과 진해 앞바다 조망이 좋아 벚꽃철에 특히 인기 있는 코스",
           "recommended": true
+        },
+        {
+          "name": "장복산조각공원~쌍바위갈래길 원점회귀코스",
+          "trailhead": "진해장복산조각공원(여좌검문소)",
+          "route": "진해장복산조각공원(여좌검문소) - 마진터널 앞 - 고갯마루 - 장복산 정상 - 덕주봉 - 쌍바위갈래길(원점회귀)",
+          "length_km": 8.3,
+          "duration": "4시간",
+          "difficulty": "중급",
+          "note": "임도를 이용해 정상~덕주봉을 다녀오는 원점회귀 코스로 기존 진해구민회관~경화동 종주코스와 들머리·하산로가 다름 (부산일보 산&산 기사 기준)",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -5508,6 +6980,16 @@
           "difficulty": "상급",
           "note": "미폭포에서 암릉 지대와 문바위를 잇는 환종주 코스, 밧줄구간이 있어 주의 필요",
           "recommended": true
+        },
+        {
+          "name": "현성산~수승대 종주코스",
+          "trailhead": "미폭(미폭포)",
+          "route": "미폭 - 잇단바위전망대 - 현성산 - 서문가바위(연화봉) - 금원산 갈림길 - 필봉 - 말목재 - 성령산 - 수승대주차장",
+          "length_km": 8.7,
+          "duration": "4시간 30분",
+          "difficulty": "상급",
+          "note": "기존 환종주코스(미폭포 원점회귀)와 달리 서문가바위 이후 필봉·말목재·성령산을 넘어 수승대로 빠지는 편도 장거리 종주. 개인 산행기 블로그 1건 기준으로 교차검증이 충분치 않음",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -5539,6 +7021,24 @@
           "difficulty": "중급",
           "note": "기암과 여러 봉우리를 두루 지나는 순환 종주코스",
           "recommended": false
+        },
+        {
+          "name": "굴티코스",
+          "trailhead": "굴티",
+          "route": "굴티 - 폐광 채석장 - 갈림길 - 557봉 - 상산 - 갑장산 정상",
+          "duration": "2시간 30분",
+          "difficulty": "중급",
+          "note": "디지털상주문화대전 기준. 용흥사주차장을 쓰지 않는 별도 들머리(굴티)의 코스이나 정확한 카카오맵 지명은 현지 확인 필요, 거리 미확인",
+          "recommended": false
+        },
+        {
+          "name": "승장코스",
+          "trailhead": "승장(승장폭포 인근 도로)",
+          "route": "승장(도로) - 승장폭포 - 계곡 - 구룡연 - 갑장산 정상",
+          "duration": "1시간 50분",
+          "difficulty": "중급",
+          "note": "디지털상주문화대전 기준 계곡 코스. 정확한 들머리 지명(도로변 진입점)은 현지 확인 필요, 거리 미확인",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -5569,6 +7069,15 @@
           "duration": "5~6시간",
           "difficulty": "상급",
           "note": "진달래능선을 타고 방내리로 하산하는 장거리 코스",
+          "recommended": false
+        },
+        {
+          "name": "비지리(학동마을)-입암산 원점회귀 코스",
+          "trailhead": "학동마을(경주시 내남면 비지1리)",
+          "route": "학동마을 - 사곡저수지 - 절골 - 신선사 - 단석산 정상 - 입암산 - 학동마을",
+          "duration": "5~6시간",
+          "difficulty": "상급",
+          "note": "국제신문 근교산 기사 등에 따르면 순수 보행시간만 약 5시간20분 소요되는 장거리 코스로, 우중골 방향 코스보다 훨씬 길고 험한 편(정상까지 최단 20분 코스도 있으나 본 코스는 신선사 경유·입암산 능선을 타는 더 어려운 루트). 거리는 확인되지 않아 null 처리.",
           "recommended": false
         }
       ],
@@ -5624,6 +7133,16 @@
           "difficulty": "상급",
           "note": "속리산 주능선을 따라 문장대·천황봉을 거쳐 법주사로 내려가는 장거리 종주코스",
           "recommended": false
+        },
+        {
+          "name": "토끼봉-상학봉-묘봉 원점회귀 코스",
+          "trailhead": "운흥1리 마을회관(두부마을)",
+          "route": "운흥1리 마을회관 - 토끼봉 - 통천문 - 상학봉 - 묘봉 - 북가치 - 운흥1리 마을회관",
+          "length_km": 9.8,
+          "duration": "5시간 30분",
+          "difficulty": "상급",
+          "note": "미타사로 빠지지 않고 토끼봉을 거쳐 원점회귀하는 암릉 종주 코스",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -5654,6 +7173,15 @@
           "difficulty": "상급",
           "note": "저승골 협곡과 칼바위 능선을 지나는 장거리 순환코스, 밧줄구간 주의",
           "recommended": false
+        },
+        {
+          "name": "옥동서원 코스",
+          "trailhead": "옥동서원(경북 상주시 모동면 수봉리)",
+          "route": "옥동서원 - 보현사 - 보문골 - 대궐터 - 보문사터 - 금돌성 - 922m봉 - 한성봉(백화산) 정상 - 헬기장 - 반야슈퍼 - 침수교",
+          "duration": "4시간 30분",
+          "difficulty": "중급",
+          "note": "경북 상주 쪽 들머리로, 금돌산성·옥동서원 등 문화유적을 함께 둘러보는 코스",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -5676,6 +7204,16 @@
           "difficulty": "상급",
           "note": "대슬랩과 로프 구간이 있는 암릉 순환코스",
           "recommended": true
+        },
+        {
+          "name": "성주봉-운달산-석봉산 종주코스",
+          "trailhead": "당포1리 마을회관",
+          "route": "당포1리 - 성주사 - 수리봉 - 성주봉 정상 - 동굴 - 운달산 - 석봉산 - 조항령 - 당포리",
+          "length_km": 11.8,
+          "duration": "5시간 19분",
+          "difficulty": "상급",
+          "note": "성주봉을 넘어 운달산·석봉산까지 이어지는 장거리 종주, 대슬랩·직벽로프 구간 포함",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -5708,6 +7246,15 @@
           "difficulty": "초급",
           "note": "정상까지 가지 않고 중간에 하산하는 단축코스",
           "recommended": false
+        },
+        {
+          "name": "방가산 연계 종주코스",
+          "trailhead": "아미산 주차장",
+          "route": "아미산 주차장 - 아미산 정상 - 방가산 - 장곡자연휴양림",
+          "length_km": 11.5,
+          "difficulty": "중급",
+          "note": "아미산 정상을 지나 방가산까지 이어 걷고 장곡자연휴양림으로 하산하는 장거리 코스",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -5739,6 +7286,16 @@
           "duration": "1~2시간",
           "difficulty": "중급",
           "note": "거리는 짧지만 경사가 가파른 코스",
+          "recommended": false
+        },
+        {
+          "name": "다부동전적기념관 코스",
+          "trailhead": "다부동전적기념관 주차장",
+          "route": "다부동전적기념관 주차장 - 674고지 - 792고지 - 837고지 - 유학산 정상 - 도봉사 - 팥재주차장",
+          "length_km": 7.7,
+          "duration": "5시간",
+          "difficulty": "중급",
+          "note": "6·25 다부동전투 격전지(고지들)를 지나 정상에 오르는 역사 탐방형 코스",
           "recommended": false
         }
       ],
@@ -5815,7 +7372,8 @@
       "source": "bac-myeongsan",
       "coord_confidence": "high",
       "source_note": "위키백과 좌표",
-      "added_at": "2026-07-02"
+      "added_at": "2026-07-02",
+      "blackyak_100": true
     },
     {
       "name": "청화산",
@@ -5856,7 +7414,8 @@
       "source": "bac-myeongsan",
       "coord_confidence": "medium",
       "source_note": "영위키 좌표",
-      "added_at": "2026-07-02"
+      "added_at": "2026-07-02",
+      "blackyak_100": true
     },
     {
       "name": "토함산",
@@ -5882,6 +7441,15 @@
           "duration": "25~30분",
           "difficulty": "초급",
           "note": "석굴암에서 정상까지 짧게 오르는 코스",
+          "recommended": false
+        },
+        {
+          "name": "추령 연계 코스",
+          "trailhead": "석굴암 주차장",
+          "route": "석굴암 주차장 - 토함산 정상 - 추령(백년찻집)",
+          "duration": "1시간 30분",
+          "difficulty": "중급",
+          "note": "토함산 정상에서 능선을 타고 추령(함월산 방면 고개)까지 이어지는 코스",
           "recommended": false
         }
       ],
@@ -5937,6 +7505,14 @@
           "difficulty": "중급",
           "note": "세종~유성 누리길과 연결되는 능선 코스",
           "recommended": false
+        },
+        {
+          "name": "신선봉 코스",
+          "trailhead": "갑동마을",
+          "route": "갑동마을 - 전망포토존 - 갑하산 - 신선봉 - 노은3지구",
+          "difficulty": "중급",
+          "note": "갑하산에서 신선봉을 넘어 노은3지구로 하산하는 능선 코스",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -5960,6 +7536,15 @@
           "difficulty": "중급",
           "note": "맨발로 걷는 황토 임도 14.5km로 유명",
           "recommended": true
+        },
+        {
+          "name": "대전둘레산길 5구간(계족산성길) 코스",
+          "trailhead": "동신과학고 버스종점",
+          "route": "동신과학고 버스종점 - 비룡동 줄골장승 - 갈현성 - 질현성 - 절고개 - 임도삼거리 - 봉황정(정상) - 용화사 주차장",
+          "length_km": 11.0,
+          "duration": "6시간 30분",
+          "note": "갈현성·질현성 등 여러 산성 유적을 지나 봉황정 정상에 오른 뒤 용화사로 내려오는 대전둘레산길 구간",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -5991,6 +7576,24 @@
           "duration": "2시간 10분",
           "difficulty": "초급",
           "note": "고산사·식장사 사찰을 지나는 짧은 코스",
+          "recommended": false
+        },
+        {
+          "name": "삼괴동(식장산길 4구간) 코스",
+          "trailhead": "삼괴동 덕산마을 느티나무",
+          "route": "삼괴동 덕산마을 느티나무 - 닭재 - 망덕봉 - 임도 - 동오리고개 - 식장산 해돋이 전망대 - 식장루 전망대 - 세천공원",
+          "difficulty": "중급",
+          "note": "닭재·망덕봉을 넘어 정상부 전망대를 지나는, 오르내림이 심한 대전둘레산길 구간 코스",
+          "recommended": false
+        },
+        {
+          "name": "세천공원 원점회귀 코스",
+          "trailhead": "세천공원 주차장",
+          "route": "세천공원 주차장 - 세천 수원지 주차장 - 옥천 경계능선 깔딱고개 - 구절사 - 독수리봉 - KT중계탑 - 식장산 정상 - 전망대 - 세천공원",
+          "length_km": 12.0,
+          "duration": "4시간",
+          "difficulty": "중급",
+          "note": "구절사·독수리봉을 지나 정상을 찍고 세천공원으로 돌아오는 원점회귀 코스",
           "recommended": false
         }
       ],
@@ -6063,6 +7666,14 @@
           "difficulty": "상급",
           "note": "산 둘레 임도를 도는 초장거리 코스",
           "recommended": false
+        },
+        {
+          "name": "팔각정(구교리·수성리) 코스",
+          "trailhead": "구교리 또는 수성리(해남읍 시내)",
+          "route": "구교리(또는 수성리) - 팔각정(태평정) - 미암바위 - 금강산 정상",
+          "difficulty": "중급",
+          "note": "해남읍 시내 쪽에서 팔각정과 미암바위를 거쳐 정상에 오르는 접근로",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -6109,7 +7720,8 @@
       "source": "bac-myeongsan",
       "coord_confidence": "medium",
       "source_note": "PeakVisor 불썬봉(해남)",
-      "added_at": "2026-07-02"
+      "added_at": "2026-07-02",
+      "blackyak_100": true
     },
     {
       "name": "덕룡산",
@@ -6148,7 +7760,8 @@
       "source": "bac-myeongsan",
       "coord_confidence": "approx",
       "source_note": "공식 정상좌표 미확인, 도암면 서봉 능선 근사. 주작산 덕룡봉과 구분",
-      "added_at": "2026-07-02"
+      "added_at": "2026-07-02",
+      "blackyak_100": true
     },
     {
       "name": "동석산",
@@ -6188,12 +7801,22 @@
           "difficulty": "중급",
           "note": "숲길·암릉·능선·계곡을 두루 느낄 수 있는 대표 코스",
           "recommended": true
+        },
+        {
+          "name": "학정리 코스(제4코스)",
+          "trailhead": "학정리",
+          "route": "학정리 - 동악산 정상 - 배너머재 - 형제봉 - 길상암 - 도림사",
+          "duration": "4시간",
+          "difficulty": "상급",
+          "note": "곡성읍 학정리에서 바로 정상으로 오르는 코스로, 도림사 방향 기존 코스보다 능선 접근이 가파른 편",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
       "coord_confidence": "medium",
       "source_note": "PeakVisor 곡성(경주 동악산과 구분)",
-      "added_at": "2026-07-02"
+      "added_at": "2026-07-02",
+      "blackyak_100": true
     },
     {
       "name": "만덕산",
@@ -6339,7 +7962,8 @@
       "source": "bac-myeongsan",
       "coord_confidence": "high",
       "source_note": "영위키 광양 백운산 상봉",
-      "added_at": "2026-07-02"
+      "added_at": "2026-07-02",
+      "blackyak_100": true
     },
     {
       "name": "병풍산",
@@ -6364,6 +7988,14 @@
           "duration": "3시간24분",
           "difficulty": "중급",
           "note": "장성과 담양을 잇는 종주형 코스",
+          "recommended": false
+        },
+        {
+          "name": "병풍산-삼인산-병장산 환종주 코스",
+          "trailhead": "한재 쉼터",
+          "route": "한재 쉼터 - 투구봉 - 신선대 - 병풍산(깃대봉) 정상 - 옥녀봉 - 천자봉 - 삼인산 - 장평재 - 만남재 - 병장산 - 보두산 - 능주봉 - 편백숲길 - 한재 쉼터",
+          "difficulty": "상급",
+          "note": "기존 한재-병풍산 종주코스에서 삼인산·병장산·보두산·능주봉까지 이어 도는 장거리 환종주 코스",
           "recommended": false
         }
       ],
@@ -6396,12 +8028,22 @@
           "difficulty": "중급",
           "note": "동백골과 참식나무 천연군락을 지나는 코스",
           "recommended": false
+        },
+        {
+          "name": "불갑사-도솔봉 코스",
+          "trailhead": "불갑사 공용주차장",
+          "route": "불갑사 주차장 - 수도암 - 도솔봉 - 용천봉 - 구수재 - 연실봉(정상) - 장군봉 - 법성봉/덫고개 - 불갑사 - 주차장",
+          "duration": "3시간",
+          "difficulty": "중급",
+          "note": "불갑사에서 수도암·도솔봉·용천봉 능선을 타고 정상에 오른 뒤 원점회귀하는 순환코스",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
       "coord_confidence": "medium",
       "source_note": "PeakVisor 연실봉",
-      "added_at": "2026-07-02"
+      "added_at": "2026-07-02",
+      "blackyak_100": true
     },
     {
       "name": "영취산",
@@ -6418,6 +8060,16 @@
           "difficulty": "중급",
           "note": "국내 최대급 진달래 군락지, 매년 4월 진달래축제 개최",
           "recommended": true
+        },
+        {
+          "name": "GS칼텍스 후문-억새평원 코스",
+          "trailhead": "GS칼텍스정유 후문(삼일동 예비군훈련장)",
+          "route": "GS칼텍스정유 후문 - 억새평원 - 영취산 정상",
+          "length_km": 2.2,
+          "duration": "70분",
+          "difficulty": "초급",
+          "note": "여수시 공식 A코스, 억새평원을 지나는 짧고 완만한 코스",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -6471,6 +8123,14 @@
           "duration": "2시간",
           "difficulty": "초급",
           "note": "마을버스로 사성암까지 이동 후 짧게 정상을 왕복",
+          "recommended": false
+        },
+        {
+          "name": "오산-둥주리봉-천왕봉 종주코스",
+          "trailhead": "사성암(죽연마을 방면)",
+          "route": "사성암 - 오산 정상 - 마당재 - 둥주리봉 - 천왕봉 - 삽재 - 매재",
+          "difficulty": "상급",
+          "note": "능선을 따라 순천 방면까지 이어지는 장거리 종주코스 (거리·시간 미확인, 출처 교차검증 미흡)",
           "recommended": false
         }
       ],
@@ -6543,6 +8203,14 @@
           "difficulty": "초급",
           "note": "천년고찰 금탑사와 비자나무숲을 지나는 코스",
           "recommended": false
+        },
+        {
+          "name": "송정마을(월각산·딸각산) 연계 코스",
+          "trailhead": "송정마을회관",
+          "route": "송정마을회관 - 딸각산(월각산) - 헬기장 - 천등산 정상",
+          "difficulty": "상급",
+          "note": "천등산의 조망과 월각산(딸각산)의 암릉미를 함께 즐기는 종주형 코스, 풍남항·녹동항 조망",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -6575,6 +8243,16 @@
           "difficulty": "중급",
           "note": "철쭉봉을 거쳐 짧게 정상으로 오르는 코스",
           "recommended": false
+        },
+        {
+          "name": "초암산-주월산-방장산 종주",
+          "trailhead": "수남주차장",
+          "route": "수남주차장 - 초암산 - 철쭉봉 - 광대코재 - 무남이재 - 주월산 - 방장산 - 수남주차장",
+          "length_km": 15.7,
+          "duration": "7시간",
+          "difficulty": "상급",
+          "note": "호남정맥상 초암산·주월산·방장산 3개 봉우리를 잇는 능선 종주, 철쭉 시즌 산악회 인기 코스",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -6606,12 +8284,21 @@
           "difficulty": "초급",
           "note": "가장 짧게 정상을 다녀오는 원점회귀 코스",
           "recommended": false
+        },
+        {
+          "name": "금곡영화마을 코스",
+          "trailhead": "금곡영화마을",
+          "route": "금곡영화마을 - 축령산 정상 - 원점회귀",
+          "difficulty": "중급",
+          "note": "영화 <내 마음의 풍금> 촬영지인 금곡영화마을에서 출발, 편백숲 조망 (세부 경로는 소스마다 차이 있음)",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
       "coord_confidence": "approx",
       "source_note": "OSM 고창 편백숲 치유의숲. 남양주 축령산(886m) 아님",
-      "added_at": "2026-07-02"
+      "added_at": "2026-07-02",
+      "blackyak_100": true
     },
     {
       "name": "흑석산",
@@ -6628,6 +8315,16 @@
           "difficulty": "중급",
           "note": "철쭉밭과 소사나무 군락지로 유명, 해남·영암 경계",
           "recommended": true
+        },
+        {
+          "name": "별매산-가학산-흑석산 종주",
+          "trailhead": "제전마을(강진군 성전면 월평리)",
+          "route": "제전마을 - 전위봉 - 별매산 - 민재 - 가학산 - 가래재 - 흑석산(노적봉) - 깃대봉 - 바람재 - 전망대 - 가리재 - 가학산자연휴양림",
+          "length_km": 9.6,
+          "duration": "5시간 20분",
+          "difficulty": "상급",
+          "note": "별매산 능선을 포함해 흑석산 주요 봉우리를 잇는 대표 종주 코스, 봄철 철쭉 명소",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -6651,6 +8348,23 @@
           "difficulty": "중급",
           "note": "전주 시내에서 가장 가까운 산, 남고산성 등 문화유적 인근",
           "recommended": true
+        },
+        {
+          "name": "남고산성-관성묘 코스",
+          "trailhead": "관성묘 입구 마을(남고산성 입구)",
+          "route": "관성묘 입구 - 삼경사 갈림길 - 남고사-천경대-억경대-만경대 능선 - 고덕산 정상(헬기장)",
+          "duration": "3~4시간",
+          "difficulty": "중급",
+          "note": "남고산성·남고사·관성묘·만경대 등 유적을 지나는, 인적이 드물어 호젓한 능선 코스",
+          "recommended": false
+        },
+        {
+          "name": "화원마을 원점회귀 코스",
+          "trailhead": "화원마을(완주군 구이면)",
+          "route": "화원마을 - 경복사지 갈림길 - 상하보마을 갈림길 - 고덕산 정상 - 왜목재 방향 능선 - 갈림길 - 화원마을",
+          "difficulty": "중급",
+          "note": "백제 고찰 터인 경복사지를 지나는 완주 구이면 방면 원점회귀 코스",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -6705,12 +8419,31 @@
           "difficulty": "상급",
           "note": "9개 봉우리를 모두 넘는 능선 종주, 100m 출렁다리와 마지막 9봉 구간이 최고 난이도",
           "recommended": true
+        },
+        {
+          "name": "천황암 코스",
+          "trailhead": "구봉산 저수지 아래 주차공간(상양명마을 인근)",
+          "route": "저수지 - 천황암 - 구봉산 정상(원점회귀)",
+          "length_km": 2.5,
+          "difficulty": "상급",
+          "note": "구봉산 등산로 중 가장 가파르고 힘든 코스로 알려짐",
+          "recommended": false
+        },
+        {
+          "name": "길용리-지루목재 코스",
+          "trailhead": "길용리(진안군, 운장산 방면)",
+          "route": "길용리 - 지루목재 - 구봉산 정상(9봉)",
+          "length_km": 5.1,
+          "difficulty": "중급",
+          "note": "운장산과 연계 종주 시 이용하는 코스, 지루목재부터 정상까지는 완만한 편",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
       "coord_confidence": "approx",
       "source_note": "디지털진안문화대전+PeakVisor 근사(오차~1km)",
-      "added_at": "2026-07-02"
+      "added_at": "2026-07-02",
+      "blackyak_100": true
     },
     {
       "name": "만행산",
@@ -6769,12 +8502,23 @@
           "difficulty": "상급",
           "note": "지리산 서북능선을 종주하며 천왕봉·반야봉을 조망",
           "recommended": false
+        },
+        {
+          "name": "팔랑마을 코스",
+          "trailhead": "팔랑마을 주차장",
+          "route": "팔랑마을 - 팔랑치 - 능선(철쭉 군락) - 바래봉삼거리 - 바래봉(왕복)",
+          "length_km": 7.0,
+          "duration": "4~5시간",
+          "difficulty": "중급",
+          "note": "바래봉 정상까지 가장 짧은 코스지만 초반 1시간30분가량 급경사 돌계단·데크 구간이 있음",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
       "coord_confidence": "high",
       "source_note": "PeakVisor 지리산 서북능선(운봉읍)",
-      "added_at": "2026-07-02"
+      "added_at": "2026-07-02",
+      "blackyak_100": true
     },
     {
       "name": "반야봉",
@@ -6791,12 +8535,22 @@
           "difficulty": "중급",
           "note": "노고단고개~반야봉 구간은 편도 5.5km·3시간30분, 지리산 3대 주봉 중 하나로 낙조가 유명하며 노고단 통과 시 탐방예약 필수",
           "recommended": true
+        },
+        {
+          "name": "성삼재-반야봉-뱀사골(반선) 종주코스",
+          "trailhead": "성삼재휴게소",
+          "route": "성삼재 - 노고단고개 - 피아골삼거리 - 노루목 - 반야봉 - 삼도봉 - 화개재 - 뱀사골계곡 - 반선주차장",
+          "length_km": 19.0,
+          "difficulty": "상급",
+          "note": "기존 왕복코스와 달리 반야봉을 지나 삼도봉·화개재·뱀사골로 하산해 반선에서 마치는 장거리 종주",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
       "coord_confidence": "high",
       "source_note": "PeakVisor 반야봉(남원·구례)",
-      "added_at": "2026-07-02"
+      "added_at": "2026-07-02",
+      "blackyak_100": true
     },
     {
       "name": "선야봉",
@@ -6813,6 +8567,16 @@
           "difficulty": "중급",
           "note": "충남 금산 측 대표 코스, 계곡 하산으로 마무리되어 인기",
           "recommended": true
+        },
+        {
+          "name": "원고당마을 코스",
+          "trailhead": "원고당마을(원고당교)",
+          "route": "원고당교 - 산판길(당골산판길) - 암릉길 - 주능선 - 515봉 - 635봉 - 신선봉 갈림길 - 선야봉(원점회귀)",
+          "length_km": 6.0,
+          "duration": "3시간",
+          "difficulty": "중급",
+          "note": "금산 쪽(느티골/남이자연휴양림) 반대편인 완주군 운주면에서 오르는 코스",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -6835,6 +8599,24 @@
           "difficulty": "상급",
           "note": "변산반도국립공원 내변산의 병풍바위·쇠뿔바위 조망이 뛰어난 능선 종주 코스",
           "recommended": true
+        },
+        {
+          "name": "유동마을-어수대 코스",
+          "trailhead": "유동마을 주차장",
+          "route": "유동마을 - 어수대 - 비룡상천봉 - 고래등바위 - 동쇠뿔바위봉 - 서쇠뿔바위봉 - 청림마을",
+          "length_km": 5.5,
+          "duration": "3시간",
+          "difficulty": "중급",
+          "note": "기존 코스(월정약수터-개암사-우금산)와 달리 개암사·우금산을 거치지 않고 유동마을에서 바로 어수대로 진입",
+          "recommended": false
+        },
+        {
+          "name": "청림마을 원점회귀 의상봉 연계코스",
+          "trailhead": "청림마을 주차장",
+          "route": "청림마을 - 새재 - 지장봉 - 쇠뿔바위봉 전망대 - 의상봉(원효굴·부사의방) - 투구봉(삼각봉) - 구시골 - 청림마을",
+          "difficulty": "상급",
+          "note": "쇠뿔바위봉 외에 변산 최고봉 의상봉·원효굴·부사의방까지 잇는 원점회귀 종주 (거리·시간은 소스마다 차이 있어 null 처리)",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -6881,6 +8663,25 @@
           "difficulty": "중급",
           "note": "섬진강 발원지 데미샘으로 이어지는 장수 5대 명산 코스",
           "recommended": true
+        },
+        {
+          "name": "지소골 코스",
+          "trailhead": "지소골",
+          "route": "지소골 - 팔공산 정상",
+          "length_km": 2.9,
+          "duration": "1시간 20분",
+          "difficulty": "중급",
+          "note": "장수군 공식 등산코스 중 하나로 짧지만 가파르게 정상에 오르는 코스",
+          "recommended": false
+        },
+        {
+          "name": "서구이재-와룡휴양림 코스",
+          "trailhead": "서구이재",
+          "route": "서구이재 - 오계치 - 삿갓봉 - 와룡자연휴양림",
+          "duration": "3시간",
+          "difficulty": "중급",
+          "note": "서구이재에서 데미샘이 아닌 삿갓봉·와룡자연휴양림 방향으로 하산하는 코스",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -6912,6 +8713,15 @@
           "duration": "4시간 12분",
           "difficulty": "중급",
           "note": "6·25 빨치산 유적지(교통호, 사령부터)를 지나는 역사 탐방형 종주코스",
+          "recommended": false
+        },
+        {
+          "name": "가리점(백운마을) 코스",
+          "trailhead": "가리점(백운마을)",
+          "route": "가리점(백운마을) - 회문 - 김난식 묘 - 장군봉 - 회문봉 - 회문산자연휴양림",
+          "duration": "4시간",
+          "difficulty": "중급",
+          "note": "임실·순창 경계 백운마을에서 장군봉·회문봉을 거쳐 휴양림으로 하산하는 코스",
           "recommended": false
         }
       ],
@@ -6945,12 +8755,32 @@
           "difficulty": "초급",
           "note": "짧고 완만해 가족 단위 등산객에게 적합",
           "recommended": false
+        },
+        {
+          "name": "상가저수지 직등코스",
+          "trailhead": "덕산도립공원 주차장",
+          "route": "덕산도립공원 주차장 - 상가저수지 - 가야봉(정상) - 큰고개삼거리 - 남연군묘 - 주차장",
+          "length_km": 6.6,
+          "duration": "2시간 30분",
+          "difficulty": "중급",
+          "note": "옥양봉·석문봉을 거치지 않고 상가저수지 쪽 암괴류 구간으로 곧장 가야봉에 오르는 원점회귀 코스",
+          "recommended": false
+        },
+        {
+          "name": "일락산-개심사 종주코스",
+          "trailhead": "덕산도립공원 주차장",
+          "route": "덕산도립공원 주차장 - 남연군묘 - 가야봉(정상) - 석문봉 - 일락산 - 개심사 - 개심사주차장",
+          "length_km": 11.4,
+          "difficulty": "상급",
+          "note": "가야봉·석문봉을 넘어 일락산을 지나 서산 개심사로 하산하는 편도 종주 코스",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
       "coord_confidence": "high",
       "source_note": "PeakVisor 가야봉(서산·예산). 합천 가야산 아님",
-      "added_at": "2026-07-02"
+      "added_at": "2026-07-02",
+      "blackyak_100": true
     },
     {
       "name": "광덕산",
@@ -6991,7 +8821,8 @@
       "source": "bac-myeongsan",
       "coord_confidence": "high",
       "source_note": "PeakVisor 천안·아산",
-      "added_at": "2026-07-02"
+      "added_at": "2026-07-02",
+      "blackyak_100": true
     },
     {
       "name": "오서산",
@@ -7032,7 +8863,8 @@
       "source": "bac-myeongsan",
       "coord_confidence": "high",
       "source_note": "PeakVisor 보령·홍성",
-      "added_at": "2026-07-02"
+      "added_at": "2026-07-02",
+      "blackyak_100": true
     },
     {
       "name": "용봉산",
@@ -7059,12 +8891,21 @@
           "difficulty": "중급",
           "note": "용봉초등학교에서 시작하는 코스",
           "recommended": false
+        },
+        {
+          "name": "용봉산-수암산 연계 종주코스",
+          "trailhead": "용봉산자연휴양림",
+          "route": "용봉산자연휴양림 - 최영장군활터 - 용봉산 정상 - 노적봉 - 악귀봉 - 뫼넘이고개 - 수암산 - 풍차전망대 - 덕산온천",
+          "difficulty": "중급",
+          "note": "뫼넘이고개를 넘어 예산 수암산까지 잇는 종주 코스, 하산 후 덕산온천 이용 가능",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
       "coord_confidence": "high",
       "source_note": "PeakVisor 홍성",
-      "added_at": "2026-07-02"
+      "added_at": "2026-07-02",
+      "blackyak_100": true
     },
     {
       "name": "진악산",
@@ -7090,6 +8931,16 @@
           "duration": "4~5시간",
           "difficulty": "중급",
           "note": "능선을 크게 도는 원점회귀 종주형 코스, 인삼 시배지 유래지",
+          "recommended": false
+        },
+        {
+          "name": "보석사 코스",
+          "trailhead": "보석사주차장",
+          "route": "보석사주차장 - 영천암삼거리 - 도구통바위 - 진악산 정상 - 진악산광장",
+          "length_km": 5.1,
+          "duration": "2시간 15분",
+          "difficulty": "중급",
+          "note": "천연기념물 은행나무가 있는 천년사찰 보석사에서 출발해 진악산광장으로 넘는 종주 코스",
           "recommended": false
         }
       ],
@@ -7121,6 +8972,14 @@
           "difficulty": "중급",
           "note": "원점회귀 대신 어송리로 내려서는 코스, 하산 후 차량 회수 필요",
           "recommended": false
+        },
+        {
+          "name": "4봉 단축 코스",
+          "trailhead": "양길주차장",
+          "route": "양길주차장 - 1봉(감투봉) - 2봉 - 3봉(정상) - 4봉 - 탈출로 - 양길주차장",
+          "difficulty": "초급",
+          "note": "암릉 구간인 1~4봉만 오르고 탈출로로 양길주차장에 복귀하는 단축 코스",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -7143,6 +9002,24 @@
           "difficulty": "초급",
           "note": "독립기념관에서 시작하는 최단 원점회귀 코스, 해맞이 명소",
           "recommended": true
+        },
+        {
+          "name": "태조산-흑성산 종주코스",
+          "trailhead": "태조산공원",
+          "route": "태조산공원 - 태조산 - 흑성산 정상 - 독립기념관",
+          "length_km": 14.0,
+          "duration": "5시간",
+          "difficulty": "상급",
+          "note": "천안 태조산공원에서 흑성산을 거쳐 독립기념관으로 하산하는 장거리 연계 종주 코스",
+          "recommended": false
+        },
+        {
+          "name": "흑성산 둘레길",
+          "trailhead": "국학원",
+          "route": "국학원 - 흑성산 둘레길 - 독립기념관",
+          "difficulty": "초급",
+          "note": "국학원과 독립기념관 사이에 조성된 완만한 둘레길",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -7187,6 +9064,16 @@
           "difficulty": "중급",
           "note": "말갈기능선 기암과 로프 구간이 있는 짧지만 험한 코스",
           "recommended": true
+        },
+        {
+          "name": "바깥모리 원점회귀 코스",
+          "trailhead": "바깥모리 주차장",
+          "route": "바깥모리 주차장 - 헬기장 - 육각정자 - 전망바위 - 갈기산 정상 - 말갈기능선 - 차갑고개 - 소골계곡 - 바깥모리 주차장",
+          "length_km": 7.0,
+          "duration": "4시간",
+          "difficulty": "중급",
+          "note": "말갈기능선과 양산 덜게기 절벽 조망이 백미인 원점회귀 코스",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -7261,6 +9148,16 @@
           "difficulty": "중급",
           "note": "금수산 자락 능선을 타고 오르는 암릉 코스, 모래고개에서 작은동산으로 이어짐",
           "recommended": true
+        },
+        {
+          "name": "무암계곡 종주 코스",
+          "trailhead": "무암사 주차장",
+          "route": "무암계곡 - 무암사 - 작성산 - 새목재 - 동산 정상 - 중고개 - 작은동산 - 교리마을(청풍리조트)",
+          "length_km": 13.0,
+          "duration": "5시간 30분",
+          "difficulty": "상급",
+          "note": "작성산-동산-작은동산 능선을 잇는 편도 종주 코스, 청풍호 조망",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -7357,12 +9254,21 @@
           "difficulty": "중급",
           "note": "쌍곡계곡의 폭포와 어우러진 속리산국립공원 원점회귀 코스",
           "recommended": true
+        },
+        {
+          "name": "각연사 코스",
+          "trailhead": "각연사",
+          "route": "각연사 - 활목고개 - 칠보산 정상 - 청석재 - 각연사",
+          "difficulty": "중급",
+          "note": "쌍곡계곡 쪽보다 완만한 능선 위주 원점회귀 코스, 고찰 각연사 탐방 겸용",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
       "coord_confidence": "high",
       "source_note": "OSM 괴산 칠성면 쌍곡계곡(영주 칠보산과 구분)",
-      "added_at": "2026-07-02"
+      "added_at": "2026-07-02",
+      "blackyak_100": true
     },
     {
       "name": "봉명산",
@@ -7384,6 +9290,26 @@
           "route": "다솔사 - 서봉암 - 보안암 - 봉명산 정상",
           "difficulty": "초급",
           "note": "천년고찰 다솔사와 보안암 석굴을 함께 둘러보는 순례형 코스",
+          "recommended": false
+        },
+        {
+          "name": "만점마을 코스",
+          "trailhead": "만점마을",
+          "route": "만점마을 - 보안암 - 헬기장 - 봉명산 정상",
+          "length_km": 1.9,
+          "duration": "1시간 10분",
+          "difficulty": "초급",
+          "note": "사천시 공식 코스 중 가장 짧은 코스, 보안암 석굴 경유",
+          "recommended": false
+        },
+        {
+          "name": "초량마을 코스",
+          "trailhead": "초량마을",
+          "route": "초량마을 - 서봉암 - 보안암 - 봉명산 정상",
+          "length_km": 4.7,
+          "duration": "2시간 20분",
+          "difficulty": "중급",
+          "note": "서봉암 편백나무숲과 보안암을 함께 지나는 사천시 공식 3코스",
           "recommended": false
         }
       ],
@@ -7416,6 +9342,15 @@
           "difficulty": "중급",
           "note": "괘방산과 능선으로 이어 걷는 종주 코스, 암반 구간과 조망이 좋음",
           "recommended": false
+        },
+        {
+          "name": "계정등·송현산 종주 코스",
+          "trailhead": "지곡동마을회관(함안군 군북면 소포리)",
+          "route": "지곡동마을회관 - 방어산 정상 - 마애사 삼존마애불 - 희망이고개 - 계정등 - 방어산고개 - 송현산 - 학고개 - 작은방어산 - 방어산성 마당바위 - 흔들바위 - 괘방산 - 어석재",
+          "length_km": 9.6,
+          "difficulty": "중급",
+          "note": "방어산에서 계정등·송현산·작은방어산을 거쳐 괘방산까지 잇는 장거리 능선 종주 코스",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
@@ -7430,7 +9365,18 @@
       "lat": 35.47,
       "lon": 127.34,
       "height_m": 598.0,
-      "courses": [],
+      "courses": [
+        {
+          "name": "비홍재-고리봉 종주 코스",
+          "trailhead": "비홍재(남원시 대강면·주생면 경계 고갯마루)",
+          "route": "비홍재 - 문덕봉 - 고정봉 - 그럭재 - 삿갓봉 - 고리봉 - 만학골 - 매촌마을",
+          "length_km": 13.0,
+          "duration": "7~8시간",
+          "difficulty": "상급",
+          "note": "설악산 용아릉의 축소판이라 불리는 암릉 구간으로 안전시설이 없어 경험자 동행이 필요한 종주 코스",
+          "recommended": false
+        }
+      ],
       "source": "bac-myeongsan",
       "coord_confidence": "approx",
       "source_note": "영위키 Mundeokbong 높이(디지털남원문화대전 599.4m); 좌표 능선 추정",
@@ -7452,6 +9398,15 @@
           "difficulty": "초급",
           "note": "병방치 스카이워크 전망대를 지나 정상까지 오르는 짧은 코스, 정상 반대편은 정선읍 북실리로 하산",
           "recommended": true
+        },
+        {
+          "name": "정선 짜들박길 1코스(짜들박문화길)",
+          "trailhead": "정선읍 비봉산 등산로 입구",
+          "route": "정선읍 비봉산 등산로 입구 - 비봉산 - 민둔산 - 병방산군립공원(병방산 정상)",
+          "length_km": 16.6,
+          "difficulty": "초급",
+          "note": "2026년 조성 완료된 정선 9개 명산 순환 숲길 '짜들박길'의 1구간, 완만한 능선으로 병방산 스카이워크까지 연결",
+          "recommended": false
         }
       ],
       "source": "bac-myeongsan",
