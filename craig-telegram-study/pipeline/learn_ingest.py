@@ -488,6 +488,33 @@ def ingest_one(cfg, text, tags=None, image=None, image_media="image/jpeg"):
     return fp, msg
 
 
+def _register_curate(cfg, fp):
+    """수집 직후 '바로 승격/버림' 버튼용 — learn_curate 의 curate_pending.json 에 등록.
+    (curate 가 ingest 를 import 하므로 역방향 import 대신 스키마만 공유)"""
+    try:
+        txt = open(fp, encoding="utf-8").read()
+        m = re.search(r"^suggested_area:\s*(\S+)", txt, re.M)
+        area = m.group(1) if m else "unsorted"
+    except Exception:
+        area = "unsorted"
+    if area == "unsorted" or area not in cfg["categories"]:
+        area = cfg["categories"][0]
+    p = Path(cfg["vault"]) / "_System" / "curate_pending.json"
+    pend = {}
+    if p.exists():
+        try:
+            pend = json.load(open(p))
+        except Exception:
+            pass
+    i = hashlib.sha1(str(fp).encode()).hexdigest()[:10]   # learn_curate.nid 와 동일
+    pend[i] = {"path": str(fp), "area": area}
+    p.parent.mkdir(parents=True, exist_ok=True)
+    tmp = p.with_suffix(".tmp")
+    json.dump(pend, open(tmp, "w"), ensure_ascii=False, indent=2)
+    os.replace(tmp, p)
+    return i
+
+
 def process_queue(cfg):
     qin = Path(cfg["vault"]) / "_System" / "Queue" / "incoming"
     qout = Path(cfg["vault"]) / "_System" / "Queue" / "outgoing"
@@ -517,6 +544,10 @@ def process_queue(cfg):
             fp, msg = ingest_one(cfg, j.get("text", ""), tags=j.get("tags", []),
                                  image=img, image_media=media)
             out = {"chat_id": j.get("chat_id"), "text": msg}
+            if fp and msg.startswith("✅"):   # 새 노트 → 맥락 생생할 때 바로 결정 (설계안 §4-① v2)
+                i = _register_curate(cfg, fp)
+                out["buttons"] = [[{"text": "✅ 바로 승격", "callback_data": f"cur:ok:{i}"},
+                                   {"text": "🗑 버림", "callback_data": f"cur:del:{i}"}]]
             (qout / f"{f.stem}_out.json").write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
             shutil.move(str(f), str(qdone / f.name))
             n += 1
