@@ -891,6 +891,12 @@ def run_monitor(config, debug=False):
     new_videos.sort(key=lambda v: v.get('published', ''))  # 전송은 올라온 순서대로
 
     new_count, failed = 0, []
+    # #4 실패 영상 무한 재시도 방지 — 영상별 실패 횟수를 세어 상한 도달 시 포기,
+    #    연속 실패가 이어지면 YouTube 레이트리밋(IP 차단)으로 보고 이번 사이클을 중단
+    #    (남은 영상은 다음 실행 때 재시도. 계속 두드리면 차단이 길어지기만 한다)
+    fail_counts = state.get('fail_counts', {})
+    max_attempts = int(config.get('max_summary_attempts', 8))
+    consec_fail = 0
     if new_videos:
         log(f"처리 대상 {len(new_videos)}개")
         # 브라우저는 실행당 1회만 열고 세션을 모든 영상에 재사용
@@ -911,6 +917,8 @@ def run_monitor(config, debug=False):
                     summary, source = _summarize_with_fallback(
                         session, video, language, config, debug)
                     if summary:
+                        consec_fail = 0
+                        fail_counts.pop(video['id'], None)
                         if send_telegram(format_message(video, summary, source), config):
                             log(f"전송 완료({source}): {video['title']}")
                             append_daily_log(video, summary, source, config, debug)
@@ -919,12 +927,25 @@ def run_monitor(config, debug=False):
                         else:
                             failed.append(video['title'])
                     else:
-                        log(f"요약 실패 (다음 실행 시 재시도): {video['title']}")
+                        n = fail_counts.get(video['id'], 0) + 1
+                        fail_counts[video['id']] = n
+                        consec_fail += 1
+                        if n >= max_attempts:
+                            seen.add(video['id'])
+                            fail_counts.pop(video['id'], None)
+                            log(f"요약 실패 {n}회 — 포기(더 재시도 안 함): {video['title']}")
+                        else:
+                            log(f"요약 실패 ({n}/{max_attempts}회, 다음 실행 시 재시도): {video['title']}")
+                        if consec_fail >= 3:
+                            log(f"연속 실패 {consec_fail}회 — YouTube 레이트리밋(IP 차단) 의심. "
+                                "이번 사이클 중단, 남은 영상은 다음 실행에 재시도")
+                            break
                     time.sleep(2)
     else:
         log("새 동영상 없음")
 
     state['seen_videos'] = list(seen)
+    state['fail_counts'] = fail_counts
     state['last_checked'] = datetime.now().isoformat()
     save_state(state)
     log(f"완료: {new_count}개 전송" + (f", {len(failed)}개 실패" if failed else ""))
