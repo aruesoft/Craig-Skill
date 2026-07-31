@@ -9624,6 +9624,355 @@
       "source_note": "호구산군립공원(이동면). 별칭 납산. ko.wiki 좌표 미노출 근사",
       "added_at": "2026-07-02",
       "image_url": "https://tong.visitkorea.or.kr/cms/resource/94/3554594_image2_1.jpg"
+    },
+    {
+      "name": "사패산",
+      "aliases": [
+        "사패산 원각사"
+      ],
+      "region": "경기 (의정부/양주)",
+      "lat": 37.706,
+      "lon": 127.012,
+      "height_m": 552,
+      "courses": [
+        {
+          "name": "안골 코스",
+          "route": "안골계곡 - 원각사 - 사패산 정상",
+          "length_km": 3.5,
+          "duration": "2~2시간 30분",
+          "difficulty": "초급",
+          "recommended": true,
+          "note": "의정부 안골에서 오르는 대표 코스. 사패능선으로 도봉산 연계 산행 가능"
+        },
+        {
+          "name": "회룡 코스",
+          "route": "회룡탐방지원센터 - 회룡사 - 사패능선 - 정상",
+          "length_km": 4.2,
+          "duration": "2시간 30분~3시간",
+          "difficulty": "중급",
+          "recommended": false,
+          "note": "회룡역에서 접근 — 지하철 산행에 적합"
+        }
+      ],
+      "mtId": null,
+      "rank_100": null,
+      "blackyak_100": false,
+      "image_url": null,
+      "source_note": "등산카페 언급 상위 미등록 산 — 높이는 나무위키, 좌표·코스는 큐레이션(일반 안내 수치)",
+      "added_at": "2026-08-01"
+    },
+    {
+      "name": "계양산",
+      "aliases": [],
+      "region": "인천 (계양)",
+      "lat": 37.554,
+      "lon": 126.716,
+      "height_m": 395,
+      "courses": [
+        {
+          "name": "계양산성 코스",
+          "route": "계양산성박물관 - 하느재쉼터 - 정상",
+          "length_km": 2.5,
+          "duration": "1시간 30분~2시간",
+          "difficulty": "초급",
+          "recommended": true,
+          "note": "인천 대표 진산 — 계양역·계산역에서 접근 쉬움. 정상에서 한강·서해 조망"
+        }
+      ],
+      "mtId": null,
+      "rank_100": null,
+      "blackyak_100": false,
+      "image_url": null,
+      "source_note": "등산카페 언급 상위 미등록 산 — 높이는 나무위키, 좌표·코스는 큐레이션(일반 안내 수치)",
+      "added_at": "2026-08-01"
+    },
+    {
+      "name": "남덕유산",
+      "aliases": [],
+      "region": "경남 (함양)/전북 (장수)",
+      "lat": 35.854,
+      "lon": 127.678,
+      "height_m": 1507,
+      "courses": [
+        {
+          "name": "영각사 코스",
+          "route": "영각탐방지원센터 - 영각재 - 남덕유산 정상",
+          "length_km": 4.5,
+          "duration": "3~4시간",
+          "difficulty": "상급",
+          "recommended": true,
+          "note": "덕유산 남쪽 봉우리(1,507m) 최단 코스 — 겨울 설경 명소, 계단 구간 가파름"
+        },
+        {
+          "name": "육십령 코스",
+          "route": "육십령 - 할미봉 - 서봉 - 남덕유산",
+          "length_km": 8.5,
+          "duration": "5~6시간",
+          "difficulty": "상급",
+          "recommended": false,
+          "note": "백두대간 능선 종주 구간 — 조망이 뛰어나지만 길다"
+        }
+      ],
+      "mtId": null,
+      "rank_100": null,
+      "blackyak_100": false,
+      "image_url": null,
+      "source_note": "등산카페 언급 상위 미등록 산 — 높이는 나무위키, 좌표·코스는 큐레이션(일반 안내 수치)",
+      "added_at": "2026-08-01"
+    },
+    {
+      "name": "영축산",
+      "aliases": [
+        "영취산",
+        "취서산"
+      ],
+      "region": "경남 (양산)",
+      "lat": 35.51,
+      "lon": 129.004,
+      "height_m": 1081,
+      "courses": [
+        {
+          "name": "지산마을 코스",
+          "route": "지산마을 - 축서암 갈림길 - 영축산 정상",
+          "length_km": 3.8,
+          "duration": "2시간 30분~3시간 30분",
+          "difficulty": "중급",
+          "recommended": true,
+          "note": "영남알프스 남쪽 축 — 통도사 뒤편에서 오르는 대표 코스, 정상 암릉 조망"
+        }
+      ],
+      "mtId": null,
+      "rank_100": null,
+      "blackyak_100": false,
+      "image_url": null,
+      "source_note": "등산카페 언급 상위 미등록 산 — 높이는 나무위키, 좌표·코스는 큐레이션(일반 안내 수치)",
+      "added_at": "2026-08-01"
+    },
+    {
+      "name": "천황산",
+      "aliases": [
+        "사자봉",
+        "재약산 천황산"
+      ],
+      "region": "경남 (밀양)",
+      "lat": 35.555,
+      "lon": 128.985,
+      "height_m": 1189,
+      "courses": [
+        {
+          "name": "표충사 코스",
+          "route": "표충사 - 금강폭포 - 천황산 정상",
+          "length_km": 5.5,
+          "duration": "3시간 30분~4시간 30분",
+          "difficulty": "상급",
+          "recommended": true,
+          "note": "영남알프스 사자평 억새 명소 — 재약산과 연계 산행 일반적"
+        },
+        {
+          "name": "얼음골 케이블카 코스",
+          "route": "얼음골케이블카 상부 - 능선 - 천황산 정상",
+          "length_km": 3.0,
+          "duration": "1시간 30분~2시간",
+          "difficulty": "초급",
+          "recommended": false,
+          "note": "케이블카로 고도를 올린 뒤 능선 산책 — 가족 산행에 적합"
+        }
+      ],
+      "mtId": null,
+      "rank_100": null,
+      "blackyak_100": false,
+      "image_url": null,
+      "source_note": "등산카페 언급 상위 미등록 산 — 높이는 나무위키, 좌표·코스는 큐레이션(일반 안내 수치)",
+      "added_at": "2026-08-01"
+    },
+    {
+      "name": "고헌산",
+      "aliases": [],
+      "region": "울산 (울주)",
+      "lat": 35.617,
+      "lon": 129.055,
+      "height_m": 1034,
+      "courses": [
+        {
+          "name": "외항재 코스",
+          "route": "외항재 - 고헌산 정상",
+          "length_km": 2.8,
+          "duration": "1시간 30분~2시간",
+          "difficulty": "초급",
+          "recommended": true,
+          "note": "영남알프스 9봉 중 하나 — 고도를 확보한 고개에서 출발해 부담 적음"
+        }
+      ],
+      "mtId": null,
+      "rank_100": null,
+      "blackyak_100": false,
+      "image_url": null,
+      "source_note": "등산카페 언급 상위 미등록 산 — 높이는 나무위키, 좌표·코스는 큐레이션(일반 안내 수치)",
+      "added_at": "2026-08-01"
+    },
+    {
+      "name": "내변산",
+      "aliases": [
+        "변산",
+        "관음봉"
+      ],
+      "region": "전북 (부안)",
+      "lat": 35.68,
+      "lon": 126.578,
+      "height_m": 509,
+      "courses": [
+        {
+          "name": "내소사 코스",
+          "route": "내소사 - 재백이고개 - 관음봉",
+          "length_km": 4.0,
+          "duration": "2시간 30분~3시간",
+          "difficulty": "중급",
+          "recommended": true,
+          "note": "변산반도국립공원 내륙 산군 — 직소폭포·내소사 전나무길과 연계"
+        },
+        {
+          "name": "남여치 코스",
+          "route": "남여치 - 쌍선봉 - 직소폭포 - 재백이고개 - 관음봉",
+          "length_km": 6.8,
+          "duration": "4~5시간",
+          "difficulty": "중급",
+          "recommended": false,
+          "note": "직소폭포를 관통하는 내변산 종주 코스"
+        }
+      ],
+      "mtId": null,
+      "rank_100": null,
+      "blackyak_100": false,
+      "image_url": null,
+      "source_note": "등산카페 언급 상위 미등록 산 — 높이는 나무위키, 좌표·코스는 큐레이션(일반 안내 수치)",
+      "added_at": "2026-08-01"
+    },
+    {
+      "name": "백양산",
+      "aliases": [],
+      "region": "부산 (부산진/사상)",
+      "lat": 35.175,
+      "lon": 129.03,
+      "height_m": 642,
+      "courses": [
+        {
+          "name": "어린이대공원 코스",
+          "route": "부산어린이대공원 - 만남의숲 - 백양산 정상",
+          "length_km": 3.5,
+          "duration": "2~2시간 30분",
+          "difficulty": "초급",
+          "recommended": true,
+          "note": "부산 시내 조망 명소 — 낙동정맥 구간, 금정산과 함께 부산 대표 근교산"
+        }
+      ],
+      "mtId": null,
+      "rank_100": null,
+      "blackyak_100": false,
+      "image_url": null,
+      "source_note": "등산카페 언급 상위 미등록 산 — 높이는 나무위키, 좌표·코스는 큐레이션(일반 안내 수치)",
+      "added_at": "2026-08-01"
+    },
+    {
+      "name": "북악산",
+      "aliases": [
+        "백악산"
+      ],
+      "region": "서울 (종로)",
+      "lat": 37.593,
+      "lon": 126.981,
+      "height_m": 342,
+      "courses": [
+        {
+          "name": "한양도성 코스",
+          "route": "창의문 - 백악마루(정상) - 숙정문 - 말바위안내소",
+          "length_km": 3.8,
+          "duration": "2~2시간 30분",
+          "difficulty": "초급",
+          "recommended": true,
+          "note": "한양도성 성곽길 백악 구간 — 경복궁 북쪽 조망, 일부 구간 신분증 지참 안내 확인"
+        }
+      ],
+      "mtId": null,
+      "rank_100": null,
+      "blackyak_100": false,
+      "image_url": null,
+      "source_note": "등산카페 언급 상위 미등록 산 — 높이는 나무위키, 좌표·코스는 큐레이션(일반 안내 수치)",
+      "added_at": "2026-08-01"
+    },
+    {
+      "name": "천주산",
+      "aliases": [],
+      "region": "경남 (창원)",
+      "lat": 35.27,
+      "lon": 128.588,
+      "height_m": 640,
+      "courses": [
+        {
+          "name": "천주암 코스",
+          "route": "천주암 - 만남의광장 - 용지봉(정상)",
+          "length_km": 3.2,
+          "duration": "2~2시간 30분",
+          "difficulty": "초급",
+          "recommended": true,
+          "note": "창원·마산 진달래 명소 — 4월 진달래 군락 산행지로 유명"
+        }
+      ],
+      "mtId": null,
+      "rank_100": null,
+      "blackyak_100": false,
+      "image_url": null,
+      "source_note": "등산카페 언급 상위 미등록 산 — 높이는 나무위키, 좌표·코스는 큐레이션(일반 안내 수치)",
+      "added_at": "2026-08-01"
+    },
+    {
+      "name": "태기산",
+      "aliases": [],
+      "region": "강원 (횡성/평창)",
+      "lat": 37.612,
+      "lon": 128.267,
+      "height_m": 1261,
+      "courses": [
+        {
+          "name": "양구두미재 코스",
+          "route": "양구두미재 - 임도 - 태기산 정상",
+          "length_km": 3.5,
+          "duration": "1시간 30분~2시간",
+          "difficulty": "초급",
+          "recommended": true,
+          "note": "고개(980m)에서 출발해 수월한 1,261m 고산 — 풍력발전기 능선과 야생화 명소"
+        }
+      ],
+      "mtId": null,
+      "rank_100": null,
+      "blackyak_100": false,
+      "image_url": null,
+      "source_note": "등산카페 언급 상위 미등록 산 — 높이는 나무위키, 좌표·코스는 큐레이션(일반 안내 수치)",
+      "added_at": "2026-08-01"
+    },
+    {
+      "name": "심학산",
+      "aliases": [],
+      "region": "경기 (파주)",
+      "lat": 37.735,
+      "lon": 126.693,
+      "height_m": 194,
+      "courses": [
+        {
+          "name": "둘레길 코스",
+          "route": "심학산둘레길 입구 - 팔각정 - 정상",
+          "length_km": 2.5,
+          "duration": "1~1시간 30분",
+          "difficulty": "초급",
+          "recommended": true,
+          "note": "출판단지 옆 한강 하구 조망 산책 산 — 온 가족 가벼운 산행"
+        }
+      ],
+      "mtId": null,
+      "rank_100": null,
+      "blackyak_100": false,
+      "image_url": null,
+      "source_note": "등산카페 언급 상위 미등록 산 — 높이는 나무위키, 좌표·코스는 큐레이션(일반 안내 수치)",
+      "added_at": "2026-08-01"
     }
   ]
 }
