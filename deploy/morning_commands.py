@@ -13,6 +13,7 @@ from pathlib import Path
 import requests
 
 CFG = Path.home() / ".config" / "craig-telegram-study" / "config.json"
+RELAY_STATE = Path.home() / ".config" / "craig-telegram-study" / "relay_state.json"
 
 MESSAGE = (
     "☀️ 좋은 아침! 오늘의 봇 명령어 안내\n"
@@ -39,9 +40,12 @@ MESSAGE = (
 def main():
     cfg = json.load(open(CFG))
     token = cfg.get("telegram_bot_token", "")
+    # chat_id: config 우선, 비어 있으면 relay_bot 이 기록한 마지막 채팅(last_chat) 사용
     chat_id = cfg.get("telegram_chat_id", "")
+    if not chat_id and RELAY_STATE.exists():
+        chat_id = json.load(open(RELAY_STATE)).get("last_chat", "")
     if not token or not chat_id:
-        print("토큰/chat_id 없음 — ~/.config/craig-telegram-study/config.json 확인")
+        print("토큰/chat_id 없음 — config.json 의 telegram_chat_id 또는 relay_state.json 확인")
         return 1
     r = requests.post(
         f"https://api.telegram.org/bot{token}/sendMessage",
