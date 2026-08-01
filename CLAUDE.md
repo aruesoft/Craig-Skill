@@ -11,7 +11,7 @@ Claude / AI 에이전트용 스킬 모음 저장소. 원격: https://github.com/
 - `youtube-telegram-summary/` — YouTube 새 영상 → secondb.ai 요약(실패 시 Claude 폴백) → 텔레그램 전송 파이프라인. 서버에선 `monitor.py --listen` 상시 리스너 1개가 명령 응답 + 6시간 주기 감지를 겸한다.
 - `craig-telegram-study/` — 학습 파이프라인(@CraigStudyBot). **봇/지능 분리**: `pipeline/relay_bot.py`는 큐 릴레이만, 지능은 `pipeline/learn_{ingest,curate,garden,retro,weekly}.py`가 담당. 설계 SSOT는 `학습파이프라인_설계안.md`. ⚠️ `telegram-bot/study_bot.py`는 **폐기된 프로토타입** — 수정하지 말 것.
 - `SkillVault/`, `StudyVault/` — Obsidian 볼트(둘 다 git 미추적, Obsidian Sync 소유). SkillVault=이 프로젝트 위키(PARA+카파시 LLM-Wiki), StudyVault=학습 파이프라인 결과.
-- `deploy/`, `SERVER_SETUP.md` — 봇들을 맥북 에어 서버에서 launchd 상시가동 + pull 자동배포. plist: `com.craig.skill.{mountainbot,youtube,studybot,learn-ingest,learn-curate,learn-garden,learn-retro,learn-weekly,dashboard,watchdog}`. **운영·배포 절차의 SSOT는 `SERVER_SETUP.md`**.
+- `deploy/`, `SERVER_SETUP.md` — 봇들을 맥북 에어 서버에서 launchd 상시가동 + pull 자동배포. plist: `com.craig.skill.{mountainbot,youtube,studybot,learn-ingest,learn-curate,learn-garden,learn-retro,learn-weekly,dashboard,watchdog,morning-commands}`. **운영·배포 절차의 SSOT는 `SERVER_SETUP.md`**.
 
 ## 진실원본(SSOT) 맵 — 어디를 고쳐야 하는가
 

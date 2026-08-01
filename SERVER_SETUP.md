@@ -36,6 +36,7 @@
 | 헬스체크 대시보드 | `deploy/dashboard.py --port 8788` | launchd `com.craig.skill.dashboard` | 상시(웹 :8788) |
 | 워치독(중단·오류 감지→재시작·알림) | `deploy/watchdog.py` | launchd `com.craig.skill.watchdog` | 5분마다 |
 | Obsidian 상시 실행(Sync 유지) | `open -a Obsidian` | launchd `com.craig.skill.obsidian-keeper` | 5분마다(+부팅 시) |
+| 아침 명령어 안내(봇 3종 사용법 텔레그램 발송) | `deploy/morning_commands.py` | launchd `com.craig.skill.morning-commands` | 매일 08시 |
 | 자동배포 | `deploy/auto_deploy.sh` | crontab | 10분마다 |
 
 > **Obsidian Sync 주의** 🙋: Obsidian Sync 는 **앱이 그 볼트를 열고 실행 중일 때만** 동기화한다(클라우드 데몬 아님).

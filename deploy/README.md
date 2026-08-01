@@ -16,6 +16,7 @@
 | `launchd/com.craig.skill.watchdog.plist` | 워치독(5분마다) |
 | `watchdog.py` | 서비스 중단·오류 감지 → 자동 재시작 + 텔레그램 올림보고(복구 시 ✅). stdlib |
 | `launchd/com.craig.skill.obsidian-keeper.plist` | Obsidian 상시 실행 유지(Sync는 앱 실행 중일 때만 동기화). 5분마다 `open -a Obsidian`+부팅 시 |
+| `launchd/com.craig.skill.morning-commands.plist` + `morning_commands.py` | 매일 08시 봇 3종 명령어 안내를 텔레그램 발송(학습봇 토큰 사용). 목록 수정은 `morning_commands.py` MESSAGE |
 | `bootstrap_server.sh` | 프리플라이트 + launchd 등록 + crontab(자동배포) 한 방 등록. `DRY=1` 지원 |
 | `auto_deploy.sh` | pull 기반 자동배포(개발기 push → 서버 ff-only 당김 + 변경 서비스 재시작 + 텔레그램 통지) |
 
