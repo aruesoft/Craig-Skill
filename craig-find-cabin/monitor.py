@@ -26,11 +26,9 @@ def _fmt_date(d):
 def _event_message(ev):
     d = _fmt_date(ev.target.date)
     if ev.kind == "became_available":
-        return (f"🎉 예약가능! {ev.target.shelter} {d} — 잔여 {ev.curr.rsvt}자리\n"
-                f"예약 선점을 시작합니다. 캡차 숫자를 답장하세요.")
+        return f"🎉 예약가능! {ev.target.shelter} {d} — 잔여 {ev.curr.rsvt}자리"
     if ev.kind == "became_waiting":
-        return (f"🕓 대기가능! {ev.target.shelter} {d} — 대기 {ev.curr.rsvt}\n"
-                f"대기신청을 시작합니다. 캡차 숫자를 답장하세요.")
+        return f"🕓 대기가능! {ev.target.shelter} {d} — 대기 {ev.curr.rsvt}"
     if ev.kind == "rsvt_changed":
         return f"ℹ️ {ev.target.shelter} {d} 잔여 변화: {ev.prev.rsvt} → {ev.curr.rsvt}"
     if ev.kind == "became_soldout":
@@ -47,7 +45,8 @@ class Daemon:
         self.knps = KnpsClient()
         self.state = {}
         self.done = set()          # 선점 완료된 target key
-        self.pending = {}          # target.key() -> {"cell","party","target"} 캡차 대기
+        self.queue = []            # FIFO: [{"cell","party","target"}, ...] 캡차 대기열
+        self.active = None         # 현재 캡차 발송 후 응답 대기 중인 job (dict) 또는 None
         self.last_poll = 0.0
         self.last_heartbeat = time.time()
         self.tg_offset = None
@@ -70,34 +69,52 @@ class Daemon:
     def handle_event(self, ev, calendar):
         self.tg.send(_event_message(ev))
         k = ev.target.key()
-        if ev.kind == "became_soldout" and k in self.pending:
-            del self.pending[k]
-            self.tg.send(f"릴레이 취소: {ev.target.shelter} {_fmt_date(ev.target.date)} 소진.")
+        if ev.kind == "became_soldout":
+            self.queue = [j for j in self.queue if j["target"].key() != k]
+            if self.active is not None and self.active["target"].key() == k:
+                self.tg.send(f"릴레이 취소: {ev.target.shelter} {_fmt_date(ev.target.date)} 소진.")
+                self.active = None
+                self._send_next_captcha()
             return
         if ev.kind in ("became_available", "became_waiting") and ev.target.mode == "auto":
             self.start_relay(ev.target, ev.cell)
 
     def start_relay(self, target, cell):
+        self.queue.append({"cell": cell, "party": target.party, "target": target})
+        if self.active is None:
+            self._send_next_captcha()
+
+    def _send_next_captcha(self):
+        if not self.queue:
+            self.active = None
+            return
+        job = self.queue.pop(0)
+        self.active = job
+        target, cell = job["target"], job["cell"]
         try:
             if not self.knps.is_authenticated():
                 self.knps.login(self.cfg.knps_id, self.cfg.knps_pw)
             png = self.knps.get_captcha()
         except KnpsError as e:
             self.tg.send(f"⚠️ 로그인/캡차 실패: {e}")
+            self.active = None
+            self._send_next_captcha()
             return
-        self.pending[target.key()] = {"cell": cell, "party": target.party, "target": target}
         qty = min(target.party, cell.rsvt_cnt) if cell.rsvt_cnt else target.party
         self.tg.send_photo(png,
             f"{target.shelter} {_fmt_date(target.date)} {qty}명 예약. "
             f"캡차 숫자를 답장하세요. (인원변경: '2 1234', 취소: 'pass')")
 
     def handle_captcha_reply(self, text):
-        if not self.pending:
+        if self.active is None:
             return
         text = text.strip()
         if text.lower() == "pass":
-            self.pending.clear()
-            self.tg.send("릴레이를 취소했습니다.")
+            job = self.active
+            self.tg.send(f"릴레이를 취소했습니다: {job['target'].shelter} "
+                         f"{_fmt_date(job['target'].date)}.")
+            self.active = None
+            self._send_next_captcha()
             return
         parts = text.split()
         qty_override = None
@@ -107,18 +124,19 @@ class Daemon:
             captcha = parts[0]
         else:
             return  # 캡차 형식 아님 — 명령으로 처리
-        key = next(iter(self.pending))
-        job = self.pending.pop(key)
+        job = self.active
         party = qty_override or job["party"]
         if self.dry_run:
             self.tg.send(f"[dry-run] 제출 생략: {job['cell'].fclt_nm} "
                          f"{_fmt_date(job['target'].date)} {party}명 captcha={captcha}")
+            self.active = None
+            self._send_next_captcha()
             return
         try:
             res = self.knps.submit_reservation(job["cell"], party, captcha)
         except KnpsError as e:
             self.tg.send(f"⚠️ 제출 오류: {e}. 자리가 남아있으면 다시 캡차를 보냅니다.")
-            self.start_relay(job["target"], job["cell"])
+            self._resend_active_captcha()
             return
         if res.success:
             self.done.add(job["target"].key())
@@ -130,9 +148,29 @@ class Daemon:
                              f"https://reservation.knps.or.kr/mypage/dashBoard.do?prdDvcd=S")
             else:
                 self.tg.send(f"✅ {res.message}: {res.prd_nm}")
+            self.active = None
+            self._send_next_captcha()
         else:
             self.tg.send(f"❌ {res.message}. 자리가 남아있으면 다시 캡차를 보냅니다.")
-            self.start_relay(job["target"], job["cell"])
+            self._resend_active_captcha()
+
+    def _resend_active_captcha(self):
+        """제출 실패/오류 후 현재 active job을 유지한 채 캡차를 다시 보낸다."""
+        job = self.active
+        target, cell = job["target"], job["cell"]
+        try:
+            if not self.knps.is_authenticated():
+                self.knps.login(self.cfg.knps_id, self.cfg.knps_pw)
+            png = self.knps.get_captcha()
+        except KnpsError as e:
+            self.tg.send(f"⚠️ 로그인/캡차 실패: {e}")
+            self.active = None
+            self._send_next_captcha()
+            return
+        qty = min(target.party, cell.rsvt_cnt) if cell.rsvt_cnt else target.party
+        self.tg.send_photo(png,
+            f"{target.shelter} {_fmt_date(target.date)} {qty}명 예약. "
+            f"캡차 숫자를 답장하세요. (인원변경: '2 1234', 취소: 'pass')")
 
     def handle_command(self, text, chat_id):
         if self.cfg.telegram_chat_id is None:
@@ -146,7 +184,14 @@ class Daemon:
             lines = [f"{t.shelter} {_fmt_date(t.date)}: "
                      f"{self.state.get(t.key(), Slot('none',0)).status}"
                      for t in self.active_targets()]
-            self.tg.send("감시 중\n" + "\n".join(lines) if lines else "감시 대상 없음")
+            msg = "감시 중\n" + "\n".join(lines) if lines else "감시 대상 없음"
+            if self.active is not None:
+                at = self.active["target"]
+                msg += f"\n\n캡차 대기 중: {at.shelter} {_fmt_date(at.date)}"
+            if self.queue:
+                qlines = [f"{j['target'].shelter} {_fmt_date(j['target'].date)}" for j in self.queue]
+                msg += "\n대기열: " + ", ".join(qlines)
+            self.tg.send(msg)
         elif cmd == "/targets":
             self.tg.send("\n".join(f"{t.shelter} {_fmt_date(t.date)} {t.party}명 [{t.mode}]"
                                    for t in self.targets) or "없음")
