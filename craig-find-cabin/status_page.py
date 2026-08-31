@@ -38,11 +38,11 @@ def render_html(targets, state, last_check: str, healthy: bool) -> str:
     return f"""<!doctype html><html lang="ko"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="refresh" content="300">
-<title>대피소 감시</title>
+<title>설악원정대 대피소 취소표 감시 프로그램</title>
 <style>body{{font-family:-apple-system,sans-serif;max-width:640px;margin:2rem auto;padding:0 1rem}}
 table{{width:100%;border-collapse:collapse}}th,td{{padding:.6rem;border-bottom:1px solid #eee;text-align:left}}
 .meta{{color:#666;font-size:.9rem}}</style></head><body>
-<h1>⛰️ KNPS 대피소 취소표 감시</h1>
+<h1>⛰️ 설악원정대 대피소 취소표 감시 프로그램</h1>
 <p class="meta">마지막 확인: {last_check} · 데몬: {health} · 5분마다 자동 새로고침</p>
 <table><thead><tr><th>대피소</th><th>날짜</th><th>상태</th><th>인원</th></tr></thead>
 <tbody>{trs}</tbody></table></body></html>"""

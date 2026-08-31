@@ -63,7 +63,7 @@ def render_page(msg=""):
     return f"""<!doctype html><html lang="ko"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="refresh" content="300">
-<title>대피소 감시</title>
+<title>설악원정대 대피소 취소표 감시 프로그램</title>
 <style>
 body{{font-family:-apple-system,sans-serif;max-width:680px;margin:2rem auto;padding:0 1rem;color:#222}}
 h1{{font-size:1.4rem}} .meta{{color:#666;font-size:.9rem}}
@@ -75,7 +75,7 @@ button{{cursor:pointer;background:#1a7f37;color:#fff;border:none}}
 button.del{{background:#c0392b;padding:.35rem .7rem;font-size:.85rem}}
 .msg{{background:#eef7ee;border:1px solid #cbe6cb;padding:.6rem;border-radius:6px}}
 </style></head><body>
-<h1>⛰️ KNPS 대피소 취소표 감시</h1>
+<h1>⛰️ 설악원정대 대피소 취소표 감시 프로그램</h1>
 <p class="meta">마지막 확인: {updated} · 5분마다 자동 새로고침 · 예약가능/대기가능이 뜨면 텔레그램·전화·Pushover로 알림</p>
 {banner}
 <table><thead><tr><th>대피소</th><th>날짜</th><th>상태</th><th>인원</th><th></th></tr></thead>
