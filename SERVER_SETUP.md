@@ -37,6 +37,7 @@
 | 워치독(중단·오류 감지→재시작·알림) | `deploy/watchdog.py` | launchd `com.craig.skill.watchdog` | 5분마다 |
 | Obsidian 상시 실행(Sync 유지) | `open -a Obsidian` | launchd `com.craig.skill.obsidian-keeper` | 5분마다(+부팅 시) |
 | 아침 명령어 안내(봇 3종 사용법 텔레그램 발송) | `deploy/morning_commands.py` | launchd `com.craig.skill.morning-commands` | 매일 08시 |
+| 대피소 선점 데몬(KNPS 취소표 감시·예약) | `craig-find-cabin/monitor.py --listen` | launchd `com.craig.skill.findcabin` | 3분(폴링) |
 | 자동배포 | `deploy/auto_deploy.sh` | crontab | 10분마다 |
 
 > **Obsidian Sync 주의** 🙋: Obsidian Sync 는 **앱이 그 볼트를 열고 실행 중일 때만** 동기화한다(클라우드 데몬 아님).
@@ -216,6 +217,75 @@ launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.craig.skill.mountain
 - [ ] **개발기·구 클론(`~/youtube-telegram-summary`) 종료**했나? (단일 인스턴스)
 - [ ] secondb 로그인(`login.py`) 했나?
 - [ ] 절전 끄기·자동 로그인(재부팅 후 launchd 복구) 켜져 있나? (stock 런북 §2)
+
+---
+
+## 11. 대피소 선점 데몬 (com.craig.skill.findcabin)
+
+### 개요
+KNPS(국립공원공단) 대피소 취소표를 3분 주기로 감시하고 자동 예약하는 데몬. 텔레그램 @FindCabin_bot 으로 명령 수신(추가/삭제/상태) 및 캡차 릴레이. 신규 봇 토큰이라 기존 봇(mountainbot/youtube/studybot)과 getUpdates 충돌 없음.
+
+### 설정
+
+`~/.config/craig-find-cabin/config.json` (chmod 600):
+```json
+{
+  "knps_id": "<KNPS 사용자명>",
+  "knps_pw": "<KNPS 비밀번호>",
+  "telegram_token": "<봇 토큰>",
+  "telegram_chat_id": null,
+  "poll_sec": 180
+}
+```
+- `telegram_chat_id`: 사용자가 봇에 `/start` 보내면 데몬이 자동 저장.
+- **이 값들은 저장소·문서·커밋에 넣지 않는다** (git 외부).
+
+감시대상은 `craig-find-cabin/targets.json`:
+```json
+{
+  "targets": [
+    {"shelter": "솔샘", "date": "20260901", "qty": 2}
+  ]
+}
+```
+
+### 배포
+
+#### 3-1. 심볼릭 링크 + launchctl 등록
+```bash
+cd /Users/craigpark/Github/Craig-Skill
+cp deploy/launchd/com.craig.skill.findcabin.plist ~/Library/LaunchAgents/
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.craig.skill.findcabin.plist
+```
+
+#### 3-2. 재시작/언로드
+```bash
+# 재시작
+launchctl kickstart -k gui/$(id -u)/com.craig.skill.findcabin
+# 내리기
+launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.craig.skill.findcabin.plist
+# 다시 올리기
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.craig.skill.findcabin.plist
+```
+
+### 로그
+
+`/Users/craigpark/Github/Craig-Skill/logs/findcabin.{out,err}.log`
+
+```bash
+tail -f logs/findcabin.err.log    # 에러
+```
+
+### 단일 인스턴스 원칙
+
+신규 봇 토큰이라 기존 봇과 Telegram getUpdates 충돌 없음. 그러나 **같은 텔레그램 봇을 두 곳에서 폴링하면 `Conflict` 에러**. 재시작 전 기존 프로세스 확인:
+```bash
+pgrep -fl "monitor.py --listen"
+```
+
+### 상태페이지
+
+데몬이 매 폴링마다 `craig-find-cabin/status/{status.json,index.html}` 생성(5분 자동새로고침). v1은 파일 생성까지만 담당. 외부 도메인 배포는 v2.
 
 ---
 
