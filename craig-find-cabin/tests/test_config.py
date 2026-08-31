@@ -47,3 +47,30 @@ def test_save_and_reload_targets_roundtrip():
         save_targets(p, [Target("설악산", "B03", "양폭대피소", "20261016", 5, "auto")])
         ts = load_targets(p)
         assert ts[0].shelter == "양폭대피소" and ts[0].party == 5
+
+
+def test_alert_channels_default_absent():
+    with tempfile.TemporaryDirectory() as tmp:
+        p = _write(tmp, "config.json", {
+            "knps_id": "u", "knps_pw": "p", "telegram_token": "t",
+        })
+        c = load_config(p)
+        assert c.pushover_user is None and c.pushover_token is None
+        assert c.twilio_sid is None and c.twilio_to is None
+        assert c.alert_repeat_sec == 45 and c.captcha_refresh_sec == 120
+        assert c.call_repeat_sec == 300
+
+def test_alert_channels_parsed_when_present():
+    with tempfile.TemporaryDirectory() as tmp:
+        p = _write(tmp, "config.json", {
+            "knps_id": "u", "knps_pw": "p", "telegram_token": "t",
+            "pushover_user": "pu", "pushover_token": "pt",
+            "twilio_sid": "AC1", "twilio_token": "tok",
+            "twilio_from": "+1", "twilio_to": "+82",
+            "alert_repeat_sec": 20, "captcha_refresh_sec": 90, "call_repeat_sec": 200,
+        })
+        c = load_config(p)
+        assert c.pushover_user == "pu" and c.pushover_token == "pt"
+        assert c.twilio_sid == "AC1" and c.twilio_to == "+82"
+        assert c.alert_repeat_sec == 20 and c.captcha_refresh_sec == 90
+        assert c.call_repeat_sec == 200

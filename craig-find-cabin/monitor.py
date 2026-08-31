@@ -6,7 +6,7 @@ import traceback
 from config import (load_config, load_targets, save_targets, save_config_chat_id,
                     DEFAULT_CONFIG_PATH, DEFAULT_TARGETS_PATH, Target, ConfigError)
 from knps import KnpsClient, KnpsError
-from notify import Telegram
+from notify import Telegram, Pushover, Caller
 from watch import diff_targets, compute_state, Slot
 import status_page
 
@@ -42,11 +42,18 @@ class Daemon:
         self.targets = targets
         self.dry_run = dry_run
         self.tg = Telegram(cfg.telegram_token, cfg.telegram_chat_id)
+        self.pushover = Pushover(cfg.pushover_user, cfg.pushover_token)
+        self.caller = Caller(cfg.twilio_sid, cfg.twilio_token,
+                             cfg.twilio_from, cfg.twilio_to)
         self.knps = KnpsClient()
         self.state = {}
         self.done = set()          # 선점 완료된 target key
         self.queue = []            # FIFO: [{"cell","party","target"}, ...] 캡차 대기열
         self.active = None         # 현재 캡차 발송 후 응답 대기 중인 job (dict) 또는 None
+        self.active_sent_at = 0.0  # 현재 캡차를 보낸 시각 (재발송 판단용)
+        self.last_nudge = 0.0      # 마지막 텔레그램 반복 독촉 시각
+        self.last_call = 0.0       # 마지막 전화 시각
+        self.active_receipt = None # 현재 활성 릴레이의 Pushover 긴급 receipt (해결 시 취소)
         self.last_poll = 0.0
         self.last_heartbeat = time.time()
         self.tg_offset = None
@@ -73,7 +80,7 @@ class Daemon:
             self.queue = [j for j in self.queue if j["target"].key() != k]
             if self.active is not None and self.active["target"].key() == k:
                 self.tg.send(f"릴레이 취소: {ev.target.shelter} {_fmt_date(ev.target.date)} 소진.")
-                self.active = None
+                self._clear_active()
                 self._send_next_captcha()
             return
         if ev.kind in ("became_available", "became_waiting") and ev.target.mode == "auto":
@@ -84,12 +91,25 @@ class Daemon:
         if self.active is None:
             self._send_next_captcha()
 
-    def _send_next_captcha(self):
-        if not self.queue:
-            self.active = None
-            return
-        job = self.queue.pop(0)
-        self.active = job
+    def _clear_active(self):
+        """활성 릴레이 종료: Pushover 긴급 반복 취소 + active 해제."""
+        if self.active_receipt:
+            self.pushover.cancel(self.active_receipt)
+            self.active_receipt = None
+        self.active = None
+
+    def _escalate(self, target, qty, kind):
+        """자리 발생 시 큰 알림: Pushover 긴급 푸시(확인까지 반복) + 전화."""
+        title = f"{kind} 자리! {target.shelter} {_fmt_date(target.date)}"
+        body = (f"{target.shelter} {_fmt_date(target.date)} {qty}명 {kind} 가능. "
+                f"텔레그램에서 캡차 숫자를 답장하세요.")
+        self.active_receipt = self.pushover.emergency(title, body)
+        self.caller.call(f"국립공원 대피소 {kind} 자리가 났습니다. 텔레그램을 확인하세요.")
+        self.last_call = time.time()
+
+    def _send_captcha(self, job, escalate):
+        """job에 대한 캡차를 받아 텔레그램으로 보낸다. escalate=True면 긴급 알림도 발동.
+        성공 True / 로그인·캡차 실패 시 active 해제 후 다음 job 진행하고 False."""
         target, cell = job["target"], job["cell"]
         try:
             if not self.knps.is_authenticated():
@@ -98,13 +118,27 @@ class Daemon:
         except KnpsError as e:
             self.tg.send(f"⚠️ 로그인/캡차 실패: {e}")
             self.state[target.key()] = Slot("none", 0)
-            self.active = None
+            self._clear_active()
             self._send_next_captcha()
-            return
+            return False
         qty = min(target.party, cell.rsvt_cnt) if cell.rsvt_cnt else target.party
+        kind = "대기신청" if cell.reser_tp == "W" else "예약"
         self.tg.send_photo(png,
-            f"{target.shelter} {_fmt_date(target.date)} {qty}명 예약. "
+            f"{target.shelter} {_fmt_date(target.date)} {qty}명 {kind}. "
             f"캡차 숫자를 답장하세요. (인원변경: '2 1234', 취소: 'pass')")
+        self.active_sent_at = time.time()
+        self.last_nudge = time.time()
+        if escalate:
+            self._escalate(target, qty, kind)
+        return True
+
+    def _send_next_captcha(self):
+        if not self.queue:
+            self.active = None
+            return
+        job = self.queue.pop(0)
+        self.active = job
+        self._send_captcha(job, escalate=True)
 
     def handle_captcha_reply(self, text):
         if self.active is None:
@@ -114,7 +148,7 @@ class Daemon:
             job = self.active
             self.tg.send(f"릴레이를 취소했습니다: {job['target'].shelter} "
                          f"{_fmt_date(job['target'].date)}.")
-            self.active = None
+            self._clear_active()
             self._send_next_captcha()
             return
         parts = text.split()
@@ -130,7 +164,7 @@ class Daemon:
         if self.dry_run:
             self.tg.send(f"[dry-run] 제출 생략: {job['cell'].fclt_nm} "
                          f"{_fmt_date(job['target'].date)} {party}명 captcha={captcha}")
-            self.active = None
+            self._clear_active()
             self._send_next_captcha()
             return
         try:
@@ -149,30 +183,35 @@ class Daemon:
                              f"https://reservation.knps.or.kr/mypage/dashBoard.do?prdDvcd=S")
             else:
                 self.tg.send(f"✅ {res.message}: {res.prd_nm}")
-            self.active = None
+            self._clear_active()
             self._send_next_captcha()
         else:
             self.tg.send(f"❌ {res.message}. 자리가 남아있으면 다시 캡차를 보냅니다.")
             self._resend_active_captcha()
 
     def _resend_active_captcha(self):
-        """제출 실패/오류 후 현재 active job을 유지한 채 캡차를 다시 보낸다."""
-        job = self.active
-        target, cell = job["target"], job["cell"]
-        try:
-            if not self.knps.is_authenticated():
-                self.knps.login(self.cfg.knps_id, self.cfg.knps_pw)
-            png = self.knps.get_captcha()
-        except KnpsError as e:
-            self.tg.send(f"⚠️ 로그인/캡차 실패: {e}")
-            self.state[target.key()] = Slot("none", 0)
-            self.active = None
-            self._send_next_captcha()
+        """제출 실패/오류 후 현재 active job을 유지한 채 캡차를 다시 보낸다(긴급알림 재발동 없음)."""
+        self._send_captcha(self.active, escalate=False)
+
+    def maybe_relay_upkeep(self):
+        """활성 릴레이가 있으면 캡차를 신선하게 유지하고 반복 알림/전화로 재촉한다."""
+        if self.active is None:
             return
-        qty = min(target.party, cell.rsvt_cnt) if cell.rsvt_cnt else target.party
-        self.tg.send_photo(png,
-            f"{target.shelter} {_fmt_date(target.date)} {qty}명 예약. "
-            f"캡차 숫자를 답장하세요. (인원변경: '2 1234', 취소: 'pass')")
+        now = time.time()
+        if now - self.active_sent_at >= self.cfg.captcha_refresh_sec:
+            # 오래된 캡차는 만료될 수 있으니 새 캡차로 교체(같은 job 유지)
+            self._send_captcha(self.active, escalate=False)
+            return
+        if now - self.last_nudge >= self.cfg.alert_repeat_sec:
+            at = self.active["target"]
+            self.tg.send(f"⏰ 아직 캡차 답장 대기 중: {at.shelter} "
+                         f"{_fmt_date(at.date)} — 숫자를 답장하세요.")
+            self.last_nudge = now
+        if self.caller.enabled and now - self.last_call >= self.cfg.call_repeat_sec:
+            at = self.active["target"]
+            self.caller.call(f"국립공원 대피소 {at.shelter} 자리가 아직 대기 중입니다. "
+                             f"텔레그램을 확인하세요.")
+            self.last_call = now
 
     def handle_command(self, text, chat_id):
         if self.cfg.telegram_chat_id is None:
@@ -228,19 +267,29 @@ class Daemon:
 
     def maybe_heartbeat(self):
         if time.time() - self.last_heartbeat >= HEARTBEAT_SEC:
-            lines = [f"{t.shelter} {_fmt_date(t.date)}" for t in self.active_targets()]
-            self.tg.send("감시 중: " + ", ".join(lines) + " — 변화 없음\n"
+            self.tg.send(f"🔎 감시 중 — 변화 없음\n{self._target_lines()}\n"
                          f"마지막 확인 {_now()}")
             self.last_heartbeat = time.time()
 
+    def _target_lines(self):
+        return "\n".join(f"• {t.shelter} {_fmt_date(t.date)} ({t.party}명)"
+                         for t in self.active_targets())
+
     def run(self):
-        self.tg.send(f"🏔️ 대피소 감시 시작 ({len(self.active_targets())}개 대상)")
+        ch = ["텔레그램"]
+        if self.pushover.enabled:
+            ch.append("Pushover")
+        if self.caller.enabled:
+            ch.append("전화")
+        self.tg.send(f"🏔️ 대피소 감시 시작 ({len(self.active_targets())}개 대상)\n"
+                     f"{self._target_lines()}\n\n알림: {'·'.join(ch)}")
         while True:
             try:
                 if self.active_targets() and time.time() - self.last_poll >= self.cfg.poll_sec:
                     self.poll()
                     self.last_poll = time.time()
                 self.pump_telegram()
+                self.maybe_relay_upkeep()
                 self.maybe_heartbeat()
             except KnpsError as e:
                 self.fail_streak += 1

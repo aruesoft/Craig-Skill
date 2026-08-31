@@ -30,6 +30,17 @@ class Config:
     telegram_token: str
     telegram_chat_id: str | None
     poll_sec: int
+    # 긴급 알림 채널 (선택 — 키 없으면 비활성)
+    pushover_user: str | None = None
+    pushover_token: str | None = None
+    twilio_sid: str | None = None
+    twilio_token: str | None = None
+    twilio_from: str | None = None
+    twilio_to: str | None = None
+    # 릴레이 에스컬레이션 타이밍(초)
+    alert_repeat_sec: int = 45       # 텔레그램 반복 독촉 간격
+    captcha_refresh_sec: int = 120   # 활성 릴레이 캡차 재발송 간격
+    call_repeat_sec: int = 300       # 전화 재시도 간격
 
 
 def load_config(path: str = DEFAULT_CONFIG_PATH) -> Config:
@@ -46,6 +57,15 @@ def load_config(path: str = DEFAULT_CONFIG_PATH) -> Config:
         telegram_token=d["telegram_token"],
         telegram_chat_id=(str(d["telegram_chat_id"]) if d.get("telegram_chat_id") else None),
         poll_sec=int(d.get("poll_sec", 180)),
+        pushover_user=d.get("pushover_user") or None,
+        pushover_token=d.get("pushover_token") or None,
+        twilio_sid=d.get("twilio_sid") or None,
+        twilio_token=d.get("twilio_token") or None,
+        twilio_from=d.get("twilio_from") or None,
+        twilio_to=d.get("twilio_to") or None,
+        alert_repeat_sec=int(d.get("alert_repeat_sec", 45)),
+        captcha_refresh_sec=int(d.get("captcha_refresh_sec", 120)),
+        call_repeat_sec=int(d.get("call_repeat_sec", 300)),
     )
 
 
