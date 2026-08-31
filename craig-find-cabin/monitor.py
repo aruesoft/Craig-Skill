@@ -97,6 +97,7 @@ class Daemon:
             png = self.knps.get_captcha()
         except KnpsError as e:
             self.tg.send(f"⚠️ 로그인/캡차 실패: {e}")
+            self.state[target.key()] = Slot("none", 0)
             self.active = None
             self._send_next_captcha()
             return
@@ -164,6 +165,7 @@ class Daemon:
             png = self.knps.get_captcha()
         except KnpsError as e:
             self.tg.send(f"⚠️ 로그인/캡차 실패: {e}")
+            self.state[target.key()] = Slot("none", 0)
             self.active = None
             self._send_next_captcha()
             return
@@ -197,6 +199,8 @@ class Daemon:
                                    for t in self.targets) or "없음")
         elif cmd == "/add" and len(rest) >= 2:
             shelter, date = rest[0], rest[1]
+            if not shelter.endswith("대피소"):
+                shelter = shelter + "대피소"
             party = int(rest[2]) if len(rest) > 2 and rest[2].isdigit() else 5
             self.targets.append(Target("설악산", "B03", shelter, date, party, "auto"))
             save_targets(DEFAULT_TARGETS_PATH, self.targets)

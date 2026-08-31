@@ -99,14 +99,20 @@ class KnpsClient:
         return parse_calendar(r.text)
 
     def login(self, mmb_id: str, passwd: str) -> None:
-        r = self.s.get(f"{BASE}/mmb/mmbLogin.do", timeout=20)
+        try:
+            r = self.s.get(f"{BASE}/mmb/mmbLogin.do", timeout=20)
+        except requests.RequestException as e:
+            raise KnpsError(f"login request failed: {e}") from e
         m = _LOGIN_FORM_RE.search(r.text)
         hidden = dict(_HIDDEN_RE.findall(m.group(0))) if m else {"loginType": "Member"}
         hidden.pop("mmbId", None)
         hidden.pop("passWd", None)
         data = {**hidden, "mmbId": mmb_id, "passWd": passwd}
-        r2 = self.s.post(f"{BASE}/mmb/mmbLoginProc.do", data=data,
-                         allow_redirects=False, timeout=20)
+        try:
+            r2 = self.s.post(f"{BASE}/mmb/mmbLoginProc.do", data=data,
+                             allow_redirects=False, timeout=20)
+        except requests.RequestException as e:
+            raise KnpsError(f"login request failed: {e}") from e
         if r2.status_code not in (301, 302) or not self.is_authenticated():
             raise KnpsError(f"login failed: HTTP {r2.status_code}")
 
@@ -118,7 +124,10 @@ class KnpsClient:
             return False
 
     def get_captcha(self) -> bytes:
-        r = self.s.get(f"{BASE}/reserCaptcha.do?dummy={int(time.time()*1000)}", timeout=20)
+        try:
+            r = self.s.get(f"{BASE}/reserCaptcha.do?dummy={int(time.time()*1000)}", timeout=20)
+        except requests.RequestException as e:
+            raise KnpsError(f"captcha request failed: {e}") from e
         if r.status_code != 200 or not r.content:
             raise KnpsError(f"captcha fetch failed: HTTP {r.status_code}")
         return r.content
