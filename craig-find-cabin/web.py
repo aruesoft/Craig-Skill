@@ -7,11 +7,15 @@
 import os
 import json
 import html
+import base64
 import argparse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, quote, urlparse
 
 from config import load_targets, save_targets, Target
+
+# 편집(추가/삭제) 암호. main()에서 config로 채운다. None이면 편집 무인증.
+EDIT_PASSWORD = None
 
 STATUS_JSON = os.path.join(os.path.dirname(__file__), "status", "status.json")
 # 설악산(B03) 대피소 — 현재 감시 범위
@@ -121,7 +125,28 @@ class Handler(BaseHTTPRequestHandler):
         n = int(self.headers.get("Content-Length", 0))
         return parse_qs(self.rfile.read(n).decode("utf-8"))
 
+    def _authorized(self):
+        if not EDIT_PASSWORD:
+            return True
+        h = self.headers.get("Authorization", "")
+        if h.startswith("Basic "):
+            try:
+                _, _, pw = base64.b64decode(h[6:]).decode("utf-8").partition(":")
+                return pw == EDIT_PASSWORD
+            except (ValueError, UnicodeDecodeError):
+                return False
+        return False
+
+    def _require_auth(self):
+        self.send_response(401)
+        self.send_header("WWW-Authenticate", 'Basic realm="cabin edit"')
+        self.send_header("Content-Length", "0")
+        self.end_headers()
+
     def do_POST(self):
+        if not self._authorized():
+            self._require_auth()
+            return
         f = self._form()
         if self.path == "/add":
             shelter = (f.get("shelter", [""])[0]).strip()
@@ -156,11 +181,17 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def main():
+    global EDIT_PASSWORD
     ap = argparse.ArgumentParser()
     ap.add_argument("--port", type=int, default=8790)
     ap.add_argument("--host", default="0.0.0.0")
     a = ap.parse_args()
-    print(f"find-cabin web on {a.host}:{a.port}")
+    try:
+        from config import load_config
+        EDIT_PASSWORD = load_config().web_edit_password
+    except Exception as e:
+        print(f"config load skipped ({e}); edit auth disabled")
+    print(f"find-cabin web on {a.host}:{a.port} (edit auth: {'ON' if EDIT_PASSWORD else 'OFF'})")
     ThreadingHTTPServer((a.host, a.port), Handler).serve_forever()
 
 

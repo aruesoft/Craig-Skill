@@ -50,6 +50,8 @@ class Config:
     alert_repeat_sec: int = 45       # 텔레그램 반복 독촉 간격
     captcha_refresh_sec: int = 120   # 활성 릴레이 캡차 재발송 간격
     call_repeat_sec: int = 300       # 전화 재시도 간격
+    # 상태페이지 편집(추가/삭제) 암호 — 공개 도메인 노출 시 필수. 없으면 편집 무인증(Tailscale 전용).
+    web_edit_password: str | None = None
 
 
 def load_config(path: str = DEFAULT_CONFIG_PATH) -> Config:
@@ -75,6 +77,7 @@ def load_config(path: str = DEFAULT_CONFIG_PATH) -> Config:
         alert_repeat_sec=int(d.get("alert_repeat_sec", 45)),
         captcha_refresh_sec=int(d.get("captcha_refresh_sec", 120)),
         call_repeat_sec=int(d.get("call_repeat_sec", 300)),
+        web_edit_password=d.get("web_edit_password") or None,
     )
 
 
