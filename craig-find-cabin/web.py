@@ -9,7 +9,7 @@ import json
 import html
 import argparse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import parse_qs
+from urllib.parse import parse_qs, quote, urlparse
 
 from config import load_targets, save_targets, Target
 
@@ -97,7 +97,8 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(data)
 
     def _redirect(self, msg=""):
-        loc = "/?msg=" + msg if msg else "/"
+        # Location 헤더는 latin-1만 가능 → 한글 msg는 percent-encode
+        loc = "/?msg=" + quote(msg) if msg else "/"
         self.send_response(303)
         self.send_header("Location", loc)
         self.end_headers()
@@ -111,8 +112,7 @@ class Handler(BaseHTTPRequestHandler):
                 self._send(404, "{}", "application/json")
             return
         if self.path == "/" or self.path.startswith("/?"):
-            from urllib.parse import urlparse, parse_qs as pq
-            msg = pq(urlparse(self.path).query).get("msg", [""])[0]
+            msg = parse_qs(urlparse(self.path).query).get("msg", [""])[0]
             self._send(200, render_page(msg))
             return
         self._send(404, "not found")
