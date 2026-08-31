@@ -1,6 +1,8 @@
 {
   "poll_sec": 180,
   "targets": [
+    {"park": "설악산", "dept": "B03", "shelter": "소청대피소", "date": "20261007", "party": 5, "mode": "auto"},
+    {"park": "설악산", "dept": "B03", "shelter": "양폭대피소", "date": "20261008", "party": 5, "mode": "auto"},
     {"park": "설악산", "dept": "B03", "shelter": "소청대피소", "date": "20261015", "party": 5, "mode": "auto"},
     {"park": "설악산", "dept": "B03", "shelter": "양폭대피소", "date": "20261016", "party": 5, "mode": "auto"}
   ]
