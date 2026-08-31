@@ -6,6 +6,7 @@
 
 - 국립공원 예약시스템(reservation.knps.or.kr)에서 **설악산 소청대피소 2026-10-15, 양폭대피소 2026-10-16**의 취소표(예약가능/대기가능 전환)를 3분 주기로 감시한다.
 - 상태 변화 시 즉시 텔레그램 알림. 예약가능/대기가능이 뜨면 **캡차 릴레이**로 수 초~수 분 내 선점한다.
+- 알림 채널은 **텔레그램 단독**(카카오톡은 미채택 — 서버에 카카오 앱 없음, "나에게 보내기" API는 양방향 캡차 릴레이 불가라 제외).
 - 감시 대상(대피소·날짜·인원)은 설정 파일로 추가/변경 가능하다.
 - 2시간마다 하트비트 보고, 상태 페이지(5분 내 갱신) 제공.
 - 운영은 맥북 에어 서버 launchd 상시가동(기존 봇 3종과 동일 컨벤션).
@@ -82,7 +83,7 @@ craig-find-cabin/
 ├── SPEC.md              # 이 문서
 ├── knps.py              # KNPS 클라이언트 (조회·파싱·로그인·예약제출) — 부수효과 없는 라이브러리
 ├── monitor.py           # 데몬 진입점: 폴링 루프 + 텔레그램 long-poll + 캡차 릴레이 상태머신
-├── notify.py            # 알림 추상화 (telegram 필수, kakao 선택)
+├── notify.py            # 알림 발송 (telegram)
 ├── status_page.py       # status.json + index.html 생성
 ├── targets.json         # 감시 대상 (git 추적, 비밀값 없음)
 ├── status/              # 생성물 (git 무시)
@@ -91,7 +92,7 @@ craig-find-cabin/
 └── logs/                # git 무시
 ```
 
-- 비밀값은 `~/.config/craig-find-cabin/config.json` (chmod 600, git 밖): `knps_id`, `knps_pw`, `telegram_token`, `telegram_chat_id`, `kakao_enabled`.
+- 비밀값은 `~/.config/craig-find-cabin/config.json` (chmod 600, git 밖): `knps_id`, `knps_pw`, `telegram_token`, `telegram_chat_id`.
 - `targets.json` 예:
 
 ```json
@@ -139,7 +140,7 @@ craig-find-cabin/
 
 - 상태 변화: 즉시.
 - 하트비트: 2시간마다 "10/15 소청, 10/16 양폭 감시 중 — 변화 없음 (마지막 확인 HH:MM)".
-- 채널: 텔레그램 기본. 서버에서 kakaocli 동작 확인되면 카카오 "나에게 보내기"를 하트비트·알림에 병행(캡차 릴레이는 텔레그램 전용).
+- 채널: 텔레그램 단독.
 
 ### 4-5. 상태 페이지
 
@@ -174,4 +175,4 @@ craig-find-cabin/
 
 ## 8. v2 후보 (이번 범위 아님)
 
-- 외부 도메인 상태 페이지(cabin.craigpark.kr), 다공원 감시, 잔여수 추이 그래프, 카카오 양방향.
+- 외부 도메인 상태 페이지(cabin.craigpark.kr), 다공원 감시, 잔여수 추이 그래프.
