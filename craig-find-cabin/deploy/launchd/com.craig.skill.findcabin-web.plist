@@ -5,17 +5,15 @@
     <key>Label</key>
     <string>com.craig.skill.findcabin-web</string>
 
-    <!-- 대피소 감시 상태 페이지 정적 서빙: status/index.html (5분 자동새로고침). Tailscale로 접근. -->
+    <!-- 대피소 감시 상태 페이지 + 감시대상 편집 웹앱 (web.py, :8790). 5분 자동새로고침. -->
     <key>ProgramArguments</key>
     <array>
         <string>/Users/craigpark/anaconda3/bin/python3</string>
-        <string>-m</string>
-        <string>http.server</string>
+        <string>/Users/craigpark/Github/Craig-Skill/craig-find-cabin/web.py</string>
+        <string>--port</string>
         <string>8790</string>
-        <string>--bind</string>
+        <string>--host</string>
         <string>0.0.0.0</string>
-        <string>--directory</string>
-        <string>/Users/craigpark/Github/Craig-Skill/craig-find-cabin/status</string>
     </array>
 
     <key>WorkingDirectory</key>

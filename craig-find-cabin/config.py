@@ -3,7 +3,16 @@ import os
 from dataclasses import dataclass, asdict
 
 DEFAULT_CONFIG_PATH = os.path.expanduser("~/.config/craig-find-cabin/config.json")
-DEFAULT_TARGETS_PATH = os.path.join(os.path.dirname(__file__), "targets.json")
+# 런타임 감시대상: 저장소 밖(편집돼도 git pull 충돌 없음). 없으면 저장소 seed로 부트스트랩.
+DEFAULT_TARGETS_PATH = os.path.expanduser("~/.config/craig-find-cabin/targets.json")
+SEED_TARGETS_PATH = os.path.join(os.path.dirname(__file__), "targets.json")
+
+
+def _targets_source(path):
+    """런타임 파일이 있으면 그것을, 없으면 저장소 seed를 읽을 경로."""
+    if path == DEFAULT_TARGETS_PATH and not os.path.exists(path):
+        return SEED_TARGETS_PATH
+    return path
 
 
 class ConfigError(Exception):
@@ -80,19 +89,30 @@ def save_config_chat_id(path: str, chat_id: str) -> None:
 
 
 def load_targets(path: str = DEFAULT_TARGETS_PATH) -> list[Target]:
-    with open(path, encoding="utf-8") as f:
+    with open(_targets_source(path), encoding="utf-8") as f:
         d = json.load(f)
     return [Target(t["park"], t["dept"], t["shelter"], t["date"],
                    int(t["party"]), t.get("mode", "auto")) for t in d["targets"]]
 
 
 def load_poll_sec(path: str = DEFAULT_TARGETS_PATH) -> int:
-    with open(path, encoding="utf-8") as f:
+    with open(_targets_source(path), encoding="utf-8") as f:
         return int(json.load(f).get("poll_sec", 180))
 
 
-def save_targets(path: str, targets: list[Target]) -> None:
-    poll = load_poll_sec(path) if os.path.exists(path) else 180
-    obj = {"poll_sec": poll, "targets": [asdict(t) for t in targets]}
+def targets_mtime(path: str = DEFAULT_TARGETS_PATH) -> float:
+    """유효 대상 파일(런타임 or seed)의 수정시각 — 데몬이 변경 감지에 사용."""
+    try:
+        return os.path.getmtime(_targets_source(path))
+    except OSError:
+        return 0.0
+
+
+def save_targets(path: str = DEFAULT_TARGETS_PATH, targets=None) -> None:
+    poll = load_poll_sec(path) if os.path.exists(_targets_source(path)) else 180
+    obj = {"poll_sec": poll, "targets": [asdict(t) for t in (targets or [])]}
+    d = os.path.dirname(path)
+    if d:
+        os.makedirs(d, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(obj, f, ensure_ascii=False, indent=2)

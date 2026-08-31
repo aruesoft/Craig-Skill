@@ -4,7 +4,8 @@ import time
 import traceback
 
 from config import (load_config, load_targets, save_targets, save_config_chat_id,
-                    DEFAULT_CONFIG_PATH, DEFAULT_TARGETS_PATH, Target, ConfigError)
+                    targets_mtime, DEFAULT_CONFIG_PATH, DEFAULT_TARGETS_PATH,
+                    Target, ConfigError)
 from knps import KnpsClient, KnpsError
 from notify import Telegram, Pushover, Caller
 from watch import diff_targets, compute_state, Slot
@@ -58,6 +59,7 @@ class Daemon:
         self.last_heartbeat = time.time()
         self.tg_offset = None
         self.fail_streak = 0
+        self.targets_sig = targets_mtime()  # 대상 파일 변경 감지(웹/텔레그램 편집)
 
     def active_targets(self):
         return [t for t in self.targets if t.key() not in self.done]
@@ -265,6 +267,32 @@ class Daemon:
             else:
                 self.handle_captcha_reply(text)
 
+    def maybe_reload_targets(self):
+        """대상 파일이 외부(웹/텔레그램)에서 바뀌면 self.targets를 다시 읽는다."""
+        sig = targets_mtime()
+        if sig == self.targets_sig:
+            return
+        self.targets_sig = sig
+        try:
+            new = load_targets()
+        except (OSError, ValueError):
+            return
+        old_keys = {t.key() for t in self.targets}
+        new_keys = {t.key() for t in new}
+        self.targets = new
+        removed = old_keys - new_keys
+        for k in removed:
+            self.state.pop(k, None)
+            self.done.discard(k)
+        self.queue = [j for j in self.queue if j["target"].key() not in removed]
+        if self.active is not None and self.active["target"].key() in removed:
+            self._clear_active()
+            self._send_next_captcha()
+        added = new_keys - old_keys
+        if added or removed:
+            self.tg.send(f"🛠️ 감시 대상 갱신 ({len(self.active_targets())}개)\n"
+                         f"{self._target_lines()}")
+
     def maybe_heartbeat(self):
         if time.time() - self.last_heartbeat >= HEARTBEAT_SEC:
             self.tg.send(f"🔎 감시 중 — 변화 없음\n{self._target_lines()}\n"
@@ -289,6 +317,7 @@ class Daemon:
                     self.poll()
                     self.last_poll = time.time()
                 self.pump_telegram()
+                self.maybe_reload_targets()
                 self.maybe_relay_upkeep()
                 self.maybe_heartbeat()
             except KnpsError as e:
