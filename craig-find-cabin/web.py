@@ -25,6 +25,15 @@ PARK, DEPT = "설악산", "B03"
 _LABEL = {"available": ("예약가능", "#1a7f37"), "waiting": ("대기가능", "#9a6700"),
           "soldout": ("매진", "#767676")}
 
+# 하단 배너 — 국립공원 대피소 예약 바로가기 (전 공원 공통 페이지, 산은 그 페이지 탭에서 선택)
+KNPS_SHELTER_URL = "https://reservation.knps.or.kr/reservation/shelter/searchSimpleShelterReservation.do"
+PARK_SHELTERS = [
+    ("설악산", ["소청", "양폭", "수렴동", "희운각"]),
+    ("지리산", ["노고단", "세석", "장터목", "벽소령", "연하천", "치밭목", "로타리"]),
+    ("덕유산", ["삿갓재"]),
+    ("소백산", ["연화봉"]),
+]
+
 
 def _statuses():
     try:
@@ -38,6 +47,15 @@ def _statuses():
 
 def _valid_date(s):
     return len(s) == 8 and s.isdigit()
+
+
+def _park_banners():
+    cards = ""
+    for park, shelters in PARK_SHELTERS:
+        chips = "".join(f"<span>{s}</span>" for s in shelters)
+        cards += (f'<a class="park" href="{KNPS_SHELTER_URL}" target="_blank" rel="noopener">'
+                  f'<div class="nm">⛰️ {park}</div><div class="sh">{chips}</div></a>')
+    return cards
 
 
 def render_page(msg=""):
@@ -74,6 +92,16 @@ select,input,button{{padding:.5rem;font-size:.95rem;border:1px solid #ccc;border
 button{{cursor:pointer;background:#1a7f37;color:#fff;border:none}}
 button.del{{background:#c0392b;padding:.35rem .7rem;font-size:.85rem}}
 .msg{{background:#eef7ee;border:1px solid #cbe6cb;padding:.6rem;border-radius:6px}}
+.parks{{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.6rem;margin:.8rem 0}}
+a.park{{display:block;padding:.8rem .9rem;border:1px solid #dbe7db;border-radius:10px;
+  background:linear-gradient(135deg,#f4faf4,#eaf4ea);text-decoration:none;color:#222;
+  transition:box-shadow .15s,transform .15s}}
+a.park:hover{{box-shadow:0 3px 10px rgba(26,127,55,.18);transform:translateY(-2px)}}
+a.park .nm{{font-weight:700;color:#1a5c30;display:flex;align-items:center;gap:.3rem}}
+a.park .nm::after{{content:"↗";margin-left:auto;font-weight:400;color:#7aa88a;font-size:.85em}}
+a.park .sh{{display:flex;flex-wrap:wrap;gap:.25rem;margin-top:.5rem}}
+a.park .sh span{{background:#fff;border:1px solid #e0e9e0;border-radius:999px;
+  padding:.1rem .5rem;font-size:.75rem;color:#556b57}}
 </style></head><body>
 <h1>⛰️ 설악원정대 대피소 취소표 감시 프로그램</h1>
 <p class="meta">마지막 확인: {updated} · 5분마다 자동 새로고침 · 예약가능/대기가능이 뜨면 텔레그램·전화·Pushover로 알림</p>
@@ -88,6 +116,9 @@ button.del{{background:#c0392b;padding:.35rem .7rem;font-size:.85rem}}
   <button type="submit">추가</button>
 </form>
 <p class="meta">※ 설악산 대피소만 지원. 추가하면 데몬이 자동으로 감시에 포함합니다(수 분 내).</p>
+<h2 style="font-size:1.1rem;margin-top:2rem">🔗 국립공원 대피소 예약 바로가기</h2>
+<div class="parks">{_park_banners()}</div>
+<p class="meta">국립공원공단 예약 페이지로 이동합니다. 산 선택은 이동한 페이지의 탭에서 하세요.</p>
 </body></html>"""
 
 
