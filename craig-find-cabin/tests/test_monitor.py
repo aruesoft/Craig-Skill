@@ -84,13 +84,29 @@ def test_captcha_error_does_not_wedge():
     assert d.state[t.key()] == Slot("none", 0)  # 다음 폴링 재감지되도록 리셋
 
 
-def test_reply_success_clears_active_and_marks_done():
+def test_reply_full_booking_marks_done():
+    """요청 인원 전부 선점되면 done 처리(더 감시 안 함)."""
     d = _daemon(FakeKnps(submit=OK))
     t = Target("설악산", "B03", "양폭대피소", "20261026", 5, "auto")
-    d.start_relay(t, _cell("양폭대피소", "20261026"))
+    d.start_relay(t, _cell("양폭대피소", "20261026", rsvt=5))  # 5석 열림, 5명 요청 → 전량
     d.handle_captcha_reply("1234")
     assert d.active is None
     assert t.key() in d.done
+
+
+def test_partial_booking_keeps_monitoring(monkeypatch):
+    """일부만 선점되면 done이 아니라 남은 인원만큼 party를 줄이고 계속 감시한다."""
+    monkeypatch.setattr("monitor.save_targets", lambda *a, **k: None)
+    monkeypatch.setattr("monitor.targets_mtime", lambda *a, **k: 0.0)
+    d = _daemon(FakeKnps(submit=OK))
+    t = Target("설악산", "B03", "소청대피소", "20261015", 5, "auto")
+    d.targets = [t]
+    d.start_relay(t, _cell("소청대피소", "20261015", rsvt=1))  # 1석만 열림
+    d.handle_captcha_reply("1")                                # 1자리 선점
+    assert d.active is None
+    assert t.key() not in d.done          # 계속 감시
+    assert t.party == 4                    # 5 → 4
+    assert t.key() not in d.state          # 잔여분 재감지되도록 상태 초기화
 
 
 def test_pass_cancels_active():
@@ -116,7 +132,7 @@ def test_concurrent_relays_are_serialized():
     d = _daemon(FakeKnps(submit=OK))
     t1 = Target("설악산", "B03", "소청대피소", "20261015", 5, "auto")
     t2 = Target("설악산", "B03", "양폭대피소", "20261016", 5, "auto")
-    d.start_relay(t1, _cell("소청대피소", "20261015"))
+    d.start_relay(t1, _cell("소청대피소", "20261015", rsvt=5))  # 5석 → 5명 전량 선점
     d.start_relay(t2, _cell("양폭대피소", "20261016"))
     assert d.active["target"].key() == t1.key()   # 첫 번째만 active
     assert len(d.queue) == 1                       # 두 번째는 대기열

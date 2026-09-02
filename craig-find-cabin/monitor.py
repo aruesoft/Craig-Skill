@@ -176,15 +176,27 @@ class Daemon:
             self._resend_active_captcha()
             return
         if res.success:
-            self.done.add(job["target"].key())
+            tgt, cell = job["target"], job["cell"]
+            booked = min(party, cell.rsvt_cnt) if cell.rsvt_cnt else party
+            remaining = max(0, tgt.party - booked)
+            if remaining > 0:
+                # 일부만 선점 — 나머지 인원만큼 계속 감시(취소표는 한 자리씩 떨어짐)
+                tgt.party = remaining
+                self.state.pop(tgt.key(), None)   # 잔여분 다시 감지하도록 상태 초기화
+                save_targets(DEFAULT_TARGETS_PATH, self.targets)
+                self.targets_sig = targets_mtime()  # 방금 쓴 변경으로 재리로드되지 않게
+                keep = f"\n남은 {remaining}자리 계속 감시합니다."
+            else:
+                self.done.add(tgt.key())
+                keep = ""
             if res.payment_deadline:
                 dl = res.payment_deadline
                 pretty = f"{dl[:4]}-{dl[4:6]}-{dl[6:8]} {dl[8:10]}:{dl[10:12]}"
-                self.tg.send(f"✅ 선점 완료! {res.prd_nm}\n결제 만기: {pretty}\n"
+                self.tg.send(f"✅ 선점 완료! {res.prd_nm} ({booked}명)\n결제 만기: {pretty}\n"
                              f"미결제 시 자동취소 — 지금 결제하세요:\n"
-                             f"https://reservation.knps.or.kr/mypage/dashBoard.do?prdDvcd=S")
+                             f"https://reservation.knps.or.kr/mypage/dashBoard.do?prdDvcd=S{keep}")
             else:
-                self.tg.send(f"✅ {res.message}: {res.prd_nm}")
+                self.tg.send(f"✅ {res.message}: {res.prd_nm} ({booked}명){keep}")
             self._clear_active()
             self._send_next_captcha()
         else:
