@@ -123,16 +123,40 @@ class Daemon:
             self._clear_active()
             self._send_next_captcha()
             return False
-        qty = min(target.party, cell.rsvt_cnt) if cell.rsvt_cnt else target.party
+        # 같은 날 기존 예약(이 아이디)은 사이트가 추가 예약을 거절하므로, 취소 후 합산 재예약 계획을 세운다
+        try:
+            job["existing"] = self.knps.my_reservations(target.date)
+        except KnpsError as e:
+            job["existing"] = []
+            self.tg.send(f"⚠️ 마이페이지 조회 실패({e}) — 기존 예약 확인 없이 진행합니다.")
+        qty, held = self._plan_qty(job)
         kind = "대기신청" if cell.reser_tp == "W" else "예약"
+        plan = ""
+        if job["existing"]:
+            desc = ", ".join(f"{r.shelter} {r.qty or '?'}명({'대기' if r.kind == 'W' else '예약'})"
+                             for r in job["existing"])
+            plan = f"\n기존 {desc} 취소 후 {qty}명으로 재예약합니다."
+        elif job.get("freed"):
+            plan = f"\n(기존 예약은 이미 취소됨 — 풀린 {job['freed']}자리 포함 {qty}명 재예약)"
         self.tg.send_photo(png,
-            f"{target.shelter} {_fmt_date(target.date)} {qty}명 {kind}. "
-            f"캡차 숫자를 답장하세요. (인원변경: '2 1234', 취소: 'pass')")
+            f"{target.shelter} {_fmt_date(target.date)} 잔여 {cell.rsvt_cnt} → {qty}명 {kind}.{plan}\n"
+            f"캡차 숫자를 답장하세요. (건너뛰기: pass)")
         self.active_sent_at = time.time()
         self.last_nudge = time.time()
         if escalate:
             self._escalate(target, qty, kind)
         return True
+
+    def _plan_qty(self, job, want=None):
+        """제출 인원 계산. 같은 대피소·같은 종류(예약/대기)의 기존 예약은 취소 시 자리가 풀리므로 합산.
+        반환 (제출 인원, 합산된 기존 인원)."""
+        target, cell = job["target"], job["cell"]
+        want = want or target.party
+        held = sum((r.qty or 0) for r in job.get("existing", [])
+                   if r.shelter == target.shelter and r.kind == cell.reser_tp)
+        freed = held + job.get("freed", 0)
+        avail = (cell.rsvt_cnt + freed) if cell.rsvt_cnt else want
+        return max(1, min(want, avail)), held
 
     def _send_next_captcha(self):
         if not self.queue:
@@ -162,30 +186,46 @@ class Daemon:
         else:
             return  # 캡차 형식 아님 — 명령으로 처리
         job = self.active
-        party = qty_override or job["party"]
+        tgt, cell = job["target"], job["cell"]
+        qty, held = self._plan_qty(job, qty_override)
         if self.dry_run:
-            self.tg.send(f"[dry-run] 제출 생략: {job['cell'].fclt_nm} "
-                         f"{_fmt_date(job['target'].date)} {party}명 captcha={captcha}")
+            self.tg.send(f"[dry-run] 제출 생략: {cell.fclt_nm} {_fmt_date(tgt.date)} "
+                         f"{qty}명 captcha={captcha} (기존취소 {len(job.get('existing', []))}건)")
             self._clear_active()
             self._send_next_captcha()
             return
+        # 1단계: 같은 날 기존 예약 취소 (취소 실패 시 제출해도 거절되므로 중단·재시도)
+        for res in list(job.get("existing", [])):
+            try:
+                self.knps.cancel_reservation(res)
+            except KnpsError as e:
+                print(f"[{_now()}] cancel FAIL {res.rsvt_id}: {e}")
+                self.tg.send(f"⚠️ 기존 예약 취소 실패({res.shelter} {res.qty}명): {e}\n"
+                             f"제출을 보류합니다. 마이페이지에서 직접 취소 후 새 캡차에 답장하세요.")
+                self._resend_active_captcha()
+                return
+            print(f"[{_now()}] cancelled {res.rsvt_id} {res.shelter} {res.use_dt} {res.qty}명")
+            job["existing"].remove(res)
+            if res.shelter == tgt.shelter and res.kind == cell.reser_tp:
+                job["freed"] = job.get("freed", 0) + (res.qty or 0)
+        # 2단계: 합산 인원으로 제출
         try:
-            res = self.knps.submit_reservation(job["cell"], party, captcha)
+            res = self.knps.submit_reservation(cell, qty, captcha)
         except KnpsError as e:
+            print(f"[{_now()}] submit ERROR {cell.fclt_nm} {tgt.date} qty={qty}: {e}")
             self.tg.send(f"⚠️ 제출 오류: {e}. 자리가 남아있으면 다시 캡차를 보냅니다.")
             self._resend_active_captcha()
             return
+        print(f"[{_now()}] submit {cell.fclt_nm} {tgt.date} qty={qty} -> "
+              f"{'OK' if res.success else 'FAIL'} {res.message}")
         if res.success:
-            tgt, cell = job["target"], job["cell"]
-            booked = min(party, cell.rsvt_cnt) if cell.rsvt_cnt else party
+            booked = qty
             remaining = max(0, tgt.party - booked)
             if remaining > 0:
-                # 일부만 선점 — 나머지 인원만큼 계속 감시(취소표는 한 자리씩 떨어짐)
-                tgt.party = remaining
+                # 일부만 확보 — 계속 감시. 다음 자리가 나면 이 예약을 취소하고 합산 재예약한다.
                 self.state.pop(tgt.key(), None)   # 잔여분 다시 감지하도록 상태 초기화
-                save_targets(DEFAULT_TARGETS_PATH, self.targets)
-                self.targets_sig = targets_mtime()  # 방금 쓴 변경으로 재리로드되지 않게
-                keep = f"\n남은 {remaining}자리 계속 감시합니다."
+                keep = (f"\n현재 {booked}/{tgt.party}명 확보. 남은 {remaining}자리 계속 감시합니다"
+                        f"(자리 나면 이 예약을 취소하고 {booked}+α명으로 재예약).")
             else:
                 self.done.add(tgt.key())
                 keep = ""
@@ -200,7 +240,9 @@ class Daemon:
             self._clear_active()
             self._send_next_captcha()
         else:
-            self.tg.send(f"❌ {res.message}. 자리가 남아있으면 다시 캡차를 보냅니다.")
+            warn = ("\n⚠️ 기존 예약은 이미 취소된 상태입니다 — 바로 새 캡차에 답장하세요."
+                    if job.get("freed") else "")
+            self.tg.send(f"❌ {res.message}. 자리가 남아있으면 다시 캡차를 보냅니다.{warn}")
             self._resend_active_captcha()
 
     def _resend_active_captcha(self):

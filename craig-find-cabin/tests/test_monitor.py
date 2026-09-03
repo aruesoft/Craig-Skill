@@ -1,7 +1,7 @@
 """릴레이 상태머신 회귀 테스트 — 직렬화·웨지 방지 불변식을 고정한다.
 가짜 KnpsClient/Telegram을 주입해 네트워크 없이 상태 전이만 검증."""
 from config import Config, Target
-from knps import Cell, KnpsError, ReservationResult
+from knps import Cell, KnpsError, ReservationResult, Reservation
 from watch import Event, Slot
 from monitor import Daemon
 
@@ -17,11 +17,24 @@ def _cell(fclt, dt, tp="W", rsvt=1):
 
 
 class FakeKnps:
-    def __init__(self, captcha_error=False, submit=None):
+    def __init__(self, captcha_error=False, submit=None, reservations=None, cancel_error=False):
         self.captcha_error = captcha_error
         self.submit = submit
         self.captcha_calls = 0
         self.submit_calls = 0
+        self.submit_args = []          # (fclt, qty, captcha)
+        self.reservations = list(reservations or [])   # 마이페이지 활성 예약
+        self.cancel_error = cancel_error
+        self.cancelled = []
+
+    def my_reservations(self, use_dt=None):
+        return [r for r in self.reservations if use_dt is None or r.use_dt == use_dt]
+
+    def cancel_reservation(self, res):
+        if self.cancel_error:
+            raise KnpsError("cancel not applied")
+        self.cancelled.append(res.rsvt_id)
+        self.reservations = [r for r in self.reservations if r.rsvt_id != res.rsvt_id]
 
     def is_authenticated(self):
         return True
@@ -35,8 +48,9 @@ class FakeKnps:
             raise KnpsError("network")
         return b"PNGBYTES"
 
-    def submit_reservation(self, cell, party, captcha):
+    def submit_reservation(self, cell, qty, captcha):
         self.submit_calls += 1
+        self.submit_args.append((cell.fclt_nm, qty, captcha))
         return self.submit
 
 
@@ -94,10 +108,8 @@ def test_reply_full_booking_marks_done():
     assert t.key() in d.done
 
 
-def test_partial_booking_keeps_monitoring(monkeypatch):
-    """일부만 선점되면 done이 아니라 남은 인원만큼 party를 줄이고 계속 감시한다."""
-    monkeypatch.setattr("monitor.save_targets", lambda *a, **k: None)
-    monkeypatch.setattr("monitor.targets_mtime", lambda *a, **k: 0.0)
+def test_partial_booking_keeps_monitoring():
+    """일부만 선점되면 done이 아니라 party(총 희망 인원)는 그대로 두고 계속 감시한다."""
     d = _daemon(FakeKnps(submit=OK))
     t = Target("설악산", "B03", "소청대피소", "20261015", 5, "auto")
     d.targets = [t]
@@ -105,8 +117,69 @@ def test_partial_booking_keeps_monitoring(monkeypatch):
     d.handle_captcha_reply("1")                                # 1자리 선점
     assert d.active is None
     assert t.key() not in d.done          # 계속 감시
-    assert t.party == 4                    # 5 → 4
+    assert t.party == 5                    # 총 희망 인원 유지(다음엔 취소 후 n+1 재예약)
     assert t.key() not in d.state          # 잔여분 재감지되도록 상태 초기화
+    assert d.knps.submit_args == [("소청대피소", 1, "1")]
+
+
+def _held(shelter, dt, qty, kind="R"):
+    return Reservation("SB0310020100220260902106743", shelter, dt, "예약(미결제)", kind, qty)
+
+
+def test_existing_reservation_cancelled_then_rebooked_merged():
+    """같은 날 같은 대피소에 이미 1명 예약이 있고 1자리가 더 나면: 기존 취소 → 2명으로 재예약."""
+    k = FakeKnps(submit=OK, reservations=[_held("소청대피소", "20261015", 1)])
+    d = _daemon(k)
+    t = Target("설악산", "B03", "소청대피소", "20261015", 5, "auto")
+    d.targets = [t]
+    d.start_relay(t, _cell("소청대피소", "20261015", tp="R", rsvt=1))
+    assert "1명(예약) 취소 후 2명" in d.tg.photos[0]   # 캡션이 취소·재예약 계획을 알려준다
+    d.handle_captcha_reply("1234")
+    assert k.cancelled == ["SB0310020100220260902106743"]
+    assert k.submit_args == [("소청대피소", 2, "1234")]
+    assert t.key() not in d.done                     # 2/5 → 계속 감시
+    assert d.active is None
+
+
+def test_merge_reaching_party_marks_done():
+    k = FakeKnps(submit=OK, reservations=[_held("소청대피소", "20261015", 4)])
+    d = _daemon(k)
+    t = Target("설악산", "B03", "소청대피소", "20261015", 5, "auto")
+    d.targets = [t]
+    d.start_relay(t, _cell("소청대피소", "20261015", tp="R", rsvt=3))
+    d.handle_captcha_reply("1234")
+    assert k.submit_args == [("소청대피소", 5, "1234")]   # 4+3 중 희망 5명까지만
+    assert t.key() in d.done
+
+
+def test_cancel_failure_skips_submit_and_keeps_active():
+    k = FakeKnps(submit=OK, reservations=[_held("소청대피소", "20261015", 1)], cancel_error=True)
+    d = _daemon(k)
+    t = Target("설악산", "B03", "소청대피소", "20261015", 5, "auto")
+    d.targets = [t]
+    d.start_relay(t, _cell("소청대피소", "20261015", tp="R", rsvt=1))
+    d.handle_captcha_reply("1234")
+    assert k.submit_calls == 0             # 취소 안 됐으면 제출해봐야 거절 — 제출 안 함
+    assert d.active is not None            # 새 캡차로 재시도 가능
+    assert t.key() not in d.done
+
+
+def test_submit_failure_after_cancel_retries_with_freed_seats():
+    """취소는 됐는데 제출(캡차 오답)이 실패하면 풀린 자리까지 포함해 즉시 재시도한다."""
+    k = FakeKnps(submit=FAIL, reservations=[_held("소청대피소", "20261015", 1)])
+    d = _daemon(k)
+    t = Target("설악산", "B03", "소청대피소", "20261015", 5, "auto")
+    d.targets = [t]
+    d.start_relay(t, _cell("소청대피소", "20261015", tp="R", rsvt=1))
+    d.handle_captcha_reply("0000")
+    assert k.cancelled == ["SB0310020100220260902106743"]
+    assert k.submit_args == [("소청대피소", 2, "0000")]
+    assert d.active is not None
+    k.submit = OK
+    d.handle_captcha_reply("1234")         # 기존 예약은 이미 취소됨 → 다시 취소하지 않고 2명 제출
+    assert k.cancelled == ["SB0310020100220260902106743"]
+    assert k.submit_args[-1] == ("소청대피소", 2, "1234")
+    assert d.active is None
 
 
 def test_pass_cancels_active():

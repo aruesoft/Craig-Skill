@@ -83,6 +83,8 @@ echo "$CHANGED" | grep -qE '^youtube-telegram-summary/'          && reload youtu
 echo "$CHANGED" | grep -qE '^craig-telegram-study/'              && reload studybot "학습봇"
 echo "$CHANGED" | grep -qE '^deploy/dashboard\.py'              && reload dashboard "대시보드"
 echo "$CHANGED" | grep -qE '^deploy/watchdog\.py'               && reload watchdog "워치독"
+echo "$CHANGED" | grep -qE '^craig-find-cabin/(monitor|knps|notify|watch|config|status_page)\.py' && reload findcabin "대피소데몬"
+echo "$CHANGED" | grep -qE '^craig-find-cabin/(web|config)\.py'  && reload findcabin-web "대피소웹"
 
 log "배포 완료: ${COMMITS}커밋, 재시작=[${RELOADED:- 없음}]"
 tg "🚀 [Craig-Skill 배포] ${COMMITS}커밋 반영 → $(git rev-parse --short origin/$BRANCH). 재시작:${RELOADED:- 없음(유튜브는 다음 주기 자동 반영)}"

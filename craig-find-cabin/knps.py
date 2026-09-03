@@ -79,6 +79,56 @@ def _comma(n: int) -> str:
     return f"{n:,}"
 
 
+@dataclass
+class Reservation:
+    """마이페이지 '나의 예약목록' 한 행. 같은 날 기존 예약 감지·취소에 사용."""
+    rsvt_id: str
+    shelter: str
+    use_dt: str        # YYYYMMDD
+    status: str        # 사이트 표시 문자열(예약(미결제)·대기·예약취소(본인)…)
+    kind: str          # 'R' 예약 | 'W' 대기
+    qty: int | None    # 인원(대기 행은 목록에서, 예약 행은 상세 페이지에서)
+    prd_id: str = ""
+
+    @property
+    def active(self) -> bool:
+        return "취소" not in self.status
+
+
+_ROW_RE = re.compile(r"<tr>(.*?)</tr>", re.S)
+_STATUS_RE = re.compile(r'<span class="statusSpan\d+">\s*([^<]+?)\s*</span>')
+_RSVT_RE = re.compile(r"rsvtId=([A-Z0-9]+)")
+_NAME_RE = re.compile(r"-\s*([^<\s]+)\s*</a>")
+_DATE_RE = re.compile(r"(\d{4})-(\d{2})-(\d{2})\s*\[")
+_WAIT_RE = re.compile(r"cancelWait\('([^']*)','([^']*)','([^']*)','([^']*)','([^']*)'\)")
+_QTY_RE = re.compile(r"사용인원</dt>\s*<dd>\s*(\d+)\s*명")
+
+
+def parse_my_reservations(html: str) -> list[Reservation]:
+    """dashBoard.do(prdDvcd=S) HTML → 대피소 예약 행 목록(취소된 행 포함, active로 구분)."""
+    out = []
+    for row in _ROW_RE.findall(html):
+        m_id = _RSVT_RE.search(row)
+        m_st = _STATUS_RE.search(row)
+        m_dt = _DATE_RE.search(row)
+        if not (m_id and m_st and m_dt):
+            continue
+        m_nm = _NAME_RE.search(row)
+        status = m_st.group(1)
+        m_w = _WAIT_RE.search(row)
+        kind = "W" if (m_w or "대기" in status) else "R"
+        qty = _to_int(m_w.group(5), 0) if m_w else None
+        prd_id = m_w.group(2) if m_w else m_id.group(1)[:13]
+        out.append(Reservation(m_id.group(1), m_nm.group(1) if m_nm else "",
+                               "".join(m_dt.groups()), status, kind, qty, prd_id))
+    return out
+
+
+def parse_reservation_qty(html: str) -> int | None:
+    m = _QTY_RE.search(html)
+    return int(m.group(1)) if m else None
+
+
 class KnpsClient:
     def __init__(self):
         self.s = requests.Session()
@@ -132,8 +182,47 @@ class KnpsClient:
             raise KnpsError(f"captcha fetch failed: HTTP {r.status_code}")
         return r.content
 
-    def submit_reservation(self, cell: Cell, party: int, captcha: str) -> ReservationResult:
-        qty = min(party, cell.rsvt_cnt) if cell.rsvt_cnt else party
+    def my_reservations(self, use_dt: str | None = None) -> list[Reservation]:
+        """로그인 세션으로 '나의 예약목록(대피소)'의 활성 행을 가져온다(use_dt 지정 시 그 날짜만).
+        예약(R) 행은 인원이 목록에 없어 상세 페이지를 한 번 더 읽는다."""
+        try:
+            r = self.s.get(f"{BASE}/mypage/dashBoard.do",
+                           params={"pageNo": 1, "type": "rsvt", "prdDvcd": "S"}, timeout=20)
+        except requests.RequestException as e:
+            raise KnpsError(f"mypage request failed: {e}") from e
+        if r.status_code != 200 or "예약목록" not in r.text:
+            raise KnpsError(f"unexpected mypage response: HTTP {r.status_code}")
+        rows = [x for x in parse_my_reservations(r.text)
+                if x.active and (use_dt is None or x.use_dt == use_dt)]
+        for x in rows:
+            if x.qty is None:
+                try:
+                    d = self.s.get(f"{BASE}/mypage/selectReservationDetail.do",
+                                   params={"rsvtId": x.rsvt_id, "prdDvcd": "S"}, timeout=20)
+                    x.qty = parse_reservation_qty(d.text)
+                except requests.RequestException:
+                    x.qty = None
+        return rows
+
+    def cancel_reservation(self, res: Reservation) -> None:
+        """기존 예약(R)은 전체취소, 대기(W)는 대기취소. 취소 후 목록을 다시 읽어 실제로 사라졌는지 검증."""
+        try:
+            if res.kind == "W":
+                self.s.post(f"{BASE}/mypage/cancelWait.do",
+                            data={"rsvtId": res.rsvt_id, "prdSalYmd": res.use_dt,
+                                  "prdId": res.prd_id, "prdDvcd": "S",
+                                  "pttNopCnt": res.qty or 1}, timeout=30)
+            else:
+                self.s.post(f"{BASE}/appendix/reservationCancelProc.do",
+                            data={"rsvtId": res.rsvt_id, "allCancel": "Y"}, timeout=30)
+        except requests.RequestException as e:
+            raise KnpsError(f"cancel request failed: {e}") from e
+        still = [x for x in self.my_reservations(res.use_dt) if x.rsvt_id == res.rsvt_id]
+        if still:
+            raise KnpsError(f"cancel not applied: {res.rsvt_id} still {still[0].status}")
+
+    def submit_reservation(self, cell: Cell, qty: int, captcha: str) -> ReservationResult:
+        """qty명 그대로 제출(잔여 대비 캡은 호출자 책임 — 취소 직후 잔여가 목록보다 클 수 있음)."""
         sal = cell.price * qty
         prd = {
             "reserTp": cell.reser_tp,
