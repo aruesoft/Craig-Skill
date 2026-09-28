@@ -38,6 +38,7 @@
 | Obsidian 상시 실행(Sync 유지) | `open -a Obsidian` | launchd `com.craig.skill.obsidian-keeper` | 5분마다(+부팅 시) |
 | 아침 명령어 안내(봇 3종 사용법 텔레그램 발송) | `deploy/morning_commands.py` | launchd `com.craig.skill.morning-commands` | 매일 08시 |
 | 대피소 선점 데몬(KNPS 취소표 감시·예약) | `craig-find-cabin/monitor.py --listen` | launchd `com.craig.skill.findcabin` | 3분(폴링) |
+| 파크골프 예약 데몬·웹(양산 선점·부산 추첨, 별도 저장소 `~/Github/craig-find-parkgolf`) | `monitor.py --listen`, `web.py --port 8791` | launchd `com.craig.skill.findparkgolf{,-web}` | 상시(1초 tick) · parkgolf.santalk.kr |
 | 자동배포 | `deploy/auto_deploy.sh` | crontab | 10분마다 |
 
 > **Obsidian Sync 주의** 🙋: Obsidian Sync 는 **앱이 그 볼트를 열고 실행 중일 때만** 동기화한다(클라우드 데몬 아님).
