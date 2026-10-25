@@ -260,7 +260,7 @@ def poll_once(cfg, long_poll=False):
         params["offset"] = off
     r = api(cfg, "getUpdates", _http_timeout=(55 if long_poll else 20), **params)
     if not r.get("ok"):
-        return
+        return False
     last = None
     for upd in r.get("result", []):
         last = upd["update_id"]
@@ -271,18 +271,27 @@ def poll_once(cfg, long_poll=False):
     if last is not None:
         st["offset"] = last + 1
         save_state(st)
+    return True
 
 
 def listen(cfg):
     log("relay_bot 시작 (큐 릴레이). 링크/텍스트/사진을 보내세요.")
+    delay = 5
     while True:
         try:
-            poll_once(cfg, long_poll=True)
+            ok = poll_once(cfg, long_poll=True)
         except KeyboardInterrupt:
             break
         except Exception as e:
             log(f"루프 오류(계속): {e}")
-            time.sleep(5)
+            ok = False
+        # api()가 예외를 삼키고 {}를 반환하므로 반환값으로 실패를 판단해 백오프
+        # (DNS 단절 시 즉시 실패가 반복돼 로그 폭주 — 2026-08-03 55K줄/4분)
+        if ok:
+            delay = 5
+        else:
+            time.sleep(delay)
+            delay = min(delay * 2, 300)
 
 
 def main():

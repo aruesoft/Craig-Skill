@@ -223,7 +223,7 @@ launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.craig.skill.mountain
 
 ## 11. 대피소 선점 데몬 (com.craig.skill.findcabin) — 이전됨
 
-2026-10-25 예약 통합 저장소 **`~/Github/craig-find-reserve/craig-find-cabin/`**(GitHub 프라이빗 `aruesoft/craig-find-parkgolf`)로 이동. 설정·배포·로그는 그 저장소 `README.md`·`CLAUDE.md` 참고.
+2026-10-25 예약 통합 저장소 **`~/Github/craig-find-reserve/craig-find-cabin/`**(GitHub 프라이빗 `aruesoft/craig-find-reserve`)로 이동. 설정·배포·로그는 그 저장소 `README.md`·`CLAUDE.md` 참고.
 - 설정: 통합 `~/.config/craig-find-reserve/config.json` (KNPS 계정 최상위, 봇·알림은 `"cabin"` 섹션). 감시대상 `~/.config/craig-find-reserve/cabin/targets.json`.
 - 배포: craig-find-reserve에서 `bash deploy/redeploy-air.sh` (파크골프와 함께 재시작).
 - 로그: `~/Github/craig-find-reserve/logs/findcabin{,-web}.{out,err}.log`.

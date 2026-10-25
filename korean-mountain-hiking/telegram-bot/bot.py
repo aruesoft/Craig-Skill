@@ -815,7 +815,7 @@ def process_updates(cfg, long_poll=False):
     token = cfg["telegram_bot_token"]
     if not token:
         log("TELEGRAM_BOT_TOKEN 이 없습니다. config.json 또는 환경변수를 설정하세요.")
-        return 0
+        return None
     allow = cfg["telegram_chat_id"]  # 비어있으면 모든 채팅 허용
     offset = load_state().get("telegram_update_offset")
     params = {"timeout": 50 if long_poll else 0}
@@ -826,10 +826,10 @@ def process_updates(cfg, long_poll=False):
                          params=params, timeout=(55 if long_poll else 20)).json()
     except Exception as e:
         log(f"getUpdates 오류: {e}")
-        return 0
+        return None
     if not r.get("ok"):
         log(f"getUpdates 실패: {r.get('description')}")
-        return 0
+        return None
 
     updates = r.get("result", [])
     last_id = None
@@ -874,15 +874,23 @@ def process_updates(cfg, long_poll=False):
 
 def listen_loop(cfg):
     log("리스너 시작 (long-poll). 산 이름을 보내면 응답합니다. Ctrl+C 종료.")
+    delay = 5
     while True:
         try:
-            process_updates(cfg, long_poll=True)
+            ok = process_updates(cfg, long_poll=True) is not None
         except KeyboardInterrupt:
             log("리스너 종료")
             break
         except Exception as e:
             log(f"리스너 오류(계속): {e}")
-            time.sleep(5)
+            ok = False
+        # process_updates가 네트워크 예외를 내부에서 처리(None 반환)하므로
+        # 여기서 백오프 — DNS 단절 시 즉시 실패 반복으로 로그 폭주 방지
+        if ok:
+            delay = 5
+        else:
+            time.sleep(delay)
+            delay = min(delay * 2, 300)
 
 
 # ──────────────────────────── main ────────────────────────────
@@ -902,7 +910,7 @@ def main():
     if args.listen:
         listen_loop(cfg)
     elif args.once:
-        n = process_updates(cfg, long_poll=False)
+        n = process_updates(cfg, long_poll=False) or 0
         log(f"처리 완료: {n}건")
     else:
         ap.print_help()
